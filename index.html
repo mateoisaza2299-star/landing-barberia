@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barbería El Filo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;900&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1C1A17;
+    --bg-alt: #24211D;
+    --paper: #F1EAD9;
+    --accent: #B5652D;
+    --text: #F1EAD9;
+    --text-muted: #A9A08D;
+    --line: #3A362F;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 48px;
+    align-items: center;
+    padding: 90px 0 100px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    left: -24px;
+    top: 60px;
+    bottom: 60px;
+    width: 6px;
+    background: var(--accent);
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 5.5vw, 68px);
+    max-width: 11ch;
+  }
+
+  .hero p {
+    margin-top: 22px;
+    max-width: 42ch;
+    color: var(--text-muted);
+    font-size: 17px;
+  }
+
+  .cta-row {
+    margin-top: 36px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--paper);
+    text-decoration: none;
+    padding: 14px 28px;
+    font-weight: 500;
+    font-size: 15px;
+    border-radius: 3px;
+  }
+
+  .btn-ghost {
+    text-decoration: none;
+    color: var(--text);
+    font-size: 15px;
+    border-bottom: 1px solid var(--text-muted);
+    padding-bottom: 2px;
+  }
+
+  .hero-fact {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    padding: 32px;
+    border-radius: 4px;
+  }
+
+  .hero-fact .num {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .hero-fact .label {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-top: 6px;
+  }
+
+  /* Services */
+  .services { padding: 90px 0; border-bottom: 1px solid var(--line); }
+
+  .services h2 {
+    font-size: 34px;
+    margin-bottom: 44px;
+  }
+
+  .service-list {
+    list-style: none;
+  }
+
+  .service-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .service-list li:last-child { border-bottom: 1px solid var(--line); }
+
+  .service-name {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+  }
+
+  .service-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .service-price {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--accent);
+    white-space: nowrap;
+    padding-left: 24px;
+  }
+
+  /* Footer / contact */
+  footer {
+    padding: 70px 0 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  footer h3 {
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+
+  footer p { color: var(--text-muted); font-size: 15px; }
+
+  .hours-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 15px;
+    max-width: 320px;
+  }
+
+  .foot-bottom {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; padding-top: 60px; }
+    nav ul { display: none; }
+    footer { grid-template-columns: 1fr; }
+    .hero::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="logo">El Filo</div>
+    <nav>
+      <ul>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#contacto">Horarios</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Corte con oficio, no con afán.</h1>
+      <p>Barbería de barrio en Bogotá. Cortes clásicos, arreglo de barba y navaja, hechos con calma y buena conversación.</p>
+      <div class="cta-row">
+        <a href="#contacto" class="btn">Agendar cita</a>
+        <a href="#servicios" class="btn-ghost">Ver servicios</a>
+      </div>
+    </div>
+    <div class="hero-fact">
+      <div class="num">12</div>
+      <div class="label">años cortando en el mismo barrio</div>
+    </div>
+  </section>
+
+  <section class="services" id="servicios">
+    <h2>Servicios</h2>
+    <ul class="service-list">
+      <li>
+        <div>
+          <div class="service-name">Corte clásico</div>
+          <div class="service-desc">Tijera y máquina, incluye lavado</div>
+        </div>
+        <div class="service-price">$25.000</div>
+      </li>
+      <li>
+        <div>
+          <div class="service-name">Barba y perfilado</div>
+          <div class="service-desc">Navaja caliente, toalla vapor</div>
+        </div>
+        <div class="service-price">$18.000</div>
+      </li>
+      <li>
+        <div>
+          <div class="service-name">Corte + barba</div>
+          <div class="service-desc">El combo completo</div>
+        </div>
+        <div class="service-price">$38.000</div>
+      </li>
+      <li>
+        <div>
+          <div class="service-name">Diseño y línea</div>
+          <div class="service-desc">Diseños a máquina, líneas definidas</div>
+        </div>
+        <div class="service-price">$15.000</div>
+      </li>
+    </ul>
+  </section>
+
+  <footer id="contacto">
+    <div>
+      <h3>Horarios</h3>
+      <div class="hours-row"><span>Lunes a viernes</span><span>9:00 am – 7:00 pm</span></div>
+      <div class="hours-row"><span>Sábados</span><span>9:00 am – 5:00 pm</span></div>
+      <div class="hours-row"><span>Domingos</span><span>Cerrado</span></div>
+    </div>
+    <div>
+      <h3>Visítanos</h3>
+      <p>Cra 45 # 12-30, Bogotá</p>
+      <p>WhatsApp: 300 123 4567</p>
+    </div>
+  </footer>
+
+  <div class="foot-bottom wrap" style="padding-left:0">
+    © 2026 Barbería El Filo
+  </div>
+</div>
+
+</body>
+</html>
