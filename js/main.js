@@ -1,4 +1,4 @@
-/* El Filo — interacciones de la landing.
+/* Pupilos Barber — interacciones de la landing.
    El número de WhatsApp vive en <body data-whatsapp="...">. */
 
 (function () {
@@ -177,7 +177,7 @@
     const nota = String(data.get("nota") || "").trim();
 
     const lines = [
-      "Hola, soy " + nombre + ". Quiero reservar una cita en El Filo.",
+      "Hola, soy " + nombre + ". Quiero reservar una cita en Pupilos Barber.",
       "Servicio: " + servicio + ".",
       "Barbero: " + barbero + "."
     ];
