@@ -1,315 +1,379 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Barbería El Filo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;900&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #1C1A17;
-    --bg-alt: #24211D;
-    --paper: #F1EAD9;
-    --accent: #B5652D;
-    --text: #F1EAD9;
-    --text-muted: #A9A08D;
-    --line: #3A362F;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Work Sans', sans-serif;
-    line-height: 1.6;
-  }
-
-  h1, h2, h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    line-height: 1.15;
-  }
-
-  a { color: inherit; }
-
-  .wrap {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  /* Header */
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .logo {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
-    font-size: 22px;
-    letter-spacing: -0.5px;
-  }
-
-  nav ul {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-
-  nav a {
-    text-decoration: none;
-    color: var(--text-muted);
-    font-size: 15px;
-    transition: color 0.2s;
-  }
-
-  nav a:hover { color: var(--text); }
-
-  /* Hero */
-  .hero {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 48px;
-    align-items: center;
-    padding: 90px 0 100px;
-    border-bottom: 1px solid var(--line);
-    position: relative;
-  }
-
-  .hero::before {
-    content: "";
-    position: absolute;
-    left: -24px;
-    top: 60px;
-    bottom: 60px;
-    width: 6px;
-    background: var(--accent);
-  }
-
-  .hero h1 {
-    font-size: clamp(40px, 5.5vw, 68px);
-    max-width: 11ch;
-  }
-
-  .hero p {
-    margin-top: 22px;
-    max-width: 42ch;
-    color: var(--text-muted);
-    font-size: 17px;
-  }
-
-  .cta-row {
-    margin-top: 36px;
-    display: flex;
-    gap: 16px;
-    align-items: center;
-  }
-
-  .btn {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--paper);
-    text-decoration: none;
-    padding: 14px 28px;
-    font-weight: 500;
-    font-size: 15px;
-    border-radius: 3px;
-  }
-
-  .btn-ghost {
-    text-decoration: none;
-    color: var(--text);
-    font-size: 15px;
-    border-bottom: 1px solid var(--text-muted);
-    padding-bottom: 2px;
-  }
-
-  .hero-fact {
-    background: var(--bg-alt);
-    border: 1px solid var(--line);
-    padding: 32px;
-    border-radius: 4px;
-  }
-
-  .hero-fact .num {
-    font-family: 'Fraunces', serif;
-    font-size: 56px;
-    color: var(--accent);
-    font-weight: 600;
-  }
-
-  .hero-fact .label {
-    color: var(--text-muted);
-    font-size: 15px;
-    margin-top: 6px;
-  }
-
-  /* Services */
-  .services { padding: 90px 0; border-bottom: 1px solid var(--line); }
-
-  .services h2 {
-    font-size: 34px;
-    margin-bottom: 44px;
-  }
-
-  .service-list {
-    list-style: none;
-  }
-
-  .service-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 22px 0;
-    border-top: 1px solid var(--line);
-  }
-
-  .service-list li:last-child { border-bottom: 1px solid var(--line); }
-
-  .service-name {
-    font-family: 'Fraunces', serif;
-    font-size: 20px;
-  }
-
-  .service-desc {
-    color: var(--text-muted);
-    font-size: 14px;
-    margin-top: 4px;
-  }
-
-  .service-price {
-    font-family: 'Fraunces', serif;
-    font-size: 20px;
-    color: var(--accent);
-    white-space: nowrap;
-    padding-left: 24px;
-  }
-
-  /* Footer / contact */
-  footer {
-    padding: 70px 0 40px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-  }
-
-  footer h3 {
-    font-size: 26px;
-    margin-bottom: 16px;
-  }
-
-  footer p { color: var(--text-muted); font-size: 15px; }
-
-  .hours-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    font-size: 15px;
-    max-width: 320px;
-  }
-
-  .foot-bottom {
-    margin-top: 60px;
-    padding-top: 24px;
-    border-top: 1px solid var(--line);
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-
-  @media (max-width: 720px) {
-    .hero { grid-template-columns: 1fr; padding-top: 60px; }
-    nav ul { display: none; }
-    footer { grid-template-columns: 1fr; }
-    .hero::before { display: none; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Barbería El Filo en Bogotá. Cortes, barba y afeitado clásico con calma. Reserva tu cita por WhatsApp.">
+  <meta name="theme-color" content="#161210">
+  <title>El Filo — Barbería en Bogotá</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='none' stroke='%23C9A24B' stroke-width='1.4'/%3E%3Cpath d='M16 6 L16 26' stroke='%23C9A24B' stroke-width='1.2' transform='rotate(24 16 16)'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
-<body>
+<body data-whatsapp="573001234567">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
-<div class="wrap">
-  <header>
-    <div class="logo">El Filo</div>
-    <nav>
-      <ul>
-        <li><a href="#servicios">Servicios</a></li>
-        <li><a href="#contacto">Horarios</a></li>
-      </ul>
-    </nav>
+  <header class="site-header" data-header>
+    <div class="wrap header-bar">
+      <a class="logo" href="#inicio" aria-label="El Filo, inicio">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="logo-text">El Filo</span>
+      </a>
+
+      <nav class="nav" id="nav-menu" data-nav aria-label="Principal">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="#nosotros">Nosotros</a></li>
+          <li><a class="nav-link" href="#servicios">Servicios</a></li>
+          <li><a class="nav-link" href="#galeria">Galería</a></li>
+          <li><a class="nav-link" href="#equipo">Equipo</a></li>
+          <li><a class="nav-link" href="#visita">Visita</a></li>
+        </ul>
+        <a class="btn btn-nav" data-open-reserva href="https://wa.me/573001234567?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20El%20Filo.">Reserva tu cita</a>
+      </nav>
+
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-menu">
+        <span class="nav-toggle-box" aria-hidden="true"><span></span><span></span></span>
+        <span class="sr-only">Abrir menú</span>
+      </button>
+    </div>
   </header>
 
-  <section class="hero">
-    <div>
-      <h1>Corte con oficio, no con afán.</h1>
-      <p>Barbería de barrio en Bogotá. Cortes clásicos, arreglo de barba y navaja, hechos con calma y buena conversación.</p>
-      <div class="cta-row">
-        <a href="#contacto" class="btn">Agendar cita</a>
-        <a href="#servicios" class="btn-ghost">Ver servicios</a>
+  <main id="contenido">
+    <section class="hero" id="inicio">
+      <div class="hero-media">
+        <img src="assets/hero-corte.jpg" width="1280" height="720" alt="Barbero cortando el cabello de un cliente bajo luz cálida en El Filo" fetchpriority="high">
+      </div>
+      <div class="hero-overlay" aria-hidden="true"></div>
+      <p class="hero-side" aria-hidden="true">Corte · Barba · Navaja</p>
+
+      <div class="wrap hero-content">
+        <p class="eyebrow"><i></i> Barbería · Bogotá</p>
+        <h1>El corte que se queda contigo.</h1>
+        <p class="hero-lead">Precisión, calma y un acabado que se nota. Un espacio para verse bien, sin prisa y sin ruido.</p>
+        <div class="hero-actions">
+          <a class="btn" data-open-reserva href="https://wa.me/573001234567?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20El%20Filo.">Reserva tu cita</a>
+          <a class="text-link" href="#servicios">Ver servicios</a>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#nosotros" aria-label="Bajar a la sección nosotros"><span></span></a>
+    </section>
+
+    <section class="section about" id="nosotros">
+      <div class="wrap about-grid">
+        <div class="about-copy reveal">
+          <p class="kicker">01 — Nosotros</p>
+          <h2>Oficio moderno, trato de barrio.</h2>
+          <p>El Filo lleva doce años en el mismo punto de Bogotá. No crecimos por moda: la gente vuelve cuando el corte queda bien y la conversación no estorba.</p>
+          <p>El local es oscuro, cálido y simple a propósito. Tijera, navaja y tiempo. Si buscas un sitio que se sienta exclusivo sin ponerse solemne, estás en el lugar correcto.</p>
+          <blockquote class="pull">Un buen corte se siente antes de verse.</blockquote>
+          <ul class="stats">
+            <li><strong>12</strong><span>años en el barrio</span></li>
+            <li><strong>3</strong><span>barberos</span></li>
+            <li><strong>1</strong><span>cita a la vez</span></li>
+          </ul>
+        </div>
+        <div class="about-media reveal" data-delay="1">
+          <img src="assets/about-interior.jpg" width="1152" height="864" alt="Sillón de barbería en cuero, madera oscura y luz de un aplique de latón">
+          <span class="about-frame" aria-hidden="true"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section services" id="servicios">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="kicker">02 — Servicios</p>
+          <h2>Lo esencial, bien hecho.</h2>
+          <p>Precios claros, en pesos colombianos. Si no sabes qué pedirte, lo decidimos juntos en la silla.</p>
+        </header>
+
+        <ul class="service-grid">
+          <li class="service-card reveal">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><circle cx="9" cy="8" r="3.2"/><circle cx="9" cy="24" r="3.2"/><path d="M11.4 10.2 26 23.5M11.4 21.8 26 8.5"/></svg>
+            </span>
+            <h3>Corte clásico</h3>
+            <p>Tijera y máquina, con lavado y el acabado que te queda natural.</p>
+            <p class="price">$25.000</p>
+          </li>
+          <li class="service-card reveal" data-delay="1">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M8 22c2.5-7 5-12 8-12s5.5 5 8 12"/><path d="M7 22h18M11 14.5c1.4-2 2.8-3 5-3s3.6 1 5 3"/></svg>
+            </span>
+            <h3>Fade definido</h3>
+            <p>Degradado limpio, línea precisa y textura arriba. Dura la semana.</p>
+            <p class="price">$32.000</p>
+          </li>
+          <li class="service-card reveal" data-delay="2">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M10 8h12v6.5c0 4.2-2.6 7.2-6 7.2s-6-3-6-7.2V8z"/><path d="M12 8V6.5M20 8V6.5M16 21.7V26M12 26h8"/></svg>
+            </span>
+            <h3>Barba y perfilado</h3>
+            <p>Navaja caliente, toalla de vapor y un contorno que no se ve forzado.</p>
+            <p class="price">$18.000</p>
+          </li>
+          <li class="service-card reveal">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M6 22 20 8l3 3L9 25H6v-3z"/><path d="M18 10l3 3M22 7l3 3"/></svg>
+            </span>
+            <h3>Afeitado clásico</h3>
+            <p>Ritual de navaja, vapor y bálsamo. Sales más ligero de lo que entraste.</p>
+            <p class="price">$28.000</p>
+          </li>
+          <li class="service-card reveal" data-delay="1">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><circle cx="8" cy="9" r="2.4"/><circle cx="8" cy="23" r="2.4"/><path d="M10 10.6 18 18M10 21.4 16 16"/><path d="M20 8h6v6.2c0 3.4-2.2 5.8-3 5.8s-3-2.4-3-5.8V8z"/></svg>
+            </span>
+            <h3>Corte + barba</h3>
+            <p>El combo completo en una sola cita. Lo que más se reserva.</p>
+            <p class="price">$38.000</p>
+          </li>
+          <li class="service-card reveal" data-delay="2">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M8 24 24 8"/><path d="M8 16h6M18 16h6M16 8v6M16 18v6"/></svg>
+            </span>
+            <h3>Diseño y línea</h3>
+            <p>Líneas definidas y detalles a máquina, sin recargar el corte.</p>
+            <p class="price">$15.000</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section gallery" id="galeria">
+      <div class="wrap">
+        <header class="section-head section-head-light reveal">
+          <p class="kicker">03 — Galería</p>
+          <h2>El detalle es el estilo.</h2>
+          <p>El local, las herramientas y el trabajo. Nada de poses: así se ve un corte cuando está listo.</p>
+        </header>
+
+        <div class="gallery-grid">
+          <figure class="shot g-fade reveal">
+            <img src="assets/galeria-fade.jpg" width="864" height="1152" alt="Detalle de un fade con la máquina en la nuca" loading="lazy">
+            <figcaption>Fade</figcaption>
+          </figure>
+          <figure class="shot g-tools reveal" data-delay="1">
+            <img src="assets/galeria-herramientas.jpg" width="1024" height="1024" alt="Tijeras, brocha y cuenco de latón sobre madera oscura" loading="lazy">
+            <figcaption>Herramientas</figcaption>
+          </figure>
+          <figure class="shot g-razor reveal" data-delay="2">
+            <img src="assets/galeria-navaja.jpg" width="864" height="1152" alt="Afeitado clásico con navaja y toalla caliente" loading="lazy">
+            <figcaption>Navaja</figcaption>
+          </figure>
+          <figure class="shot g-scissors reveal">
+            <img src="assets/galeria-tijera.jpg" width="1024" height="1024" alt="Tijera cortando el cabello en primer plano" loading="lazy">
+            <figcaption>Tijera</figcaption>
+          </figure>
+          <figure class="shot g-beard reveal" data-delay="1">
+            <img src="assets/galeria-barba.jpg" width="864" height="1152" alt="Perfilado de barba con recortadora" loading="lazy">
+            <figcaption>Barba</figcaption>
+          </figure>
+          <figure class="shot g-chair reveal" data-delay="2">
+            <img src="assets/galeria-silla.jpg" width="1152" height="864" alt="Sillón de barbería frente al espejo, con luz cálida" loading="lazy">
+            <figcaption>El local</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section team" id="equipo">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="kicker">04 — El equipo</p>
+          <h2>Manos que ya conocen el oficio.</h2>
+          <p>Tres barberos, tres maneras de cortar. Pide a quien quieras al reservar.</p>
+        </header>
+
+        <ul class="team-grid">
+          <li class="barber reveal">
+            <img src="assets/barber-mateo.jpg" width="864" height="1152" alt="Retrato de Mateo Ríos, barbero" loading="lazy">
+            <h3>Mateo Ríos</h3>
+            <p class="role">Cortes y fades</p>
+            <p>Degradados limpios y cortes que aguantan la semana sin retocarse.</p>
+          </li>
+          <li class="barber reveal" data-delay="1">
+            <img src="assets/barber-camilo.jpg" width="864" height="1152" alt="Retrato de Camilo Herrera, barbero" loading="lazy">
+            <h3>Camilo Herrera</h3>
+            <p class="role">Barba y navaja</p>
+            <p>Perfilado y afeitado clásico. Preciso, sin dejar la barba de catálogo.</p>
+          </li>
+          <li class="barber reveal" data-delay="2">
+            <img src="assets/barber-andres.jpg" width="864" height="1152" alt="Retrato de Andrés Vega, barbero" loading="lazy">
+            <h3>Andrés Vega</h3>
+            <p class="role">Estilo clásico</p>
+            <p>Tijera, textura y calma. El clásico con un giro de ahora.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section quotes" id="testimonios" aria-roledescription="carrusel">
+      <div class="wrap">
+        <header class="section-head section-head-light reveal">
+          <p class="kicker">05 — Testimonios</p>
+          <h2>Lo que se dicen al salir.</h2>
+        </header>
+
+        <div class="carousel" data-carousel>
+          <div class="carousel-viewport">
+            <figure class="quote is-active">
+              <blockquote>Me hice el fade un jueves y el viernes todavía me lo estaban preguntando. Se nota cuando alguien corta con calma.</blockquote>
+              <figcaption>Julián Pardo <span>Corte fade</span></figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>Pedí el afeitado clásico sin saber bien qué era. La toalla caliente vale la cita sola. Sales más ligero.</blockquote>
+              <figcaption>Santiago Melo <span>Afeitado clásico</span></figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>Reservar por WhatsApp es fácil y cumplen la hora. El sitio se siente cuidado, sin pose y sin letra pequeña.</blockquote>
+              <figcaption>Valentina Ruiz <span>Corte + barba</span></figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>Llevo la barba cerrada y no me la dejan de revista: me la dejan mía, solo más precisa. Por eso vuelvo.</blockquote>
+              <figcaption>Leo Gutiérrez <span>Barba</span></figcaption>
+            </figure>
+          </div>
+
+          <div class="carousel-controls">
+            <button class="carousel-btn" type="button" data-carousel-prev aria-label="Reseña anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+            </button>
+            <div class="dots" data-dots role="tablist" aria-label="Elegir reseña"></div>
+            <button class="carousel-btn" type="button" data-carousel-next aria-label="Reseña siguiente">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section visit" id="visita">
+      <div class="wrap visit-grid">
+        <div class="visit-copy reveal">
+          <p class="kicker">06 — Visítanos</p>
+          <h2>Estamos en Bogotá.</h2>
+          <p class="status" data-open-status>
+            <span class="status-dot" aria-hidden="true"></span>
+            <span data-open-label>Cita previa por WhatsApp</span>
+          </p>
+          <address>
+            Carrera 45 #12-30<br>
+            Bogotá, Colombia
+          </address>
+          <p><a class="text-link" href="https://maps.google.com/?q=Carrera+45+12-30+Bogota" target="_blank" rel="noopener">Cómo llegar</a></p>
+
+          <h3 class="hours-title">Horario</h3>
+          <ul class="hours">
+            <li><span>Lunes a viernes</span><span>9:00 am – 7:00 pm</span></li>
+            <li><span>Sábados</span><span>9:00 am – 5:00 pm</span></li>
+            <li><span>Domingos</span><span>Cerrado</span></li>
+          </ul>
+          <p class="visit-note">Si pasas sin reserva, te decimos el hueco más cercano. Los domingos descansamos la tijera.</p>
+          <a class="btn btn-dark" data-open-reserva href="https://wa.me/573001234567?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20El%20Filo.">Reserva tu cita</a>
+        </div>
+
+        <div class="map-frame reveal" data-delay="1">
+          <iframe
+            title="Mapa de Barbería El Filo en Bogotá"
+            src="https://maps.google.com/maps?q=Carrera%2045%20%2312-30%20Bogot%C3%A1&z=16&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <p class="logo-text">El Filo</p>
+        <p>Corte con oficio, sin afán. Barbería en Bogotá desde 2014.</p>
+      </div>
+      <div>
+        <h2>Visita</h2>
+        <p>Carrera 45 #12-30<br>Bogotá, Colombia</p>
+        <p><a href="https://wa.me/573001234567" target="_blank" rel="noopener">WhatsApp 300 123 4567</a></p>
+      </div>
+      <div>
+        <h2>Horario</h2>
+        <p>Lun – Vie · 9:00 am – 7:00 pm<br>Sáb · 9:00 am – 5:00 pm<br>Dom · Cerrado</p>
+      </div>
+      <div class="footer-cta">
+        <h2>Tu silla</h2>
+        <a class="btn" data-open-reserva href="https://wa.me/573001234567?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20El%20Filo.">Reserva tu cita</a>
+        <ul class="social">
+          <li><a href="https://instagram.com/elfilobarberia" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"/></svg>
+          </a></li>
+          <li><a href="https://www.tiktok.com/@elfilobarberia" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6c.6 2.4 2.2 4 4.6 4.4v2.4c-1.6 0-3-.5-4.2-1.4v5.6a5.6 5.6 0 1 1-5.6-5.6c.3 0 .6 0 .9.1v2.6a3 3 0 1 0 2.1 2.9V6H14z"/></svg>
+          </a></li>
+          <li><a href="https://wa.me/573001234567" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5a7.4 7.4 0 0 0-6.4 11.1L4.5 19.5l4-1.1A7.4 7.4 0 1 0 12 4.5z"/><path d="M9.2 9.4c.2 1.6 1.6 3.4 3.4 4.2.4.2.8.1 1.1-.2l.6-.7c.2-.2.4-.2.6-.1l1.5.7c.3.1.4.4.3.7-.3 1-1.2 1.6-2.2 1.5-2.2-.2-4.6-2.4-5.4-4.6-.3-.9.1-1.8.9-2.2.2-.1.4-.1.5 0l.7.7z"/></svg>
+          </a></li>
+        </ul>
       </div>
     </div>
-    <div class="hero-fact">
-      <div class="num">12</div>
-      <div class="label">años cortando en el mismo barrio</div>
-    </div>
-  </section>
-
-  <section class="services" id="servicios">
-    <h2>Servicios</h2>
-    <ul class="service-list">
-      <li>
-        <div>
-          <div class="service-name">Corte clásico</div>
-          <div class="service-desc">Tijera y máquina, incluye lavado</div>
-        </div>
-        <div class="service-price">$25.000</div>
-      </li>
-      <li>
-        <div>
-          <div class="service-name">Barba y perfilado</div>
-          <div class="service-desc">Navaja caliente, toalla vapor</div>
-        </div>
-        <div class="service-price">$18.000</div>
-      </li>
-      <li>
-        <div>
-          <div class="service-name">Corte + barba</div>
-          <div class="service-desc">El combo completo</div>
-        </div>
-        <div class="service-price">$38.000</div>
-      </li>
-      <li>
-        <div>
-          <div class="service-name">Diseño y línea</div>
-          <div class="service-desc">Diseños a máquina, líneas definidas</div>
-        </div>
-        <div class="service-price">$15.000</div>
-      </li>
-    </ul>
-  </section>
-
-  <footer id="contacto">
-    <div>
-      <h3>Horarios</h3>
-      <div class="hours-row"><span>Lunes a viernes</span><span>9:00 am – 7:00 pm</span></div>
-      <div class="hours-row"><span>Sábados</span><span>9:00 am – 5:00 pm</span></div>
-      <div class="hours-row"><span>Domingos</span><span>Cerrado</span></div>
-    </div>
-    <div>
-      <h3>Visítanos</h3>
-      <p>Cra 45 # 12-30, Bogotá</p>
-      <p>WhatsApp: 300 123 4567</p>
+    <div class="wrap footer-bottom">
+      <p>© <span data-year>2026</span> Barbería El Filo</p>
+      <p>Bogotá</p>
     </div>
   </footer>
 
-  <div class="foot-bottom wrap" style="padding-left:0">
-    © 2026 Barbería El Filo
-  </div>
-</div>
+  <a class="fab" data-open-reserva href="https://wa.me/573001234567?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20El%20Filo.">Reservar</a>
 
+  <div class="modal" id="reserva" data-modal hidden>
+    <div class="modal-backdrop" data-close-reserva></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="reserva-title">
+      <button class="modal-close" type="button" data-close-reserva aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <p class="kicker">Reserva</p>
+      <h2 id="reserva-title">Tu cita en El Filo</h2>
+      <p class="modal-lead">Cuéntanos cómo quieres venir. Te abrimos WhatsApp con el mensaje listo.</p>
+      <form data-reserva-form>
+        <label>
+          Nombre
+          <input name="nombre" type="text" autocomplete="name" required placeholder="Tu nombre">
+        </label>
+        <label>
+          Servicio
+          <select name="servicio" required>
+            <option value="">Elige uno</option>
+            <option>Corte clásico</option>
+            <option>Fade definido</option>
+            <option>Barba y perfilado</option>
+            <option>Afeitado clásico</option>
+            <option>Corte + barba</option>
+            <option>Diseño y línea</option>
+          </select>
+        </label>
+        <label>
+          Barbero
+          <select name="barbero">
+            <option value="Quien tenga un hueco">Quien tenga un hueco</option>
+            <option>Mateo Ríos</option>
+            <option>Camilo Herrera</option>
+            <option>Andrés Vega</option>
+          </select>
+        </label>
+        <label>
+          Día preferido
+          <input name="dia" type="date" data-min-today>
+        </label>
+        <label>
+          Nota
+          <textarea name="nota" rows="3" placeholder="Hora, largo, algo que debamos saber"></textarea>
+        </label>
+        <button class="btn btn-dark btn-block" type="submit">Continuar en WhatsApp</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
