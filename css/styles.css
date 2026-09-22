@@ -1,5 +1,5 @@
 /* =========================================================
-   El Filo — paleta y tipo
+   Pupilos Barber — paleta y tipo
    Cambia estos valores para personalizar la página.
    El dorado es acento: bordes, iconos, hover. No fondo.
    ========================================================= */
@@ -169,8 +169,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .logo-text {
-  font-size: 1.55rem;
+  font-size: 1.28rem;
   letter-spacing: -0.03em;
+  white-space: nowrap;
 }
 
 .nav-list {
@@ -841,7 +842,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   gap: 2.2rem;
 }
 
-.footer-brand .logo-text { font-size: 2.4rem; }
+.footer-brand .logo-text {
+  font-size: clamp(2rem, 8vw, 2.5rem);
+  white-space: normal;
+}
 
 .site-footer h2 {
   margin-bottom: 0.7rem;
@@ -1071,6 +1075,7 @@ body.is-locked .fab {
 }
 
 @media (min-width: 721px) {
+  .logo-text { font-size: 1.5rem; }
   .gallery-grid { grid-auto-rows: 240px; gap: 0.85rem; }
   .service-grid { grid-template-columns: 1fr 1fr; }
   .modal { place-items: center; }

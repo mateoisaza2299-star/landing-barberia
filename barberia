@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Barbería El Filo</title>
+<title>Pupilos Barber</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rye&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -317,7 +317,7 @@
   <header>
     <div class="brand">
       <div class="pole" aria-hidden="true"></div>
-      <span class="display">El Filo</span>
+      <span class="display">Pupilos Barber</span>
     </div>
     <nav>
       <a class="jump" href="#tarifa">Tarifa</a>
@@ -394,7 +394,7 @@
         <p><a class="wsp" href="https://wa.me/573001234567" target="_blank" rel="noopener">WhatsApp: 300 123 4567</a></p>
       </div>
     </div>
-    <div class="foot-bottom">© 2026 Barbería El Filo</div>
+    <div class="foot-bottom">© 2026 Pupilos Barber</div>
   </div>
 </footer>
 
