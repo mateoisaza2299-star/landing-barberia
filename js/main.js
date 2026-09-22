@@ -188,7 +188,7 @@
     closeModal();
   });
 
-  /* Abierto / cerrado según hora de Bogotá */
+  /* Abierto / cerrado según la hora en Funza (America/Bogota). */
   const status = document.querySelector("[data-open-status]");
   const label = document.querySelector("[data-open-label]");
   const bogota = new Intl.DateTimeFormat("en-US", {
