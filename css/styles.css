@@ -815,6 +815,20 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-size: 0.95rem;
 }
 
+.phone-line {
+  margin: 0.85rem 0 0;
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+.phone-line a {
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold);
+}
+
+.phone-line a:hover { color: var(--gold-deep); }
+
 .map-frame {
   margin-top: 2.2rem;
   min-height: 320px;
@@ -930,11 +944,40 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .fab:hover { transform: translateY(-2px); color: var(--espresso); }
 
+.wa-float {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 46;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(16, 11, 8, 0.28);
+  transition: transform 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.wa-float svg {
+  width: 30px;
+  height: 30px;
+  fill: currentColor;
+}
+
+.wa-float:hover {
+  background: #1ebe5d;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
 body.is-locked {
   overflow: hidden;
 }
 
-body.is-locked .fab {
+body.is-locked .fab,
+body.is-locked .wa-float {
   opacity: 0;
   pointer-events: none;
 }
@@ -1071,7 +1114,8 @@ body.is-locked .fab {
 
 @media (max-width: 899px) {
   .scroll-hint { display: none; }
-  .site-footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+  .fab { bottom: calc(5.1rem + env(safe-area-inset-bottom)); }
+  .site-footer { padding-bottom: calc(8rem + env(safe-area-inset-bottom)); }
 }
 
 @media (min-width: 721px) {
