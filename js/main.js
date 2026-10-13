@@ -178,11 +178,317 @@ import { supabase } from "./supabase.js";
     formError.textContent = message || "";
   };
 
+  const citaTracker = (() => {
+    const empty = { track() {}, hush() {} };
+    try {
+      const card = document.querySelector("[data-cita]");
+      const live = document.querySelector("[data-reserva-estado]");
+      const serviceEl = card && card.querySelector("[data-cita-servicio]");
+      const whenEl = card && card.querySelector("[data-cita-cuando]");
+      const stateEl = card && card.querySelector("[data-cita-estado]");
+      const closeBtn = card && card.querySelector("[data-cita-close]");
+      if (!card || !live || !serviceEl || !whenEl || !stateEl || !closeBtn) return empty;
+
+      const storageKey = "pb_citas";
+      const hideKey = "pb_cita_hide";
+      const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const messages = {
+        pendiente: "Esperando confirmación del barbero",
+        confirmada: "Cita confirmada. Te esperamos",
+        cancelada: "Tu cita fue cancelada. Escríbenos por WhatsApp para reagendar"
+      };
+      let tokens = [];
+      const cache = new Map();
+      const seen = new Map();
+      let hiddenToken = "";
+      let hiddenEstado = "";
+      let bookedToken = "";
+      let flight = null;
+      let again = false;
+      let cardMark = "";
+      let liveMark = "";
+
+      const readHide = () => {
+        try {
+          const raw = sessionStorage.getItem(hideKey) || "";
+          const cut = raw.indexOf("|");
+          if (cut < 1) return;
+          hiddenToken = raw.slice(0, cut);
+          hiddenEstado = raw.slice(cut + 1);
+        } catch (error) {}
+      };
+
+      const writeHide = () => {
+        try {
+          if (!hiddenToken) sessionStorage.removeItem(hideKey);
+          else sessionStorage.setItem(hideKey, hiddenToken + "|" + hiddenEstado);
+        } catch (error) {}
+      };
+
+      const readTokens = () => {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+          if (!Array.isArray(parsed)) return [];
+          const unique = [];
+          parsed.forEach((item) => {
+            const token = String(item || "").trim().toLowerCase();
+            if (!uuidRe.test(token) || unique.includes(token)) return;
+            unique.push(token);
+          });
+          return unique.slice(0, 5);
+        } catch (error) {
+          return [];
+        }
+      };
+
+      const writeTokens = () => {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(tokens));
+        } catch (error) {}
+      };
+
+      const remember = (token) => {
+        const clean = String(token || "").trim().toLowerCase();
+        if (!uuidRe.test(clean)) return;
+        tokens = [clean, ...tokens.filter((item) => item !== clean)].slice(0, 5);
+        writeTokens();
+      };
+
+      const rowOf = (data) => {
+        const row = Array.isArray(data) ? data[0] : data;
+        if (!row || typeof row !== "object") return null;
+        if (!row.estado && !row.fecha && !row.servicio && !row.hora) return null;
+        return row;
+      };
+
+      const estadoOf = (row) => String((row && row.estado) || "").trim().toLowerCase();
+
+      const fechaOf = (row) => String((row && row.fecha) || "").slice(0, 10);
+
+      const activeOf = (token) => {
+        const row = cache.get(token);
+        if (!row) return null;
+        const estado = estadoOf(row);
+        if (!messages[estado]) return null;
+        const fecha = fechaOf(row);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha) || fecha < bogotaToday()) return null;
+        return { token, row, estado };
+      };
+
+      const current = () => {
+        for (let i = 0; i < tokens.length; i += 1) {
+          const item = activeOf(tokens[i]);
+          if (item) return item;
+        }
+        return null;
+      };
+
+      const whenText = (row) => {
+        const fecha = fechaOf(row);
+        let day = fecha;
+        const bits = fecha.split("-").map(Number);
+        if (bits.length === 3 && bits[0] && bits[1] && bits[2]) {
+          try {
+            day = new Intl.DateTimeFormat("es-CO", {
+              timeZone: "UTC",
+              day: "numeric",
+              month: "short"
+            }).format(new Date(Date.UTC(bits[0], bits[1] - 1, bits[2])));
+          } catch (error) {}
+        }
+        const hora = row && row.hora ? hourLabel(String(row.hora)) : "";
+        return hora ? day + " · " + hora : day;
+      };
+
+      const flash = (el) => {
+        el.classList.remove("is-highlight");
+        void el.offsetWidth;
+        el.classList.add("is-highlight");
+      };
+
+      const writeState = (el, estado) => {
+        const message = messages[estado] || "";
+        el.replaceChildren();
+        el.classList.toggle("is-confirmada", estado === "confirmada");
+        el.classList.toggle("is-cancelada", estado === "cancelada");
+        if (!message) {
+          el.hidden = true;
+          return;
+        }
+        el.hidden = false;
+        if (estado === "confirmada") {
+          const badge = document.createElement("span");
+          badge.className = "cita-badge";
+          badge.textContent = "Confirmada";
+          const copy = document.createElement("span");
+          copy.textContent = message;
+          el.append(badge, copy);
+          return;
+        }
+        el.textContent = message;
+      };
+
+      const paint = () => {
+        try {
+          const item = current();
+          let pulseCard = false;
+          let pulseLive = false;
+          tokens.forEach((token) => {
+            const row = cache.get(token);
+            if (!row) return;
+            const estado = estadoOf(row);
+            const prior = seen.get(token);
+            if (prior && prior !== estado && estado === "confirmada") {
+              if (item && item.token === token) pulseCard = true;
+              if (token === bookedToken) pulseLive = true;
+            }
+            seen.set(token, estado);
+          });
+
+          const dismissed = item && item.token === hiddenToken && item.estado === hiddenEstado;
+          if (!item || dismissed) {
+            card.hidden = true;
+          } else {
+            const service = item.row.servicio || "Cita";
+            const when = whenText(item.row);
+            const nextCard = item.estado + "\n" + service + "\n" + when;
+            if (cardMark !== nextCard) {
+              serviceEl.textContent = service;
+              whenEl.textContent = when;
+              writeState(stateEl, item.estado);
+              cardMark = nextCard;
+            }
+            card.hidden = false;
+            if (pulseCard) flash(card);
+          }
+
+          const booked = bookedToken ? activeOf(bookedToken) : null;
+          if (!booked) {
+            live.hidden = true;
+            live.classList.remove("is-highlight");
+            return;
+          }
+          const nextLive = booked.estado + "\n" + whenText(booked.row);
+          if (liveMark !== nextLive) {
+            writeState(live, booked.estado);
+            liveMark = nextLive;
+          } else if (live.hidden) {
+            live.hidden = false;
+          }
+          if (pulseLive) flash(live);
+        } catch (error) {}
+      };
+
+      const runRefresh = async () => {
+        const snapshot = tokens.slice();
+        const kept = [];
+        for (let i = 0; i < snapshot.length; i += 1) {
+          const token = snapshot[i];
+          try {
+            const { data, error } = await supabase.rpc("estado_reserva", { p_token: token });
+            if (error) throw error;
+            const row = rowOf(data);
+            if (!row) {
+              cache.delete(token);
+              seen.delete(token);
+              continue;
+            }
+            cache.set(token, row);
+            kept.push(token);
+          } catch (error) {
+            kept.push(token);
+          }
+        }
+        const added = tokens.filter((token) => !snapshot.includes(token));
+        tokens = [...added, ...kept.filter((token) => !added.includes(token))].slice(0, 5);
+        writeTokens();
+        paint();
+      };
+
+      const refresh = () => {
+        if (flight) {
+          again = true;
+          return flight;
+        }
+        flight = runRefresh().catch(() => {}).finally(() => {
+          flight = null;
+          if (!again) return;
+          again = false;
+          refresh();
+        });
+        return flight;
+      };
+
+      closeBtn.addEventListener("click", () => {
+        try {
+          const item = current();
+          if (item) {
+            hiddenToken = item.token;
+            hiddenEstado = item.estado;
+            writeHide();
+          }
+          card.hidden = true;
+        } catch (error) {}
+      });
+
+      readHide();
+      tokens = readTokens();
+      try {
+        const cited = String(new URLSearchParams(window.location.search).get("cita") || "").trim().toLowerCase();
+        if (uuidRe.test(cited)) {
+          if (hiddenToken === cited) {
+            hiddenToken = "";
+            hiddenEstado = "";
+            writeHide();
+          }
+          remember(cited);
+        }
+      } catch (error) {}
+
+      document.addEventListener("visibilitychange", () => {
+        try {
+          if (document.visibilityState === "visible") refresh();
+        } catch (error) {}
+      });
+
+      window.setInterval(() => {
+        try {
+          if (document.visibilityState === "visible") refresh();
+        } catch (error) {}
+      }, 30000);
+
+      refresh();
+
+      return {
+        track(token, seed) {
+          try {
+            remember(token);
+            bookedToken = token;
+            if (seed) cache.set(token, seed);
+            paint();
+            refresh();
+          } catch (error) {}
+        },
+        hush() {
+          try {
+            bookedToken = "";
+            liveMark = "";
+            live.hidden = true;
+            live.classList.remove("is-highlight");
+          } catch (error) {}
+        }
+      };
+    } catch (error) {
+      return empty;
+    }
+  })();
+
   const showForm = () => {
     reservaIntro.hidden = false;
     reservaDone.hidden = true;
     chosenHour = "";
     showError("");
+    citaTracker.hush();
   };
 
   const renderHours = (iso, taken) => {
@@ -306,6 +612,7 @@ import { supabase } from "./supabase.js";
     showError("");
     const data = new FormData(reservaForm);
     if (String(data.get("empresa") || "").trim()) {
+      citaTracker.hush();
       reservaIntro.hidden = true;
       reservaDone.hidden = false;
       return;
@@ -346,16 +653,28 @@ import { supabase } from "./supabase.js";
 
     submitBtn.disabled = true;
     submitBtn.textContent = "Guardando…";
-    const { error } = await supabase.from("reservas").insert({
-      nombre,
-      telefono,
-      servicio,
-      barbero,
-      fecha,
-      hora: chosenHour + ":00",
-      nota: nota || null,
-      estado: "pendiente"
-    }, { returning: "minimal" });
+    let token = "";
+    try {
+      token = crypto.randomUUID();
+    } catch (error) {}
+    let error = null;
+    try {
+      const payload = {
+        nombre,
+        telefono,
+        servicio,
+        barbero,
+        fecha,
+        hora: chosenHour + ":00",
+        nota: nota || null,
+        estado: "pendiente"
+      };
+      if (token) payload.token = token;
+      const result = await supabase.from("reservas").insert(payload, { returning: "minimal" });
+      error = result.error;
+    } catch (err) {
+      error = err;
+    }
     submitBtn.disabled = false;
     submitBtn.textContent = "Reservar cita";
 
@@ -368,6 +687,19 @@ import { supabase } from "./supabase.js";
       return;
     }
 
+    let seguimiento = "";
+    try {
+      if (token) {
+        seguimiento = window.location.origin + window.location.pathname + "?cita=" + token;
+        citaTracker.track(token, {
+          servicio,
+          fecha,
+          hora: chosenHour + ":00",
+          estado: "pendiente"
+        });
+      }
+    } catch (err) {}
+
     const lines = [
       "Hola, soy " + nombre + ". Acabo de reservar en Pupilos Barber.",
       "Servicio: " + servicio + ".",
@@ -377,6 +709,7 @@ import { supabase } from "./supabase.js";
       "Teléfono: " + telefono + "."
     ];
     if (nota) lines.push("Nota: " + nota + ".");
+    if (seguimiento) lines.push("Sigue tu cita: " + seguimiento);
     reservaSummary.textContent = nombre + " · " + servicio + " · " + fecha + " · " + hourLabel(chosenHour);
     reservaWa.href = "https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(lines.join("\n"));
     reservaIntro.hidden = true;
