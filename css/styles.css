@@ -1172,6 +1172,165 @@ body.is-locked .wa-float {
   .scroll-hint { display: none; }
 }
 
+.cita-card {
+  position: fixed;
+  z-index: 42;
+  left: max(1.15rem, env(safe-area-inset-left));
+  bottom: calc(1.15rem + env(safe-area-inset-bottom));
+  width: min(268px, calc(100vw - 6.75rem));
+  padding: 0.8rem 1.85rem 0.85rem 0.9rem;
+  background: rgba(22, 18, 16, 0.94);
+  color: var(--cream);
+  border-top: 2px solid var(--gold);
+  box-shadow: 0 16px 40px rgba(16, 11, 8, 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.cita-card[hidden] { display: none; }
+
+.cita-kicker {
+  margin: 0 0 0.3rem;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.cita-service {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  line-height: 1.05;
+  color: var(--cream);
+  overflow-wrap: anywhere;
+}
+
+.cita-when {
+  margin: 0.28rem 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: var(--muted-light);
+}
+
+.cita-status {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(247, 243, 235, 0.9);
+}
+
+.cita-status.is-cancelada { color: rgba(247, 243, 235, 0.72); }
+
+.cita-badge {
+  display: inline-block;
+  margin: 0 0.4rem 0.15rem 0;
+  padding: 0.08rem 0.38rem;
+  border: 1px solid #2f7d4a;
+  background: rgba(47, 125, 74, 0.18);
+  color: #c6efd4;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.cita-close {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.3rem;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: rgba(247, 243, 235, 0.72);
+  cursor: pointer;
+}
+
+.cita-close svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.cita-close:hover { color: var(--gold); }
+
+body.is-locked .cita-card {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cita-card.is-highlight {
+  animation: cita-highlight 1.15s var(--ease);
+}
+
+@keyframes cita-highlight {
+  0% { box-shadow: 0 16px 40px rgba(16, 11, 8, 0.28), 0 0 0 0 rgba(47, 125, 74, 0.5); }
+  100% { box-shadow: 0 16px 40px rgba(16, 11, 8, 0.28), 0 0 0 14px rgba(47, 125, 74, 0); }
+}
+
+.reserva-estado {
+  margin: -0.45rem 0 1.15rem;
+  padding: 0.7rem 0.75rem;
+  background: rgba(201, 162, 75, 0.08);
+  border-left: 2px solid var(--gold);
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.reserva-estado[hidden] { display: none; }
+
+.reserva-estado.is-confirmada {
+  background: rgba(47, 125, 74, 0.08);
+  border-left-color: #2f7d4a;
+}
+
+.reserva-estado.is-cancelada {
+  background: rgba(26, 21, 18, 0.04);
+  border-left-color: rgba(26, 21, 18, 0.22);
+  color: var(--muted);
+}
+
+.reserva-estado .cita-badge {
+  color: #1f6b3c;
+  background: rgba(47, 125, 74, 0.1);
+}
+
+.reserva-estado.is-highlight {
+  animation: cita-live 1.15s var(--ease);
+}
+
+@keyframes cita-live {
+  0% { background: rgba(47, 125, 74, 0.2); }
+  100% { background: rgba(47, 125, 74, 0.08); }
+}
+
+@media (max-width: 899px) {
+  .cita-card {
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    bottom: calc(9rem + env(safe-area-inset-bottom));
+    padding: 0.55rem 1.7rem 0.62rem 0.75rem;
+  }
+
+  .cita-kicker { margin-bottom: 0.12rem; }
+
+  .cita-service { font-size: 1.12rem; }
+
+  .cita-when { margin-top: 0.08rem; }
+
+  .cita-status { margin-top: 0.28rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
@@ -1181,7 +1340,9 @@ body.is-locked .wa-float {
   .quote,
   .service-card,
   .btn,
-  .modal-panel {
+  .modal-panel,
+  .cita-card,
+  .reserva-estado {
     transition: none;
     animation: none;
     transform: none;
