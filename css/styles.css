@@ -853,40 +853,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .fab:hover { transform: translateY(-2px); color: var(--espresso); }
 
-.wa-float {
-  position: fixed;
-  right: 1rem;
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-  z-index: 46;
-  width: 56px;
-  height: 56px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #25d366;
-  color: #fff;
-  box-shadow: 0 12px 28px rgba(16, 11, 8, 0.28);
-  transition: transform 0.3s var(--ease), background 0.3s var(--ease);
-}
-
-.wa-float svg {
-  width: 30px;
-  height: 30px;
-  fill: currentColor;
-}
-
-.wa-float:hover {
-  background: #1ebe5d;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
 body.is-locked {
   overflow: hidden;
 }
 
-body.is-locked .fab,
-body.is-locked .wa-float {
+body.is-locked .fab {
   opacity: 0;
   pointer-events: none;
 }
@@ -1084,8 +1055,7 @@ body.is-locked .wa-float {
 
 @media (max-width: 899px) {
   .scroll-hint { display: none; }
-  .fab { bottom: calc(5.1rem + env(safe-area-inset-bottom)); }
-  .site-footer { padding-bottom: calc(8rem + env(safe-area-inset-bottom)); }
+  .site-footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
 }
 
 @media (min-width: 721px) {
@@ -1177,7 +1147,7 @@ body.is-locked .wa-float {
   z-index: 42;
   left: max(1.15rem, env(safe-area-inset-left));
   bottom: calc(1.15rem + env(safe-area-inset-bottom));
-  width: min(300px, calc(100vw - 6.75rem));
+  width: min(300px, calc(100vw - 2.5rem));
   padding: 0.65rem 1.7rem 0.7rem 0.8rem;
   background: rgba(22, 18, 16, 0.94);
   color: var(--cream);
@@ -1332,7 +1302,7 @@ body.is-locked .cita-card {
     left: 0.75rem;
     right: 0.75rem;
     width: auto;
-    bottom: calc(8.85rem + env(safe-area-inset-bottom));
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
     padding: 0.48rem 1.55rem 0.52rem 0.7rem;
   }
 
@@ -1348,7 +1318,7 @@ body.is-locked .cita-card {
 
 @media (max-width: 899px) and (min-height: 740px) {
   body:has(.cita-card:not([hidden])) .hero-content {
-    padding-bottom: 16.75rem;
+    padding-bottom: 12.75rem;
   }
 }
 
