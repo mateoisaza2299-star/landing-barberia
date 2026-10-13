@@ -921,6 +921,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 
+.access-link {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.65;
+}
+
+.access-link:hover { color: var(--gold); opacity: 1; }
+
 /* ---------- Floating CTA ---------- */
 .fab {
   position: fixed;
@@ -1078,6 +1086,67 @@ body.is-locked .wa-float {
 }
 
 .modal textarea { resize: vertical; }
+
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hours-note {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.slot-grid:empty { display: none; }
+
+.slot {
+  border: 1px solid rgba(26, 21, 18, 0.16);
+  background: transparent;
+  padding: 0.7rem 0.2rem;
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.slot.is-selected {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--espresso);
+}
+
+.slot:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.form-error {
+  margin: 0;
+  color: #8c3b32;
+  font-size: 0.92rem;
+}
+
+.form-error[hidden] { display: none; }
 
 @keyframes sheet {
   from { transform: translateY(24px); opacity: 0; }

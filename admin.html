@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Panel — Pupilos Barber</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='none' stroke='%23C9A24B' stroke-width='1.4'/%3E%3Cpath d='M16 6 L16 26' stroke='%23C9A24B' stroke-width='1.2' transform='rotate(24 16 16)'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+  <header class="admin-bar">
+    <a class="logo" href="index.html" aria-label="Pupilos Barber, inicio">
+      <span class="logo-mark" aria-hidden="true"></span>
+      <span class="logo-text">Pupilos Barber</span>
+    </a>
+    <div class="admin-tools">
+      <span class="admin-mail" data-admin-email></span>
+      <button class="btn" type="button" data-logout>Salir</button>
+    </div>
+  </header>
+  <main class="wrap admin-main">
+    <p class="kicker">Panel</p>
+    <h1>La silla de hoy</h1>
+    <ul class="stat-grid">
+      <li><strong data-stat="hoy">—</strong><span>Reservas de hoy</span></li>
+      <li><strong data-stat="pendientes">—</strong><span>Pendientes</span></li>
+      <li><strong data-stat="visitas-hoy">—</strong><span>Visitas de hoy</span></li>
+      <li><strong data-stat="visitas-semana">—</strong><span>Visitas, 7 días</span></li>
+      <li><strong data-stat="mes">—</strong><span>Reservas del mes</span></li>
+    </ul>
+    <label class="day-field">
+      Fecha
+      <input type="date" data-day>
+    </label>
+    <h2>Reservas del día</h2>
+    <div class="booking-list" data-day-list></div>
+    <h2>Próximas</h2>
+    <div class="booking-list" data-upcoming></div>
+    <p class="admin-error" data-admin-error role="alert" hidden></p>
+  </main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
