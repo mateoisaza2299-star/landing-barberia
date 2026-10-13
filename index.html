@@ -322,7 +322,7 @@
     </div>
     <div class="wrap footer-bottom">
       <p>© <span data-year>2026</span> Pupilos Barber</p>
-      <p>Funza</p>
+      <p>Funza · <a class="access-link" href="admin-login.html">Acceso</a></p>
     </div>
   </footer>
 
@@ -337,48 +337,70 @@
       <button class="modal-close" type="button" data-close-reserva aria-label="Cerrar">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
-      <p class="kicker">Reserva</p>
-      <h2 id="reserva-title">Tu cita en Pupilos Barber</h2>
-      <p class="modal-lead">Cuéntanos cómo quieres venir. Te abrimos WhatsApp con el mensaje listo.</p>
-      <form data-reserva-form>
-        <label>
-          Nombre
-          <input name="nombre" type="text" autocomplete="name" required placeholder="Tu nombre">
-        </label>
-        <label>
-          Servicio
-          <select name="servicio" required>
-            <option value="">Elige uno</option>
-            <option>Corte clásico</option>
-            <option>Fade definido</option>
-            <option>Barba y perfilado</option>
-            <option>Afeitado clásico</option>
-            <option>Corte + barba</option>
-            <option>Diseño y línea</option>
-          </select>
-        </label>
-        <label>
-          Barbero
-          <select name="barbero">
-            <option value="Quien tenga un hueco">Quien tenga un hueco</option>
-            <option>Miguel</option>
-            <option>Camilo Herrera</option>
-            <option>Andrés Vega</option>
-          </select>
-        </label>
-        <label>
-          Día preferido
-          <input name="dia" type="date" data-min-today>
-        </label>
-        <label>
-          Nota
-          <textarea name="nota" rows="3" placeholder="Hora, largo, algo que debamos saber"></textarea>
-        </label>
-        <button class="btn btn-dark btn-block" type="submit">Continuar en WhatsApp</button>
-      </form>
+      <div data-reserva-intro>
+        <p class="kicker">Reserva</p>
+        <h2 id="reserva-title">Tu cita en Pupilos Barber</h2>
+        <p class="modal-lead">Elige día y hora. La cita queda pendiente hasta que la confirmemos.</p>
+        <form data-reserva-form>
+          <label class="hp">
+            Empresa
+            <input name="empresa" type="text" tabindex="-1" autocomplete="off">
+          </label>
+          <label>
+            Nombre
+            <input name="nombre" type="text" autocomplete="name" required placeholder="Tu nombre">
+          </label>
+          <label>
+            Teléfono
+            <input name="telefono" type="tel" inputmode="tel" autocomplete="tel" required placeholder="300 123 4567">
+          </label>
+          <label>
+            Servicio
+            <select name="servicio" required>
+              <option value="">Elige uno</option>
+              <option>Corte clásico</option>
+              <option>Fade definido</option>
+              <option>Barba y perfilado</option>
+              <option>Afeitado clásico</option>
+              <option>Corte + barba</option>
+              <option>Diseño y línea</option>
+            </select>
+          </label>
+          <label>
+            Barbero
+            <select name="barbero">
+              <option value="Quien tenga un hueco">Quien tenga un hueco</option>
+              <option>Miguel</option>
+              <option>Camilo Herrera</option>
+              <option>Andrés Vega</option>
+            </select>
+          </label>
+          <label>
+            Fecha
+            <input name="fecha" type="date" data-min-today required>
+          </label>
+          <div>
+            <span class="field-label">Hora</span>
+            <p class="hours-note" data-hours-note>Elige una fecha para ver las horas.</p>
+            <div class="slot-grid" data-hours></div>
+          </div>
+          <label>
+            Nota
+            <textarea name="nota" rows="3" placeholder="Largo, detalle, algo que debamos saber"></textarea>
+          </label>
+          <p class="form-error" data-form-error role="alert" hidden></p>
+          <button class="btn btn-dark btn-block" type="submit" data-reserva-submit>Reservar cita</button>
+        </form>
+      </div>
+      <div data-reserva-done hidden>
+        <p class="kicker">Listo</p>
+        <h2>Quedó pendiente</h2>
+        <p class="modal-lead" data-reserva-summary></p>
+        <a class="btn btn-dark btn-block" data-reserva-wa target="_blank" rel="noopener">Avisar por WhatsApp</a>
+      </div>
     </div>
   </div>
 
-  <script src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

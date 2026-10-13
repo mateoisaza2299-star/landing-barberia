@@ -1,5 +1,4 @@
-/* Pupilos Barber — interacciones de la landing.
-   El número de WhatsApp vive en <body data-whatsapp="...">. */
+import { supabase } from "./supabase.js";
 
 (function () {
   const header = document.querySelector("[data-header]");
@@ -122,24 +121,159 @@
   show(0);
   restart();
 
-  /* Reserva → WhatsApp */
   const dateInput = document.querySelector("[data-min-today]");
-  const today = new Intl.DateTimeFormat("en-CA", {
+  const hoursBox = document.querySelector("[data-hours]");
+  const hoursNote = document.querySelector("[data-hours-note]");
+  const formError = document.querySelector("[data-form-error]");
+  const reservaForm = document.querySelector("[data-reserva-form]");
+  const reservaIntro = document.querySelector("[data-reserva-intro]");
+  const reservaDone = document.querySelector("[data-reserva-done]");
+  const reservaSummary = document.querySelector("[data-reserva-summary]");
+  const reservaWa = document.querySelector("[data-reserva-wa]");
+  const submitBtn = document.querySelector("[data-reserva-submit]");
+  let chosenHour = "";
+
+  const bogotaParts = () => new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Bogota",
     year: "numeric",
     month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(new Date());
+
+  const bogotaToday = () => {
+    const parts = bogotaParts();
+    const pick = (type) => parts.find((item) => item.type === type).value;
+    return pick("year") + "-" + pick("month") + "-" + pick("day");
+  };
+
+  const today = bogotaToday();
   if (dateInput) dateInput.min = today;
+
+  const weekdayOf = (iso) => {
+    const [year, month, day] = iso.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  };
+
+  const slotsFor = (iso) => {
+    const day = weekdayOf(iso);
+    if (day === 0) return [];
+    const last = day === 6 ? 15 : 17;
+    const slots = [];
+    for (let hour = 9; hour <= last; hour += 1) slots.push(String(hour).padStart(2, "0") + ":00");
+    return slots;
+  };
+
+  const hourLabel = (hhmm) => {
+    const hour = Number(hhmm.slice(0, 2));
+    const suffix = hour < 12 ? "am" : "pm";
+    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+    return hour12 + ":00 " + suffix;
+  };
+
+  const showError = (message) => {
+    formError.hidden = !message;
+    formError.textContent = message || "";
+  };
+
+  const showForm = () => {
+    reservaIntro.hidden = false;
+    reservaDone.hidden = true;
+    chosenHour = "";
+    showError("");
+  };
+
+  const renderHours = (iso, taken) => {
+    hoursBox.replaceChildren();
+    chosenHour = "";
+    if (!iso) {
+      hoursNote.hidden = false;
+      hoursNote.textContent = "Elige una fecha para ver las horas.";
+      return;
+    }
+    if (weekdayOf(iso) === 0) {
+      hoursNote.hidden = false;
+      hoursNote.textContent = "Los domingos no abrimos. Elige otro día.";
+      return;
+    }
+    const now = bogotaParts();
+    const nowHour = Number(now.find((item) => item.type === "hour").value);
+    const nowMinute = Number(now.find((item) => item.type === "minute").value);
+    const isToday = iso === bogotaToday();
+    hoursNote.hidden = true;
+    slotsFor(iso).forEach((slot) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "slot";
+      button.textContent = hourLabel(slot);
+      const slotHour = Number(slot.slice(0, 2));
+      const past = isToday && (slotHour < nowHour || (slotHour === nowHour && nowMinute > 0));
+      const busy = taken.has(slot);
+      button.disabled = past || busy;
+      if (busy) button.title = "Hora ocupada";
+      button.addEventListener("click", () => {
+        chosenHour = slot;
+        hoursBox.querySelectorAll(".slot").forEach((item) => {
+          item.classList.toggle("is-selected", item === button);
+        });
+        showError("");
+      });
+      hoursBox.appendChild(button);
+    });
+  };
+
+  const loadHours = async (iso) => {
+    if (!iso || weekdayOf(iso) === 0) {
+      renderHours(iso, new Set());
+      return;
+    }
+    hoursNote.hidden = false;
+    hoursNote.textContent = "Cargando horas…";
+    hoursBox.replaceChildren();
+    try {
+      const { data, error } = await supabase.rpc("horas_ocupadas", { p_fecha: iso });
+      if (error) throw error;
+      const taken = new Set((data || []).map((row) => String(row.hora || row).slice(0, 5)));
+      renderHours(iso, taken);
+    } catch (error) {
+      hoursNote.hidden = false;
+      hoursNote.textContent = "No pudimos cargar las horas. Intenta de nuevo.";
+      hoursBox.replaceChildren();
+    }
+  };
+
+  if (dateInput) {
+    dateInput.addEventListener("change", () => {
+      showError("");
+      loadHours(dateInput.value);
+    });
+  }
+
+  const trackVisit = async () => {
+    try {
+      if (sessionStorage.getItem("pb_visit")) return;
+      sessionStorage.setItem("pb_visit", "1");
+      let visitorId = localStorage.getItem("pb_visitor");
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        localStorage.setItem("pb_visitor", visitorId);
+      }
+      await supabase.from("visitas").insert({ visitor_id: visitorId }, { returning: "minimal" });
+    } catch (error) {}
+  };
+  trackVisit();
 
   let lastTrigger = null;
 
   const openModal = (trigger) => {
     lastTrigger = trigger;
     setMenu(false);
+    showForm();
     modal.hidden = false;
     lock(true);
-    const field = modal.querySelector("input, select, textarea");
+    const field = modal.querySelector("[name='nombre']");
     if (field) field.focus();
   };
 
@@ -167,25 +301,87 @@
     else if (nav.classList.contains("is-open")) setMenu(false);
   });
 
-  document.querySelector("[data-reserva-form]").addEventListener("submit", (event) => {
+  reservaForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    showError("");
+    const data = new FormData(reservaForm);
+    if (String(data.get("empresa") || "").trim()) {
+      reservaIntro.hidden = true;
+      reservaDone.hidden = false;
+      return;
+    }
+
     const nombre = String(data.get("nombre") || "").trim();
+    const telefono = String(data.get("telefono") || "").trim();
     const servicio = String(data.get("servicio") || "").trim();
     const barbero = String(data.get("barbero") || "").trim();
-    const dia = String(data.get("dia") || "").trim();
+    const fecha = String(data.get("fecha") || "").trim();
     const nota = String(data.get("nota") || "").trim();
+    const digits = telefono.replace(/\D/g, "");
+
+    if (nombre.length < 2) {
+      showError("Escribe tu nombre.");
+      return;
+    }
+    if (digits.length < 7 || digits.length > 15) {
+      showError("Escribe un teléfono válido.");
+      return;
+    }
+    if (!servicio) {
+      showError("Elige un servicio.");
+      return;
+    }
+    if (!fecha || fecha < bogotaToday()) {
+      showError("Elige una fecha de hoy en adelante.");
+      return;
+    }
+    if (weekdayOf(fecha) === 0) {
+      showError("Los domingos no abrimos. Elige otro día.");
+      return;
+    }
+    if (!chosenHour) {
+      showError("Elige una hora libre.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Guardando…";
+    const { error } = await supabase.from("reservas").insert({
+      nombre,
+      telefono,
+      servicio,
+      barbero,
+      fecha,
+      hora: chosenHour + ":00",
+      nota: nota || null,
+      estado: "pendiente"
+    }, { returning: "minimal" });
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Reservar cita";
+
+    if (error) {
+      const duplicate = error.code === "23505" || /duplicate|unique|duplicad/i.test(error.message || "");
+      showError(duplicate
+        ? "Esa hora ya fue tomada. Elige otra."
+        : "No pudimos guardar la cita. Intenta de nuevo.");
+      if (duplicate) loadHours(fecha);
+      return;
+    }
 
     const lines = [
-      "Hola, soy " + nombre + ". Quiero reservar una cita en Pupilos Barber.",
+      "Hola, soy " + nombre + ". Acabo de reservar en Pupilos Barber.",
       "Servicio: " + servicio + ".",
-      "Barbero: " + barbero + "."
+      "Barbero: " + barbero + ".",
+      "Fecha: " + fecha + ".",
+      "Hora: " + hourLabel(chosenHour) + ".",
+      "Teléfono: " + telefono + "."
     ];
-    if (dia) lines.push("Día preferido: " + dia + ".");
-    if (nota) lines.push("Nota: " + nota);
-
-    window.open("https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(lines.join("\n")), "_blank", "noopener");
-    closeModal();
+    if (nota) lines.push("Nota: " + nota + ".");
+    reservaSummary.textContent = nombre + " · " + servicio + " · " + fecha + " · " + hourLabel(chosenHour);
+    reservaWa.href = "https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(lines.join("\n"));
+    reservaIntro.hidden = true;
+    reservaDone.hidden = false;
+    reservaWa.focus();
   });
 
   /* Abierto / cerrado según la hora en Funza (America/Bogota). */
