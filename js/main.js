@@ -320,7 +320,9 @@ import { supabase } from "./supabase.js";
           const badge = document.createElement("span");
           badge.className = "cita-badge";
           badge.textContent = "Confirmada";
-          el.append(badge, document.createTextNode(message));
+          const copy = document.createElement("span");
+          copy.textContent = message;
+          el.append(badge, copy);
           return;
         }
         el.textContent = message;
