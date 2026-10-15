@@ -58,6 +58,7 @@
     return new Promise(function (resolve) {
       var el = document.querySelector("[data-preloader]");
       if (!root.classList.contains("is-booting") || !el) {
+        if (el) el.remove();
         resolve();
         return;
       }
