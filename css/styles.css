@@ -1451,8 +1451,15 @@ body.is-locked .cita-card {
   .quote blockquote,
   .quote figcaption,
   .service-card,
+  .service-card:hover,
+  .js .service-card.reveal.is-visible:hover,
+  .js .service-card.reveal.is-visible:active,
   .btn,
+  .btn:hover,
+  .btn:active,
   .btn::before,
+  .btn:hover::before,
+  .fab:hover,
   .modal-panel,
   .modal-backdrop,
   .cita-card,
@@ -1483,6 +1490,8 @@ body.is-locked .cita-card {
 
   .site-header { transition: background 0.18s linear, border-color 0.18s linear; }
   .site-header.is-scrolled { --header: 76px; }
+
+  .nav-link::after { transition: none; }
 }
 
 .hero { background: var(--espresso); }
