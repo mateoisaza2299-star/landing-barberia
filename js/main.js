@@ -1,4 +1,5 @@
 import { supabase } from "./supabase.js";
+import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance } from "./movimiento.js";
 
 (function () {
   const header = document.querySelector("[data-header]");
@@ -11,19 +12,20 @@ import { supabase } from "./supabase.js";
   document.documentElement.classList.add("js");
   const lock = (on) => document.body.classList.toggle("is-locked", on);
 
-  /* Navbar al hacer scroll */
-  const onScroll = () => {
-    if (!header) return;
-    header.classList.toggle("is-scrolled", window.scrollY > 24);
-  };
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
+  initHeader(header, reduceMotion);
+  initPageLeave(reduceMotion);
+  initHeroEntrance(reduceMotion);
+  initCounters(reduceMotion);
+  initParallax(reduceMotion);
 
   /* Menú móvil */
   const setMenu = (open) => {
     if (!nav || !toggle) return;
     nav.classList.toggle("is-open", open);
-    if (header) header.classList.toggle("is-open", open);
+    if (header) {
+      header.classList.toggle("is-open", open);
+      if (open) header.classList.remove("is-hidden");
+    }
     toggle.setAttribute("aria-expanded", String(open));
     const menuLabel = toggle.querySelector(".sr-only");
     if (menuLabel) menuLabel.textContent = open ? "Cerrar menú" : "Abrir menú";
@@ -589,9 +591,14 @@ import { supabase } from "./supabase.js";
   trackVisit();
 
   let lastTrigger = null;
+  let closingModal = false;
+  let closeToken = 0;
 
   const openModal = (trigger) => {
     if (!modal) return;
+    closeToken += 1;
+    closingModal = false;
+    modal.classList.remove("is-closing");
     lastTrigger = trigger;
     setMenu(false);
     showForm();
@@ -602,10 +609,30 @@ import { supabase } from "./supabase.js";
   };
 
   const closeModal = () => {
-    if (!modal || modal.hidden) return;
-    modal.hidden = true;
-    lock(nav ? nav.classList.contains("is-open") : false);
-    if (lastTrigger) lastTrigger.focus();
+    if (!modal || modal.hidden || closingModal) return;
+    const token = ++closeToken;
+    const finish = () => {
+      if (token !== closeToken || modal.hidden) return;
+      closingModal = false;
+      modal.classList.remove("is-closing");
+      modal.hidden = true;
+      lock(nav ? nav.classList.contains("is-open") : false);
+      if (lastTrigger && typeof lastTrigger.focus === "function") lastTrigger.focus();
+    };
+    if (reduceMotion) {
+      finish();
+      return;
+    }
+    closingModal = true;
+    modal.classList.add("is-closing");
+    const panel = modal.querySelector(".modal-panel");
+    const onEnd = (event) => {
+      if (!panel || event.target !== panel) return;
+      panel.removeEventListener("animationend", onEnd);
+      finish();
+    };
+    if (panel) panel.addEventListener("animationend", onEnd);
+    window.setTimeout(finish, 460);
   };
 
   document.querySelectorAll("[data-open-reserva]").forEach((trigger) => {

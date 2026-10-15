@@ -11,7 +11,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <script>document.documentElement.classList.add("js");</script>
+  <script>
+    document.documentElement.classList.add("js");
+    try {
+      if (sessionStorage.getItem("pb-page") === "1") {
+        document.documentElement.classList.add("is-enter");
+        sessionStorage.removeItem("pb-page");
+      }
+    } catch (error) {}
+  </script>
 </head>
 <body data-whatsapp="573001234567">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -82,12 +90,12 @@
           <p class="about-actions"><a class="btn btn-dark" href="historia.html">Conoce nuestra historia</a></p>
           <blockquote class="pull">Un buen corte se siente antes de verse.</blockquote>
           <ul class="stats">
-            <li><strong>12</strong><span>años en el barrio</span></li>
-            <li><strong>3</strong><span>barberos</span></li>
-            <li><strong>1</strong><span>cita a la vez</span></li>
+            <li><strong data-count="12">12</strong><span>años en el barrio</span></li>
+            <li><strong data-count="3">3</strong><span>barberos</span></li>
+            <li><strong data-count="1">1</strong><span>cita a la vez</span></li>
           </ul>
         </div>
-        <div class="about-media reveal" data-delay="1">
+        <div class="about-media reveal" data-delay="1" data-parallax>
           <img src="assets/about-interior.jpg" width="1152" height="864" alt="Sillón de barbería en cuero, madera oscura y luz de un aplique de latón">
           <span class="about-frame" aria-hidden="true"></span>
         </div>
@@ -180,7 +188,7 @@
           <h2>Lo que se dicen al salir.</h2>
         </header>
 
-        <div class="carousel" data-carousel>
+        <div class="carousel reveal" data-carousel data-delay="1">
           <div class="carousel-viewport">
             <figure class="quote is-active">
               <blockquote>Me hice el fade un jueves y el viernes todavía me lo estaban preguntando. Se nota cuando alguien corta con calma.</blockquote>
@@ -392,6 +400,16 @@
     </div>
   </div>
 
+  <script>
+    window.setTimeout(function () {
+      var h1 = document.querySelector(".hero h1");
+      if (!h1 || h1.dataset.ready === "1") return;
+      h1.dataset.ready = "1";
+      var hero = document.querySelector(".hero");
+      if (hero) hero.classList.add("is-live");
+      h1.classList.add("is-split");
+    }, 2200);
+  </script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/hero.js"></script>
   <script type="module" src="js/servicios.js"></script>

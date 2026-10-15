@@ -98,12 +98,36 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
     reserve.dataset.servicio = item.nombre;
   };
 
-  const closeSheet = (restore) => {
-    if (modal.hidden) return;
-    modal.hidden = true;
-    document.removeEventListener("keydown", onKey, true);
-    lockPage(false);
-    if (restore && lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  let closingSheet = false;
+  let closeToken = 0;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const closeSheet = (restore, done) => {
+    if (modal.hidden || closingSheet) return;
+    const token = ++closeToken;
+    const finish = () => {
+      if (token !== closeToken || modal.hidden) return;
+      closingSheet = false;
+      modal.classList.remove("is-closing");
+      modal.hidden = true;
+      document.removeEventListener("keydown", onKey, true);
+      lockPage(false);
+      if (restore && lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+      if (typeof done === "function") done();
+    };
+    if (reduceMotion) {
+      finish();
+      return;
+    }
+    closingSheet = true;
+    modal.classList.add("is-closing");
+    const onEnd = (event) => {
+      if (event.target !== panel) return;
+      panel.removeEventListener("animationend", onEnd);
+      finish();
+    };
+    panel.addEventListener("animationend", onEnd);
+    window.setTimeout(finish, 460);
   };
 
   function onKey(event) {
@@ -135,6 +159,9 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
 
   const openSheet = (trigger, item) => {
     if (!modal.hidden) return;
+    closeToken += 1;
+    closingSheet = false;
+    modal.classList.remove("is-closing");
     lastFocus = trigger || null;
     fill(item);
     modal.hidden = false;
@@ -159,9 +186,10 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
   reserve.addEventListener("click", () => {
     const servicio = reserve.dataset.servicio || title.textContent;
     const trigger = lastFocus;
-    closeSheet(false);
-    document.dispatchEvent(new CustomEvent("pupilos:reservar", {
-      detail: { servicio, trigger }
-    }));
+    closeSheet(false, () => {
+      document.dispatchEvent(new CustomEvent("pupilos:reservar", {
+        detail: { servicio, trigger }
+      }));
+    });
   });
 }
