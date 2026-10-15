@@ -71,8 +71,13 @@ import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance
 
   /* Aparición al scroll */
   const reveals = document.querySelectorAll(".reveal");
+  const premiumHold = window.__pupilosPremium === "pending" || window.__pupilosPremium === "on";
   if (reduceMotion || !("IntersectionObserver" in window)) {
     reveals.forEach((el) => el.classList.add("is-visible"));
+  } else if (premiumHold) {
+    document.addEventListener("pupilos:motion-abort", () => {
+      reveals.forEach((el) => el.classList.add("is-visible"));
+    }, { once: true });
   } else {
     const revealObserver = new IntersectionObserver(
       (entries) => {

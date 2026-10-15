@@ -73,6 +73,13 @@ export function initCounters(reduceMotion) {
 
 export function initParallax(reduceMotion) {
   if (reduceMotion) return;
+  if (window.__pupilosPremium === "on") return;
+  if (window.__pupilosPremium === "pending") {
+    document.addEventListener("pupilos:motion-abort", function () {
+      initParallax(reduceMotion);
+    }, { once: true });
+    return;
+  }
   const media = window.matchMedia("(min-width: 900px)");
   const nodes = () => [...document.querySelectorAll("[data-parallax]")];
   if (!nodes().length) return;
@@ -105,6 +112,13 @@ export function initParallax(reduceMotion) {
 }
 
 export function initPageLeave(reduceMotion) {
+  if (window.__pupilosPremium === "on") return;
+  if (window.__pupilosPremium === "pending") {
+    document.addEventListener("pupilos:motion-abort", function () {
+      initPageLeave(reduceMotion);
+    }, { once: true });
+    return;
+  }
   const supportsVT = "startViewTransition" in document;
   document.addEventListener("click", (event) => {
     if (event.defaultPrevented || event.button !== 0) return;
@@ -206,8 +220,22 @@ export function initHeroEntrance(reduceMotion) {
     split();
   };
 
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(start);
-    window.setTimeout(start, 1400);
-  } else start();
+  const launch = () => {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(start);
+      window.setTimeout(start, 1400);
+    } else start();
+  };
+
+  if (window.__pupilosPremium === "on") return;
+  if (window.__pupilosPremium === "pending" || document.documentElement.classList.contains("is-booting")) {
+    const css = () => {
+      if (window.__pupilosPremium !== "off") return;
+      launch();
+    };
+    document.addEventListener("pupilos:hero-css", css, { once: true });
+    window.setTimeout(css, 2400);
+    return;
+  }
+  launch();
 }
