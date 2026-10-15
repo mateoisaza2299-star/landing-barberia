@@ -1,13 +1,28 @@
 import { supabase } from "./supabase.js";
 import { initScrollChrome, initCounters } from "./movimiento.js";
+import {
+  negocio,
+  horasDelDia,
+  diaSemana,
+  celularColombia,
+  estadoApertura,
+  enlaceWhatsapp,
+  minutosDe,
+  direccionLinea,
+  avisoDuracion
+} from "./config.js";
 
 (function () {
   const header = document.querySelector("[data-header]");
   const nav = document.querySelector("[data-nav]");
   const toggle = document.querySelector("[data-nav-toggle]");
   const modal = document.querySelector("[data-modal]");
-  const whatsapp = document.body.dataset.whatsapp || "573001234567";
+  const whatsapp = negocio.whatsapp || document.body.dataset.whatsapp || "573001234567";
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const contactKey = "pb_contacto";
+  const fichaKey = "pb_fichas";
+  let reagendarToken = "";
+  let lastBooking = null;
 
   document.documentElement.classList.add("js");
   const lock = (on) => document.body.classList.toggle("is-locked", on);
@@ -162,19 +177,9 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
   const today = bogotaToday();
   if (dateInput) dateInput.min = today;
 
-  const weekdayOf = (iso) => {
-    const [year, month, day] = iso.split("-").map(Number);
-    return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
-  };
+  const weekdayOf = (iso) => diaSemana(iso);
 
-  const slotsFor = (iso) => {
-    const day = weekdayOf(iso);
-    if (day === 0) return [];
-    const last = day === 6 ? 15 : 17;
-    const slots = [];
-    for (let hour = 9; hour <= last; hour += 1) slots.push(String(hour).padStart(2, "0") + ":00");
-    return slots;
-  };
+  const slotsFor = (iso) => horasDelDia(iso);
 
   const hourLabel = (hhmm) => {
     const hour = Number(hhmm.slice(0, 2));
@@ -190,7 +195,7 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
   };
 
   const citaTracker = (() => {
-    const empty = { track() {}, hush() {} };
+      const empty = { track() {}, hush() {}, datos() { return null; }, marcar() {} };
     try {
       const card = document.querySelector("[data-cita]");
       const live = document.querySelector("[data-reserva-estado]");
@@ -370,6 +375,8 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
               cardMark = nextCard;
             }
             card.hidden = false;
+            paintActions(item);
+            if (item.estado === "cancelada") setNote("");
             if (pulseCard) flash(card);
           }
 
@@ -430,6 +437,47 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
         return flight;
       };
 
+      const cancelBtn = card.querySelector("[data-cita-cancel]");
+      const note = card.querySelector("[data-cita-note]");
+
+      const fichaDe = (token) => {
+        try {
+          const all = JSON.parse(localStorage.getItem(fichaKey) || "{}");
+          return (all && all[token]) || {};
+        } catch (error) {
+          return {};
+        }
+      };
+
+      const setNote = (message, link) => {
+        if (!note) return;
+        note.replaceChildren();
+        if (!message) {
+          note.hidden = true;
+          return;
+        }
+        note.hidden = false;
+        note.appendChild(document.createTextNode(message));
+        if (!link) return;
+        const anchor = document.createElement("a");
+        anchor.href = link;
+        anchor.target = "_blank";
+        anchor.rel = "noopener";
+        anchor.textContent = "Escríbenos por WhatsApp";
+        note.appendChild(document.createTextNode(" "));
+        note.appendChild(anchor);
+        note.appendChild(document.createTextNode("."));
+      };
+
+      const paintActions = (item) => {
+        if (cancelBtn) {
+          const can = !!(item && (item.estado === "pendiente" || item.estado === "confirmada"));
+          cancelBtn.hidden = !can;
+        }
+        const moveBtn = card.querySelector("[data-cita-reagendar]");
+        if (moveBtn) moveBtn.hidden = !item;
+      };
+
       closeBtn.addEventListener("click", () => {
         try {
           const item = current();
@@ -440,6 +488,34 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
           }
           card.hidden = true;
         } catch (error) {}
+      });
+
+      if (cancelBtn) cancelBtn.addEventListener("click", async () => {
+        try {
+          const item = current();
+          if (!item || cancelBtn.disabled) return;
+          if (!window.confirm("¿Seguro que quieres cancelar esta cita?")) return;
+          cancelBtn.disabled = true;
+          cancelBtn.textContent = "Cancelando…";
+          setNote("");
+          const result = await supabase.rpc("cancelar_reserva", { p_token: item.token });
+          if (result.error) throw result.error;
+          const denied = result.data === false || result.data === "false";
+          if (denied) {
+            setNote("Esta cita ya no se puede cancelar.", enlaceWhatsapp("Hola, quiero cancelar mi cita en " + negocio.nombre + "."));
+            return;
+          }
+          const row = cache.get(item.token) || item.row || {};
+          cache.set(item.token, { ...row, estado: "cancelada" });
+          seen.set(item.token, "cancelada");
+          setNote("");
+          paint();
+        } catch (error) {
+          setNote("No pudimos cancelar la cita. Intenta de nuevo o escríbenos por WhatsApp.", enlaceWhatsapp("Hola, quiero cancelar mi cita en " + negocio.nombre + "."));
+        } finally {
+          cancelBtn.disabled = false;
+          cancelBtn.textContent = "Cancelar cita";
+        }
       });
 
       readHide();
@@ -487,6 +563,32 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
             live.hidden = true;
             live.classList.remove("is-highlight");
           } catch (error) {}
+        },
+        datos() {
+          try {
+            const item = current();
+            if (!item) return null;
+            const extra = fichaDe(item.token);
+            const row = item.row || {};
+            return {
+              token: item.token,
+              servicio: row.servicio || extra.servicio || "",
+              nombre: row.nombre || extra.nombre || "",
+              telefono: row.telefono || extra.telefono || "",
+              barbero: row.barbero || extra.barbero || "",
+              nota: row.nota || extra.nota || ""
+            };
+          } catch (error) {
+            return null;
+          }
+        },
+        marcar(token, estado) {
+          try {
+            const row = cache.get(token) || {};
+            cache.set(token, { ...row, estado });
+            seen.set(token, estado);
+            paint();
+          } catch (error) {}
         }
       };
     } catch (error) {
@@ -501,6 +603,8 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
     chosenHour = "";
     showError("");
     citaTracker.hush();
+    const panel = modal && modal.querySelector(".modal-panel");
+    if (panel) panel.setAttribute("aria-labelledby", "reserva-title");
   };
 
   const renderHours = (iso, taken) => {
@@ -532,10 +636,13 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
       const busy = taken.has(slot);
       button.disabled = past || busy;
       if (busy) button.title = "Hora ocupada";
+      button.setAttribute("aria-pressed", "false");
       button.addEventListener("click", () => {
         chosenHour = slot;
         hoursBox.querySelectorAll(".slot").forEach((item) => {
-          item.classList.toggle("is-selected", item === button);
+          const selected = item === button;
+          item.classList.toggle("is-selected", selected);
+          item.setAttribute("aria-pressed", String(selected));
         });
         showError("");
       });
@@ -571,11 +678,75 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
     });
   }
 
+  if (hoursBox) {
+    hoursBox.addEventListener("keydown", (event) => {
+      const buttons = [...hoursBox.querySelectorAll(".slot:not(:disabled)")];
+      const index = buttons.indexOf(document.activeElement);
+      if (index < 0) return;
+      const cols = 3;
+      let next = -1;
+      if (event.key === "ArrowRight") next = (index + 1) % buttons.length;
+      if (event.key === "ArrowLeft") next = (index - 1 + buttons.length) % buttons.length;
+      if (event.key === "ArrowDown") next = Math.min(buttons.length - 1, index + cols);
+      if (event.key === "ArrowUp") next = Math.max(0, index - cols);
+      if (event.key === "Home") next = 0;
+      if (event.key === "End") next = buttons.length - 1;
+      if (next < 0 || next === index) return;
+      event.preventDefault();
+      buttons[next].focus();
+    });
+  }
+
+  const readContact = () => {
+    try {
+      return JSON.parse(localStorage.getItem(contactKey) || "null");
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const writeContact = (nombre, telefono, guardar) => {
+    try {
+      if (!guardar) {
+        localStorage.removeItem(contactKey);
+        return;
+      }
+      localStorage.setItem(contactKey, JSON.stringify({ nombre, telefono }));
+    } catch (error) {}
+  };
+
+  const writeFicha = (token, ficha) => {
+    try {
+      if (!token) return;
+      const all = JSON.parse(localStorage.getItem(fichaKey) || "{}");
+      all[token] = ficha;
+      const keys = Object.keys(all);
+      keys.slice(0, Math.max(0, keys.length - 5)).forEach((key) => delete all[key]);
+      localStorage.setItem(fichaKey, JSON.stringify(all));
+    } catch (error) {}
+  };
+
+  const paintDuracion = () => {
+    if (!reservaForm) return;
+    const note = reservaForm.querySelector("[data-duracion-note]");
+    const select = reservaForm.querySelector("[name='servicio']");
+    if (!note || !select) return;
+    const text = avisoDuracion(select.value);
+    note.hidden = !text;
+    note.textContent = text;
+    note.classList.toggle("is-warn", /corto/.test(text));
+  };
+
+  if (reservaForm) {
+    const select = reservaForm.querySelector("[name='servicio']");
+    if (select) select.addEventListener("change", paintDuracion);
+  }
+
   let lastTrigger = null;
   let closingModal = false;
   let closeToken = 0;
 
-  const openModal = (trigger) => {
+  const openModal = (trigger, prefill) => {
     if (!modal) return;
     closeToken += 1;
     closingModal = false;
@@ -583,10 +754,48 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
     lastTrigger = trigger;
     setMenu(false);
     showForm();
+    reagendarToken = prefill && prefill.token ? prefill.token : "";
+    const title = modal.querySelector("#reserva-title");
+    const lead = modal.querySelector("[data-reserva-lead]");
+    if (title) title.textContent = reagendarToken ? "Elige la nueva fecha y hora" : "Tu cita en " + negocio.nombre;
+    if (lead) {
+      lead.textContent = reagendarToken
+        ? "Completa día y hora. La cita anterior se cancela cuando guardemos la nueva."
+        : "Elige día y hora. La cita queda pendiente hasta que la confirmemos.";
+    }
+    if (submitBtn) submitBtn.textContent = reagendarToken ? "Reagendar cita" : "Reservar cita";
+    if (reservaForm && prefill) {
+      const set = (name, value) => {
+        const field = reservaForm.querySelector("[name='" + name + "']");
+        if (field && value) field.value = value;
+      };
+      set("nombre", prefill.nombre);
+      set("telefono", prefill.telefono);
+      set("servicio", prefill.servicio);
+      set("barbero", prefill.barbero);
+      if (prefill.nota) set("nota", prefill.nota);
+      const fecha = reservaForm.querySelector("[name='fecha']");
+      if (fecha) fecha.value = "";
+      if (hoursBox) hoursBox.replaceChildren();
+      if (hoursNote) {
+        hoursNote.hidden = false;
+        hoursNote.textContent = "Elige una nueva fecha para ver las horas.";
+      }
+      chosenHour = "";
+    } else if (reservaForm) {
+      const saved = readContact();
+      if (saved) {
+        const nombre = reservaForm.querySelector("[name='nombre']");
+        const tel = reservaForm.querySelector("[name='telefono']");
+        if (nombre && !nombre.value.trim()) nombre.value = saved.nombre || "";
+        if (tel && !tel.value.trim()) tel.value = saved.telefono || "";
+      }
+    }
+    paintDuracion();
     modal.hidden = false;
     lock(true);
-    const field = modal.querySelector("[name='nombre']");
-    if (field) field.focus();
+    const focusTarget = reagendarToken ? modal.querySelector("[name='fecha']") : modal.querySelector("[name='nombre']");
+    if (focusTarget) focusTarget.focus();
   };
 
   const closeModal = () => {
@@ -618,6 +827,7 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
 
   document.querySelectorAll("[data-open-reserva]").forEach((trigger) => {
     trigger.addEventListener("click", (event) => {
+      if (!modal) return;
       event.preventDefault();
       openModal(trigger);
     });
@@ -635,6 +845,42 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
     if (sheet && !sheet.hidden) return;
     if (modal && !modal.hidden) closeModal();
     else if (nav && nav.classList.contains("is-open")) setMenu(false);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (!modal || modal.hidden || event.key !== "Tab") return;
+    const sheet = document.querySelector("[data-service-modal]");
+    if (sheet && !sheet.hidden) return;
+    const panel = modal.querySelector(".modal-panel");
+    if (!panel) return;
+    const nodes = [...panel.querySelectorAll("a[href], button, input, select, textarea")].filter((el) => {
+      if (el.disabled || el.closest(".hp") || el.closest("[hidden]")) return false;
+      if (el.tabIndex < 0) return false;
+      return el.getClientRects().length > 0;
+    });
+    if (!nodes.length) {
+      event.preventDefault();
+      panel.focus();
+      return;
+    }
+    const first = nodes[0];
+    const last = nodes[nodes.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || !panel.contains(active))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (active === last || !panel.contains(active))) {
+      event.preventDefault();
+      first.focus();
+    }
+  }, true);
+
+  document.querySelectorAll("[data-cita-reagendar]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const datos = citaTracker.datos();
+      if (!datos) return;
+      openModal(button, datos);
+    });
   });
 
   document.addEventListener("pupilos:reservar", (event) => {
@@ -664,33 +910,52 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
     const barbero = String(data.get("barbero") || "").trim();
     const fecha = String(data.get("fecha") || "").trim();
     const nota = String(data.get("nota") || "").trim();
-    const digits = telefono.replace(/\D/g, "");
+    const cel = celularColombia(telefono);
+    const datosOk = reservaForm.querySelector("[name='datos']");
+    const focusField = (name) => {
+      const field = reservaForm.querySelector("[name='" + name + "']");
+      if (field) field.focus();
+    };
 
     if (nombre.length < 2) {
       showError("Escribe tu nombre.");
+      focusField("nombre");
       return;
     }
-    if (digits.length < 7 || digits.length > 15) {
-      showError("Escribe un teléfono válido.");
+    if (!cel.ok) {
+      showError(cel.mensaje);
+      focusField("telefono");
       return;
     }
     if (!servicio) {
       showError("Elige un servicio.");
+      focusField("servicio");
       return;
     }
     if (!fecha || fecha < bogotaToday()) {
       showError("Elige una fecha de hoy en adelante.");
+      focusField("fecha");
       return;
     }
-    if (weekdayOf(fecha) === 0) {
-      showError("Los domingos no abrimos. Elige otro día.");
+    if (weekdayOf(fecha) === 0 || !slotsFor(fecha).length) {
+      showError("Ese día no abrimos. Elige otro.");
+      focusField("fecha");
       return;
     }
     if (!chosenHour) {
       showError("Elige una hora libre.");
+      const slot = hoursBox && hoursBox.querySelector(".slot:not(:disabled)");
+      if (slot) slot.focus();
+      return;
+    }
+    if (datosOk && !datosOk.checked) {
+      showError("Acepta la política de datos para reservar.");
+      datosOk.focus();
       return;
     }
 
+    const submitLabel = reagendarToken ? "Reagendar cita" : "Reservar cita";
+    const telefonoLimpio = cel.digitos.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
     submitBtn.disabled = true;
     submitBtn.textContent = "Guardando…";
     let token = "";
@@ -701,7 +966,7 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
     try {
       const payload = {
         nombre,
-        telefono,
+        telefono: telefonoLimpio,
         servicio,
         barbero,
         fecha,
@@ -716,7 +981,7 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
       error = err;
     }
     submitBtn.disabled = false;
-    submitBtn.textContent = "Reservar cita";
+    submitBtn.textContent = submitLabel;
 
     if (error) {
       const duplicate = error.code === "23505" || /duplicate|unique|duplicad/i.test(error.message || "");
@@ -727,58 +992,147 @@ import { initScrollChrome, initCounters } from "./movimiento.js";
       return;
     }
 
+    const previo = reagendarToken;
+    reagendarToken = "";
     let seguimiento = "";
+    let avisoPrevia = "";
     try {
       if (token) {
         seguimiento = window.location.origin + window.location.pathname + "?cita=" + token;
+        writeFicha(token, { nombre, telefono: telefonoLimpio, servicio, barbero, nota });
         citaTracker.track(token, {
           servicio,
           fecha,
           hora: chosenHour + ":00",
-          estado: "pendiente"
+          estado: "pendiente",
+          nombre,
+          telefono: telefonoLimpio,
+          barbero,
+          nota
         });
       }
     } catch (err) {}
+    writeContact(nombre, telefonoLimpio, data.get("recordar") === "on");
+    if (previo && previo !== token) {
+      try {
+        const cancel = await supabase.rpc("cancelar_reserva", { p_token: previo });
+        const denied = !cancel || cancel.error || cancel.data === false || cancel.data === "false";
+        if (denied) avisoPrevia = " No pudimos cancelar la cita anterior. Escríbenos por WhatsApp.";
+        else citaTracker.marcar(previo, "cancelada");
+      } catch (err) {
+        avisoPrevia = " No pudimos cancelar la cita anterior. Escríbenos por WhatsApp.";
+      }
+    }
 
     const lines = [
-      "Hola, soy " + nombre + ". Acabo de reservar en Pupilos Barber.",
+      "Hola, soy " + nombre + ". Acabo de reservar en " + negocio.nombre + ".",
       "Servicio: " + servicio + ".",
       "Barbero: " + barbero + ".",
       "Fecha: " + fecha + ".",
       "Hora: " + hourLabel(chosenHour) + ".",
-      "Teléfono: " + telefono + "."
+      "Teléfono: " + telefonoLimpio + "."
     ];
     if (nota) lines.push("Nota: " + nota + ".");
     if (seguimiento) lines.push("Sigue tu cita: " + seguimiento);
-    reservaSummary.textContent = nombre + " · " + servicio + " · " + fecha + " · " + hourLabel(chosenHour);
-    reservaWa.href = "https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(lines.join("\n"));
+    lastBooking = {
+      token,
+      servicio,
+      fecha,
+      hora: chosenHour,
+      minutos: minutosDe(servicio)
+    };
+    reservaSummary.textContent = nombre + " · " + servicio + " · " + fecha + " · " + hourLabel(chosenHour) + avisoPrevia;
+    reservaWa.href = enlaceWhatsapp(lines.join("\n"));
+    const panel = modal && modal.querySelector(".modal-panel");
+    if (panel) panel.setAttribute("aria-labelledby", "reserva-done-title");
     reservaIntro.hidden = true;
     reservaDone.hidden = false;
-    reservaWa.focus();
+    const icsBtn = document.querySelector("[data-reserva-ics]");
+    if (icsBtn) icsBtn.focus();
+    else reservaWa.focus();
   });
 
-  /* Abierto / cerrado según la hora en Funza (America/Bogota). */
-  const status = document.querySelector("[data-open-status]");
-  const label = document.querySelector("[data-open-label]");
-  if (status && label) {
-    const bogota = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Bogota",
-      weekday: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23"
-    }).formatToParts(new Date());
-    const part = (type) => bogota.find((item) => item.type === type).value;
-    const weekday = part("weekday").slice(0, 3);
-    const minutes = Number(part("hour")) * 60 + Number(part("minute"));
-    const open = weekday === "Sat" ? minutes >= 540 && minutes < 1020
-      : weekday === "Sun" ? false
-      : minutes >= 540 && minutes < 1140;
+  const icsEscape = (value) => String(value || "").replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
 
-    status.classList.add(open ? "is-open" : "is-closed");
-    label.textContent = open ? "Abierto ahora" : "Cerrado ahora";
-  }
+  const icsStamp = (fecha, hora) => {
+    const [year, month, day] = fecha.split("-");
+    const [hour, minute] = String(hora || "00:00").split(":");
+    return year + month + day + "T" + hour + minute + "00";
+  };
+
+  const icsEnd = (fecha, hora, minutes) => {
+    const [year, month, day] = fecha.split("-").map(Number);
+    const [hour, minute] = String(hora || "00:00").split(":").map(Number);
+    const end = new Date(Date.UTC(year, month - 1, day, hour, minute) + minutes * 60000);
+    const iso = end.toISOString();
+    return iso.slice(0, 4) + iso.slice(5, 7) + iso.slice(8, 10) + "T" + iso.slice(11, 13) + iso.slice(14, 16) + "00";
+  };
+
+  const downloadIcs = (booking) => {
+    const start = icsStamp(booking.fecha, booking.hora);
+    const end = icsEnd(booking.fecha, booking.hora, booking.minutos || 60);
+    const uid = (booking.token || "cita") + "@pupilos";
+    const lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Pupilos Barber//Cita//ES",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VTIMEZONE",
+      "TZID:America/Bogota",
+      "BEGIN:STANDARD",
+      "DTSTART:19700101T000000",
+      "TZOFFSETFROM:-0500",
+      "TZOFFSETTO:-0500",
+      "TZNAME:COT",
+      "END:STANDARD",
+      "END:VTIMEZONE",
+      "BEGIN:VEVENT",
+      "UID:" + uid,
+      "DTSTAMP:" + start,
+      "DTSTART;TZID=America/Bogota:" + start,
+      "DTEND;TZID=America/Bogota:" + end,
+      "SUMMARY:" + icsEscape(booking.servicio + " — " + negocio.nombre),
+      "LOCATION:" + icsEscape(direccionLinea()),
+      "DESCRIPTION:" + icsEscape(booking.servicio + " en " + negocio.nombre + ". " + direccionLinea()),
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ];
+    const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "cita-pupilos.ics";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const icsButton = document.querySelector("[data-reserva-ics]");
+  if (icsButton) icsButton.addEventListener("click", () => {
+    if (lastBooking) downloadIcs(lastBooking);
+  });
+
+  const apertura = estadoApertura();
+  document.querySelectorAll("[data-open-status]").forEach((status) => {
+    status.classList.toggle("is-open", apertura.abierto);
+    status.classList.toggle("is-closed", !apertura.abierto);
+    const label = status.querySelector("[data-open-label]");
+    if (label) label.textContent = apertura.texto;
+  });
 
   const year = document.querySelector("[data-year]");
   if (year) year.textContent = String(new Date().getFullYear());
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reservar") === "1" && modal) {
+      params.delete("reservar");
+      const next = params.toString();
+      const clean = window.location.pathname + (next ? "?" + next : "") + window.location.hash;
+      window.history.replaceState(null, "", clean);
+      openModal(null);
+    }
+  } catch (error) {}
 })();
