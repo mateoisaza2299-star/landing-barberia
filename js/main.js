@@ -581,20 +581,6 @@ import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance
     });
   }
 
-  const trackVisit = async () => {
-    try {
-      if (sessionStorage.getItem("pb_visit")) return;
-      sessionStorage.setItem("pb_visit", "1");
-      let visitorId = localStorage.getItem("pb_visitor");
-      if (!visitorId) {
-        visitorId = crypto.randomUUID();
-        localStorage.setItem("pb_visitor", visitorId);
-      }
-      await supabase.from("visitas").insert({ visitor_id: visitorId }, { returning: "minimal" });
-    } catch (error) {}
-  };
-  trackVisit();
-
   let lastTrigger = null;
   let closingModal = false;
   let closeToken = 0;

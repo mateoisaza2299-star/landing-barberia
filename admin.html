@@ -13,36 +13,152 @@
   <link rel="stylesheet" href="css/admin.css">
 </head>
 <body class="admin-body">
-  <header class="admin-bar">
-    <a class="logo" href="index.html" aria-label="Pupilos Barber, inicio">
-      <span class="logo-mark" aria-hidden="true"></span>
-      <span class="logo-text">Pupilos Barber</span>
-    </a>
-    <div class="admin-tools">
-      <span class="admin-mail" data-admin-email></span>
-      <button class="btn" type="button" data-logout>Salir</button>
+  <div class="dash">
+    <aside class="dash-side">
+      <a class="logo" href="index.html" aria-label="Pupilos Barber, inicio">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="logo-text">Pupilos Barber</span>
+      </a>
+      <p class="dash-side-label">Panel</p>
+      <nav class="dash-nav" aria-label="Secciones del panel">
+        <button type="button" data-view="resumen" aria-current="page">Resumen</button>
+        <button type="button" data-view="reservas">Reservas</button>
+        <button type="button" data-view="servicios">Servicios</button>
+        <button type="button" data-view="audiencia">Audiencia</button>
+      </nav>
+    </aside>
+
+    <div class="dash-main">
+      <header class="dash-top">
+        <a class="logo dash-logo" href="index.html" aria-label="Pupilos Barber, inicio">
+          <span class="logo-mark" aria-hidden="true"></span>
+          <span class="logo-text">Pupilos Barber</span>
+        </a>
+        <div class="dash-hello">
+          <p class="dash-greet" data-greet>Buenos días</p>
+          <p class="dash-date" data-today-label></p>
+          <p class="admin-mail" data-admin-email></p>
+        </div>
+        <div class="dash-top-actions">
+          <p class="dash-updated">Última actualización <time data-updated>—</time></p>
+          <div class="dash-action-buttons">
+            <button class="dash-btn" type="button" data-refresh>Actualizar</button>
+            <button class="btn" type="button" data-logout>Salir</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="dash-filters">
+        <div class="dash-periods" role="group" aria-label="Periodo">
+          <button type="button" data-period="hoy" aria-pressed="true">Hoy</button>
+          <button type="button" data-period="7" aria-pressed="false">7 días</button>
+          <button type="button" data-period="30" aria-pressed="false">30 días</button>
+          <button type="button" data-period="rango" aria-pressed="false">Rango</button>
+        </div>
+        <div class="dash-range" data-range hidden>
+          <label>Desde <input type="date" data-desde></label>
+          <label>Hasta <input type="date" data-hasta></label>
+        </div>
+        <p class="dash-compare">Comparado con el periodo anterior <span data-period-label></span></p>
+        <p class="dash-range-error" data-range-error role="alert" hidden>Elige un rango válido.</p>
+      </div>
+
+      <div class="dash-error" data-dash-error role="alert" hidden>
+        <p data-dash-error-text>No pudimos cargar el resumen.</p>
+        <button type="button" data-retry>Reintentar</button>
+      </div>
+      <p class="admin-error" data-admin-error role="alert" hidden></p>
+
+      <section class="dash-panel is-on is-enter" data-panel="resumen" aria-label="Resumen">
+        <ul class="stat-grid">
+          <li data-card="visitantes" class="is-loading"><strong>—</strong><span>Visitantes únicos</span><em data-delta></em></li>
+          <li data-card="visitas" class="is-loading"><strong>—</strong><span>Visitas</span><em data-delta></em></li>
+          <li data-card="reservas" class="is-loading"><strong>—</strong><span>Reservas</span><em data-delta></em></li>
+          <li data-card="conversion" class="is-loading"><strong>—</strong><span>Conversión</span><em data-delta></em></li>
+          <li data-card="pendientes" class="is-loading"><strong>—</strong><span>Pendientes por atender</span><em data-delta></em></li>
+          <li data-card="ingresos" class="is-loading"><strong>—</strong><span>Ingresos estimados</span><em data-delta></em></li>
+        </ul>
+        <div class="dash-grid-2">
+          <article class="dash-card">
+            <h2>Visitantes y reservas</h2>
+            <div class="dash-chart is-loading" data-chart="trafico"></div>
+          </article>
+          <article class="dash-card">
+            <h2>Embudo</h2>
+            <div data-funnel class="is-loading"></div>
+          </article>
+        </div>
+        <article class="dash-card">
+          <h2>Hoy</h2>
+          <div class="booking-list" data-hoy></div>
+        </article>
+      </section>
+
+      <section class="dash-panel" data-panel="reservas" hidden aria-label="Reservas">
+        <div class="res-tools">
+          <label>Estado
+            <select data-res-estado>
+              <option value="">Todos</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="confirmada">Confirmadas</option>
+              <option value="completada">Completadas</option>
+              <option value="cancelada">Canceladas</option>
+            </select>
+          </label>
+          <label>Fecha <input type="date" data-res-fecha></label>
+          <label class="res-search">Buscar
+            <input type="search" data-res-q placeholder="Nombre o teléfono" autocomplete="off">
+          </label>
+          <button class="dash-btn" type="button" data-export>Exportar CSV</button>
+        </div>
+        <p class="res-count" data-res-count></p>
+        <div class="table-scroll" data-res-table></div>
+      </section>
+
+      <section class="dash-panel" data-panel="servicios" hidden aria-label="Servicios">
+        <article class="dash-card">
+          <h2>Servicios</h2>
+          <div data-servicios></div>
+        </article>
+        <div class="dash-grid-2">
+          <article class="dash-card">
+            <h2>Horas más pedidas</h2>
+            <div class="dash-chart is-loading" data-chart="horas"></div>
+          </article>
+          <article class="dash-card">
+            <h2>Días de la semana</h2>
+            <div class="dash-chart is-loading" data-chart="dias"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dash-panel" data-panel="audiencia" hidden aria-label="Audiencia">
+        <div class="dash-grid-2">
+          <article class="dash-card">
+            <h2>Dispositivos</h2>
+            <div class="dash-chart dash-chart-sm is-loading" data-chart="dispositivos"></div>
+          </article>
+          <article class="dash-card">
+            <h2>Orígenes</h2>
+            <div data-origenes></div>
+          </article>
+        </div>
+        <h2 class="dash-subtitle">Contacto</h2>
+        <div class="contact-grid" data-contacto></div>
+      </section>
     </div>
-  </header>
-  <main class="wrap admin-main">
-    <p class="kicker">Panel</p>
-    <h1>La silla de hoy</h1>
-    <ul class="stat-grid">
-      <li><strong data-stat="hoy">—</strong><span>Reservas de hoy</span></li>
-      <li><strong data-stat="pendientes">—</strong><span>Pendientes</span></li>
-      <li><strong data-stat="visitas-hoy">—</strong><span>Visitas de hoy</span></li>
-      <li><strong data-stat="visitas-semana">—</strong><span>Visitas, 7 días</span></li>
-      <li><strong data-stat="mes">—</strong><span>Reservas del mes</span></li>
-    </ul>
-    <label class="day-field">
-      Fecha
-      <input type="date" data-day>
-    </label>
-    <h2>Reservas del día</h2>
-    <div class="booking-list" data-day-list></div>
-    <h2>Próximas</h2>
-    <div class="booking-list" data-upcoming></div>
-    <p class="admin-error" data-admin-error role="alert" hidden></p>
-  </main>
+  </div>
+
+  <p class="dash-note">Las visitas y eventos se cuentan desde que se activó el registro, y no incluyen las tuyas cuando tienes la sesión iniciada.</p>
+
+  <nav class="dash-tabs" aria-label="Secciones del panel">
+    <button type="button" data-view="resumen" aria-current="page">Resumen</button>
+    <button type="button" data-view="reservas">Reservas</button>
+    <button type="button" data-view="servicios">Servicios</button>
+    <button type="button" data-view="audiencia">Audiencia</button>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
   <script type="module" src="js/admin.js"></script>
 </body>
 </html>

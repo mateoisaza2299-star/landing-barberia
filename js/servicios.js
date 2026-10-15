@@ -1,4 +1,4 @@
-const servicios = [
+export const servicios = [
   {
     nombre: "Corte clásico",
     precio: "$25.000",
