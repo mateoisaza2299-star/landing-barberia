@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance } from "./movimiento.js";
+import { initScrollChrome, initCounters } from "./movimiento.js";
 
 (function () {
   const header = document.querySelector("[data-header]");
@@ -12,20 +12,14 @@ import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance
   document.documentElement.classList.add("js");
   const lock = (on) => document.body.classList.toggle("is-locked", on);
 
-  initHeader(header, reduceMotion);
-  initPageLeave(reduceMotion);
-  initHeroEntrance(reduceMotion);
+  initScrollChrome(header);
   initCounters(reduceMotion);
-  initParallax(reduceMotion);
 
   /* Menú móvil */
   const setMenu = (open) => {
     if (!nav || !toggle) return;
     nav.classList.toggle("is-open", open);
-    if (header) {
-      header.classList.toggle("is-open", open);
-      if (open) header.classList.remove("is-hidden");
-    }
+    if (header) header.classList.toggle("is-open", open);
     toggle.setAttribute("aria-expanded", String(open));
     const menuLabel = toggle.querySelector(".sr-only");
     if (menuLabel) menuLabel.textContent = open ? "Cerrar menú" : "Abrir menú";
@@ -69,15 +63,10 @@ import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance
     sections.forEach((section) => spy.observe(section));
   }
 
-  /* Aparición al scroll */
+  /* Aparición al scroll, una sola vez */
   const reveals = document.querySelectorAll(".reveal");
-  const premiumHold = window.__pupilosPremium === "pending" || window.__pupilosPremium === "on";
   if (reduceMotion || !("IntersectionObserver" in window)) {
     reveals.forEach((el) => el.classList.add("is-visible"));
-  } else if (premiumHold) {
-    document.addEventListener("pupilos:motion-abort", () => {
-      reveals.forEach((el) => el.classList.add("is-visible"));
-    }, { once: true });
   } else {
     const revealObserver = new IntersectionObserver(
       (entries) => {
@@ -87,10 +76,11 @@ import { initHeader, initCounters, initParallax, initPageLeave, initHeroEntrance
           revealObserver.unobserve(entry.target);
         });
       },
-      { threshold: 0.16 }
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
     );
     reveals.forEach((el) => revealObserver.observe(el));
   }
+  window.__pupilosMotion = "ready";
 
   /* Carrusel de reseñas */
   const carousel = document.querySelector("[data-carousel]");

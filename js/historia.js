@@ -101,7 +101,6 @@ if (blocks) {
 
     const photo = document.createElement("div");
     photo.className = "historia-photo";
-    photo.setAttribute("data-parallax", "");
     const img = document.createElement("img");
     img.src = bloque.foto;
     img.alt = bloque.alt;

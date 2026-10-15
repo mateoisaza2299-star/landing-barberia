@@ -11,57 +11,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.css">
   <script>
     document.documentElement.classList.add("js");
-    window.__pupilosPremium = "off";
-    try {
-      if (sessionStorage.getItem("pb-page") === "1") {
-        document.documentElement.classList.add("is-enter");
-        sessionStorage.removeItem("pb-page");
-      }
-    } catch (error) {}
-    var reduceMotion = false;
-    try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (error) {}
-    if (!reduceMotion) {
-      window.__pupilosPremium = "pending";
-      document.documentElement.classList.add("motion-pending");
-      try {
-        var curtainMode = sessionStorage.getItem("pb-curtain");
-        if (curtainMode) {
-          sessionStorage.removeItem("pb-curtain");
-          document.documentElement.classList.add(curtainMode === "js" ? "is-arriving-js" : "is-arriving");
-        }
-        if (sessionStorage.getItem("pb-intro") !== "1") {
-          sessionStorage.setItem("pb-intro", "1");
-          document.documentElement.classList.add("is-booting");
-        }
-      } catch (error) {}
-    }
+    window.__pupilosMotion = "pending";
     window.setTimeout(function () {
-      if (window.__pupilosPremium === "on") return;
-      window.__pupilosPremium = "off";
-      var root = document.documentElement;
-      root.classList.remove("motion-pending", "is-booting", "has-motion");
-      root.classList.add("motion-ready");
-      var pre = document.querySelector("[data-preloader]");
-      if (pre) pre.remove();
-      document.dispatchEvent(new CustomEvent("pupilos:hero-css"));
-      document.dispatchEvent(new CustomEvent("pupilos:motion-abort"));
-    }, 2100);
+      if (window.__pupilosMotion === "ready") return;
+      document.documentElement.classList.add("motion-ready");
+    }, 2500);
   </script>
 </head>
 <body data-whatsapp="573001234567">
-  <div class="preloader" data-preloader aria-hidden="true">
-    <div>
-      <p class="preloader-name">Pupilos Barber</p>
-      <span class="preloader-line"><i></i></span>
-    </div>
-  </div>
-  <div class="curtain" data-curtain aria-hidden="true">
-    <p class="curtain-name">Pupilos Barber</p>
-    <span class="curtain-rule"></span>
-  </div>
   <div class="scroll-progress" data-progress aria-hidden="true"></div>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
@@ -98,7 +57,6 @@
         </div>
       </div>
       <div class="hero-overlay" aria-hidden="true"></div>
-      <div class="hero-dim" aria-hidden="true"></div>
       <p class="hero-side" aria-hidden="true">Corte · Barba · Navaja</p>
 
       <div class="wrap hero-content">
@@ -137,7 +95,7 @@
             <li><strong data-count="1">1</strong><span>cita a la vez</span></li>
           </ul>
         </div>
-        <div class="about-media reveal" data-delay="1" data-parallax>
+        <div class="about-media reveal" data-delay="1">
           <img src="assets/about-interior.jpg" width="1152" height="864" alt="Sillón de barbería en cuero, madera oscura y luz de un aplique de latón">
           <span class="about-frame" aria-hidden="true"></span>
         </div>
@@ -442,17 +400,6 @@
     </div>
   </div>
 
-  <script src="js/experiencia.js"></script>
-  <script>
-    window.setTimeout(function () {
-      if (window.__pupilosPremium === "on" || window.__pupilosPremium === "pending") return;
-      var h1 = document.querySelector(".hero h1");
-      if (!h1 || h1.dataset.ready === "1" || h1.querySelector(".hero-line") || h1.querySelector(".line-mask")) return;
-      var hero = document.querySelector(".hero");
-      if (hero) hero.classList.add("is-live");
-      h1.classList.add("is-split");
-    }, 2600);
-  </script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/hero.js"></script>
   <script type="module" src="js/servicios.js"></script>
