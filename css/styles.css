@@ -855,7 +855,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .site-footer {
   background: var(--espresso);
   color: var(--cream);
-  padding: 4.5rem 0 1.4rem;
+  padding: 4.5rem 0 4.8rem;
 }
 
 .footer-grid {
@@ -1200,7 +1200,7 @@ body.is-locked .fab {
     bottom: 3.6rem;
     height: 36px;
   }
-  .site-footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  .site-footer { padding-bottom: calc(8.5rem + env(safe-area-inset-bottom)); }
 }
 
 @media (min-width: 721px) {
@@ -1439,6 +1439,11 @@ body.is-locked .cita-card {
 @media (min-width: 900px) {
   body:has(.cita-card:not([hidden])) .hero-content {
     padding-bottom: 10.5rem;
+  }
+
+  .cita-card {
+    left: auto;
+    right: max(1.15rem, env(safe-area-inset-right));
   }
 }
 
@@ -2157,7 +2162,7 @@ html.motion-ready .reveal {
 
 .cita-note[hidden] { display: none; }
 
-.cita-note a { color: #f0d48a; }
+.cita-note a { color: #f0d48a; white-space: nowrap; }
 
 .social-band { background: var(--brown); color: var(--cream); }
 
@@ -2281,7 +2286,12 @@ html.motion-ready .reveal {
 
 .to-top[hidden] { display: none; }
 
-body.is-locked .to-top { visibility: hidden; }
+body.is-locked .to-top,
+body:has(.cita-card:not([hidden])) .to-top { display: none; }
+
+body:has(.cita-card:not([hidden])) .site-footer {
+  padding-bottom: 22rem;
+}
 
 .page-legal,
 .page-miss {
@@ -2324,6 +2334,10 @@ body:has(.page-legal) .site-header {
 
 @media (max-width: 899px) {
   .to-top { bottom: calc(5.1rem + env(safe-area-inset-bottom)); }
+
+  body:has(.cita-card:not([hidden])) .site-footer {
+    padding-bottom: calc(20rem + env(safe-area-inset-bottom));
+  }
 }
 
 @media (min-width: 800px) {
