@@ -12,31 +12,42 @@ import { supabase } from "./supabase.js";
   const lock = (on) => document.body.classList.toggle("is-locked", on);
 
   /* Navbar al hacer scroll */
-  const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 24);
+  const onScroll = () => {
+    if (!header) return;
+    header.classList.toggle("is-scrolled", window.scrollY > 24);
+  };
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
   /* Menú móvil */
   const setMenu = (open) => {
+    if (!nav || !toggle) return;
     nav.classList.toggle("is-open", open);
-    header.classList.toggle("is-open", open);
+    if (header) header.classList.toggle("is-open", open);
     toggle.setAttribute("aria-expanded", String(open));
-    toggle.querySelector(".sr-only").textContent = open ? "Cerrar menú" : "Abrir menú";
-    lock(open || !modal.hidden);
+    const menuLabel = toggle.querySelector(".sr-only");
+    if (menuLabel) menuLabel.textContent = open ? "Cerrar menú" : "Abrir menú";
+    lock(open || (modal ? !modal.hidden : false));
   };
 
-  toggle.addEventListener("click", () => setMenu(!nav.classList.contains("is-open")));
+  if (toggle && nav) {
+    toggle.addEventListener("click", () => setMenu(!nav.classList.contains("is-open")));
 
-  nav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth < 960) setMenu(false);
+    nav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (window.innerWidth < 960) setMenu(false);
+      });
     });
-  });
+  }
 
   /* Sección activa */
   const links = [...document.querySelectorAll(".nav-link")];
   const sections = links
-    .map((link) => document.querySelector(link.getAttribute("href")))
+    .map((link) => {
+      const href = link.getAttribute("href") || "";
+      if (!href.startsWith("#")) return null;
+      return document.querySelector(href);
+    })
     .filter(Boolean);
 
   if ("IntersectionObserver" in window) {
@@ -76,50 +87,52 @@ import { supabase } from "./supabase.js";
 
   /* Carrusel de reseñas */
   const carousel = document.querySelector("[data-carousel]");
-  const slides = [...carousel.querySelectorAll(".quote")];
-  const dotsWrap = carousel.querySelector("[data-dots]");
-  let index = 0;
-  let timer;
+  if (carousel) {
+    const slides = [...carousel.querySelectorAll(".quote")];
+    const dotsWrap = carousel.querySelector("[data-dots]");
+    let index = 0;
+    let timer;
 
-  slides.forEach((slide, i) => {
-    const dot = document.createElement("button");
-    dot.type = "button";
-    dot.className = "dot";
-    dot.setAttribute("role", "tab");
-    dot.setAttribute("aria-label", "Reseña " + (i + 1));
-    dot.addEventListener("click", () => show(i, true));
-    dotsWrap.appendChild(dot);
-  });
-
-  const dots = [...dotsWrap.children];
-
-  function show(next, user) {
-    index = (next + slides.length) % slides.length;
     slides.forEach((slide, i) => {
-      const active = i === index;
-      slide.classList.toggle("is-active", active);
-      slide.setAttribute("aria-hidden", String(!active));
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "dot";
+      dot.setAttribute("role", "tab");
+      dot.setAttribute("aria-label", "Reseña " + (i + 1));
+      dot.addEventListener("click", () => show(i, true));
+      dotsWrap.appendChild(dot);
     });
-    dots.forEach((dot, i) => dot.setAttribute("aria-selected", String(i === index)));
-    if (user) restart();
-  }
 
-  function restart() {
-    clearInterval(timer);
-    if (reduceMotion) return;
-    timer = setInterval(() => show(index + 1), 7000);
-  }
+    const dots = [...dotsWrap.children];
 
-  carousel.querySelector("[data-carousel-prev]").addEventListener("click", () => show(index - 1, true));
-  carousel.querySelector("[data-carousel-next]").addEventListener("click", () => show(index + 1, true));
-  carousel.addEventListener("mouseenter", () => clearInterval(timer));
-  carousel.addEventListener("mouseleave", restart);
-  carousel.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") show(index - 1, true);
-    if (event.key === "ArrowRight") show(index + 1, true);
-  });
-  show(0);
-  restart();
+    function show(next, user) {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => {
+        const active = i === index;
+        slide.classList.toggle("is-active", active);
+        slide.setAttribute("aria-hidden", String(!active));
+      });
+      dots.forEach((dot, i) => dot.setAttribute("aria-selected", String(i === index)));
+      if (user) restart();
+    }
+
+    function restart() {
+      clearInterval(timer);
+      if (reduceMotion) return;
+      timer = setInterval(() => show(index + 1), 7000);
+    }
+
+    carousel.querySelector("[data-carousel-prev]").addEventListener("click", () => show(index - 1, true));
+    carousel.querySelector("[data-carousel-next]").addEventListener("click", () => show(index + 1, true));
+    carousel.addEventListener("mouseenter", () => clearInterval(timer));
+    carousel.addEventListener("mouseleave", restart);
+    carousel.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") show(index - 1, true);
+      if (event.key === "ArrowRight") show(index + 1, true);
+    });
+    show(0);
+    restart();
+  }
 
   const dateInput = document.querySelector("[data-min-today]");
   const hoursBox = document.querySelector("[data-hours]");
@@ -174,6 +187,7 @@ import { supabase } from "./supabase.js";
   };
 
   const showError = (message) => {
+    if (!formError) return;
     formError.hidden = !message;
     formError.textContent = message || "";
   };
@@ -484,6 +498,7 @@ import { supabase } from "./supabase.js";
   })();
 
   const showForm = () => {
+    if (!reservaIntro || !reservaDone) return;
     reservaIntro.hidden = false;
     reservaDone.hidden = true;
     chosenHour = "";
@@ -492,6 +507,7 @@ import { supabase } from "./supabase.js";
   };
 
   const renderHours = (iso, taken) => {
+    if (!hoursBox || !hoursNote) return;
     hoursBox.replaceChildren();
     chosenHour = "";
     if (!iso) {
@@ -531,6 +547,7 @@ import { supabase } from "./supabase.js";
   };
 
   const loadHours = async (iso) => {
+    if (!hoursBox || !hoursNote) return;
     if (!iso || weekdayOf(iso) === 0) {
       renderHours(iso, new Set());
       return;
@@ -574,6 +591,7 @@ import { supabase } from "./supabase.js";
   let lastTrigger = null;
 
   const openModal = (trigger) => {
+    if (!modal) return;
     lastTrigger = trigger;
     setMenu(false);
     showForm();
@@ -584,9 +602,9 @@ import { supabase } from "./supabase.js";
   };
 
   const closeModal = () => {
-    if (modal.hidden) return;
+    if (!modal || modal.hidden) return;
     modal.hidden = true;
-    lock(nav.classList.contains("is-open"));
+    lock(nav ? nav.classList.contains("is-open") : false);
     if (lastTrigger) lastTrigger.focus();
   };
 
@@ -597,17 +615,31 @@ import { supabase } from "./supabase.js";
     });
   });
 
-  modal.querySelectorAll("[data-close-reserva]").forEach((el) => {
-    el.addEventListener("click", closeModal);
-  });
+  if (modal) {
+    modal.querySelectorAll("[data-close-reserva]").forEach((el) => {
+      el.addEventListener("click", closeModal);
+    });
+  }
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
-    if (!modal.hidden) closeModal();
-    else if (nav.classList.contains("is-open")) setMenu(false);
+    const sheet = document.querySelector("[data-service-modal]");
+    if (sheet && !sheet.hidden) return;
+    if (modal && !modal.hidden) closeModal();
+    else if (nav && nav.classList.contains("is-open")) setMenu(false);
   });
 
-  reservaForm.addEventListener("submit", async (event) => {
+  document.addEventListener("pupilos:reservar", (event) => {
+    const detail = (event && event.detail) || {};
+    const select = reservaForm ? reservaForm.querySelector("[name='servicio']") : null;
+    if (select && detail.servicio) {
+      const match = [...select.options].some((option) => option.value === detail.servicio);
+      if (match) select.value = detail.servicio;
+    }
+    openModal(detail.trigger || null);
+  });
+
+  if (reservaForm) reservaForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     showError("");
     const data = new FormData(reservaForm);
@@ -720,22 +752,24 @@ import { supabase } from "./supabase.js";
   /* Abierto / cerrado según la hora en Funza (America/Bogota). */
   const status = document.querySelector("[data-open-status]");
   const label = document.querySelector("[data-open-label]");
-  const bogota = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Bogota",
-    weekday: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).formatToParts(new Date());
-  const part = (type) => bogota.find((item) => item.type === type).value;
-  const weekday = part("weekday").slice(0, 3);
-  const minutes = Number(part("hour")) * 60 + Number(part("minute"));
-  const open = weekday === "Sat" ? minutes >= 540 && minutes < 1020
-    : weekday === "Sun" ? false
-    : minutes >= 540 && minutes < 1140;
+  if (status && label) {
+    const bogota = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Bogota",
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(new Date());
+    const part = (type) => bogota.find((item) => item.type === type).value;
+    const weekday = part("weekday").slice(0, 3);
+    const minutes = Number(part("hour")) * 60 + Number(part("minute"));
+    const open = weekday === "Sat" ? minutes >= 540 && minutes < 1020
+      : weekday === "Sun" ? false
+      : minutes >= 540 && minutes < 1140;
 
-  status.classList.add(open ? "is-open" : "is-closed");
-  label.textContent = open ? "Abierto ahora" : "Cerrado ahora";
+    status.classList.add(open ? "is-open" : "is-closed");
+    label.textContent = open ? "Abierto ahora" : "Cerrado ahora";
+  }
 
   const year = document.querySelector("[data-year]");
   if (year) year.textContent = String(new Date().getFullYear());
