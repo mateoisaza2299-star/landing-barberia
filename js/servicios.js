@@ -1,7 +1,10 @@
-export const servicios = [
+import { negocio, formatoPrecio } from "./config.js";
+
+const base = [
   {
     nombre: "Corte clásico",
     precio: "$25.000",
+    ritmo: "Según el cabello, sin prisa",
     duracion: "Según el cabello, sin prisa",
     descripcion: "Tijera y máquina, con lavado y el acabado que te queda natural. Lo trabajamos con calma para que se vea sencillo y se sienta bien al salir.",
     incluye: ["Corte con tijera y máquina", "Lavado", "Acabado natural"],
@@ -11,6 +14,7 @@ export const servicios = [
   {
     nombre: "Fade definido",
     precio: "$32.000",
+    ritmo: "Según el degradado, sin prisa",
     duracion: "Según el degradado, sin prisa",
     descripcion: "Degradado limpio, línea precisa y textura arriba. Lo dejamos para que dure la semana, sin apretar el proceso.",
     incluye: ["Degradado", "Línea precisa", "Textura arriba"],
@@ -20,6 +24,7 @@ export const servicios = [
   {
     nombre: "Barba y perfilado",
     precio: "$18.000",
+    ritmo: "Según la barba, sin prisa",
     duracion: "Según la barba, sin prisa",
     descripcion: "Navaja caliente, toalla de vapor y un contorno que no se ve forzado. La barba queda tuya, solo más precisa.",
     incluye: ["Navaja caliente", "Toalla de vapor", "Contorno de la barba"],
@@ -29,6 +34,7 @@ export const servicios = [
   {
     nombre: "Afeitado clásico",
     precio: "$28.000",
+    ritmo: "Un ritual, sin prisa",
     duracion: "Un ritual, sin prisa",
     descripcion: "Ritual de navaja, vapor y bálsamo. Sales más ligero de lo que entraste. El tiempo es parte del servicio.",
     incluye: ["Navaja", "Vapor", "Bálsamo"],
@@ -38,6 +44,7 @@ export const servicios = [
   {
     nombre: "Corte + barba",
     precio: "$38.000",
+    ritmo: "Corte y barba en la misma cita, sin prisa",
     duracion: "Corte y barba en la misma cita, sin prisa",
     descripcion: "El combo completo en una sola cita. Corte y barba, uno después del otro, con el mismo cuidado. Es lo que más se reserva.",
     incluye: ["Corte", "Barba y perfilado", "Una sola cita"],
@@ -47,6 +54,7 @@ export const servicios = [
   {
     nombre: "Diseño y línea",
     precio: "$15.000",
+    ritmo: "Según el detalle, sin prisa",
     duracion: "Según el detalle, sin prisa",
     descripcion: "Líneas definidas y detalles a máquina, sin recargar el corte. Un acento, no un dibujo de más.",
     incluye: ["Líneas definidas", "Detalle a máquina"],
@@ -54,6 +62,23 @@ export const servicios = [
     cuidado: "Las líneas se suavizan con los días. Cuando se abran, se pueden retomar en otra visita."
   }
 ];
+
+export const servicios = base.map((item) => {
+  const valor = negocio.precios[item.nombre];
+  const minutos = Number(negocio.minutos[item.nombre]);
+  const precio = Number.isFinite(Number(valor)) ? formatoPrecio(valor) : item.precio;
+  const duracion = Number.isFinite(minutos) && minutos > 0 ? minutos + " min · " + item.ritmo : item.duracion;
+  return {
+    nombre: item.nombre,
+    precio,
+    duracion,
+    minutos: Number.isFinite(minutos) ? minutos : 0,
+    descripcion: item.descripcion,
+    incluye: item.incluye,
+    ideal: item.ideal,
+    cuidado: item.cuidado
+  };
+});
 
 const modal = document.querySelector("[data-service-modal]");
 const panel = document.querySelector("[data-service-panel]");

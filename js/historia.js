@@ -1,3 +1,9 @@
+import { negocio, direccionLinea, hora12 } from "./config.js";
+
+const horarioTexto = negocio.horario.filter((regla) => !regla.cerrado).map((regla) => {
+  return regla.etiqueta + " de " + hora12(regla.abre) + " a " + hora12(regla.cierra);
+}).join(". ");
+
 const historia = {
   intro: [
     "Pupilos Barber lleva doce años en el mismo punto de Funza. Desde 2014 el oficio ha sido el mismo: tijera, navaja y tiempo.",
@@ -27,12 +33,14 @@ const historia = {
     {
       ano: "Hoy",
       titulo: "La puerta de siempre",
-      texto: "Cra 6 #23-70, Zuame, Funza. Lunes a viernes de 9:00 am a 7:00 pm. Sábados de 9:00 am a 5:00 pm. Los domingos descansamos la tijera."
+      texto: direccionLinea() + ". " + horarioTexto + ". Los domingos descansamos la tijera."
     }
   ],
   bloques: [
     {
       foto: "assets/historia/01-inicio.jpg",
+      ancho: 1280,
+      alto: 720,
       alt: "Barbero cortando el cabello de un cliente bajo luz cálida. EDITAR: describe la foto definitiva.",
       titulo: "Tijera, navaja y tiempo",
       texto: "El local es oscuro, cálido y simple a propósito. El corte se hace sin prisa y sin ruido.",
@@ -40,6 +48,8 @@ const historia = {
     },
     {
       foto: "assets/historia/02-sillon.jpg",
+      ancho: 1152,
+      alto: 864,
       alt: "Sillón de barbería en cuero, madera oscura y luz de un aplique. EDITAR: describe la foto definitiva.",
       titulo: "La silla",
       texto: "Una cita a la vez. El sitio se siente cuidado, sin pose y sin letra pequeña.",
@@ -47,6 +57,8 @@ const historia = {
     },
     {
       foto: "assets/historia/03-oficio.jpg",
+      ancho: 1280,
+      alto: 720,
       alt: "Detalle de un corte en Pupilos Barber. EDITAR: describe la foto definitiva.",
       titulo: "El oficio",
       texto: "Un buen corte se siente antes de verse. Por eso el trabajo sigue siendo de tijera, navaja y tiempo.",
@@ -54,9 +66,11 @@ const historia = {
     },
     {
       foto: "assets/historia/04-barrio.jpg",
+      ancho: 1152,
+      alto: 864,
       alt: "Interior cálido de la barbería. EDITAR: describe la foto definitiva.",
       titulo: "El barrio",
-      texto: "Seguimos en Funza, en la Cra 6 #23-70, Zuame. Quien llega de paso y quien vuelve encuentra la misma puerta.",
+      texto: "Seguimos en " + negocio.direccion.ciudad + ", en la " + negocio.direccion.calle + ", " + negocio.direccion.barrio + ". Quien llega de paso y quien vuelve encuentra la misma puerta.",
       nota: "EDITAR: si hubo un cambio de local o de fachada, escríbelo aquí. Si no, borra esta línea."
     }
   ]
@@ -101,14 +115,25 @@ if (blocks) {
 
     const photo = document.createElement("div");
     photo.className = "historia-photo";
+    const picture = document.createElement("picture");
+    const source = document.createElement("source");
+    const stem = bloque.foto.replace(/\.jpe?g$/, "");
+    const width = bloque.ancho || 1152;
+    const height = bloque.alto || 864;
+    source.type = "image/webp";
+    source.srcset = stem + "-640.webp 640w, " + stem + ".webp " + width + "w";
+    source.sizes = "(min-width: 800px) 46vw, 100vw";
     const img = document.createElement("img");
     img.src = bloque.foto;
+    img.srcset = stem + "-640.jpg 640w, " + bloque.foto + " " + width + "w";
+    img.sizes = "(min-width: 800px) 46vw, 100vw";
     img.alt = bloque.alt;
-    img.width = 1152;
-    img.height = 864;
+    img.width = width;
+    img.height = height;
     img.loading = "lazy";
     img.decoding = "async";
-    photo.appendChild(img);
+    picture.append(source, img);
+    photo.appendChild(picture);
 
     const copy = document.createElement("div");
     copy.className = "historia-block-copy";
@@ -125,3 +150,6 @@ if (blocks) {
     blocks.appendChild(article);
   });
 }
+
+const cierre = document.querySelector("[data-cierre]");
+if (cierre) cierre.textContent = direccionLinea() + ". " + horarioTexto + ".";

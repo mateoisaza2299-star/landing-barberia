@@ -12,27 +12,39 @@
   const catalog = [
     {
       src: "assets/hero-corte.jpg",
-      alt: "Barbero cortando el cabello de un cliente bajo luz cálida en Pupilos Barber"
+      alt: "Barbero cortando el cabello de un cliente bajo luz cálida en Pupilos Barber",
+      width: 1280,
+      height: 720
     },
     {
       src: "assets/hero/02-sillon.jpg",
-      alt: "Sillón de barbería en cuero, madera oscura y luz cálida"
+      alt: "Sillón de barbería en cuero, madera oscura y luz cálida",
+      width: 1152,
+      height: 864
     },
     {
       src: "assets/hero/01-corte.jpg",
-      alt: "Corte en la silla de Pupilos Barber"
+      alt: "Corte en la silla de Pupilos Barber",
+      width: 1280,
+      height: 720
     },
     {
       src: "assets/hero/04-luz.jpg",
-      alt: "Interior de Pupilos Barber con luz de aplique"
+      alt: "Interior de Pupilos Barber con luz de aplique",
+      width: 1152,
+      height: 864
     },
     {
       src: "assets/hero/03-detalle.jpg",
-      alt: "Detalle del corte bajo la luz de la barbería"
+      alt: "Detalle del corte bajo la luz de la barbería",
+      width: 1280,
+      height: 720
     },
     {
       src: "assets/hero/05-interior.jpg",
-      alt: "Espacio de la barbería en Funza"
+      alt: "Espacio de la barbería en Funza",
+      width: 1280,
+      height: 720
     }
   ];
 
@@ -41,14 +53,23 @@
     if (known.has(item.src)) return;
     const slide = document.createElement("div");
     slide.className = "hero-slide";
+    const picture = document.createElement("picture");
+    const source = document.createElement("source");
+    const stem = item.src.replace(/\.jpe?g$/, "");
+    source.type = "image/webp";
+    source.srcset = stem + "-640.webp 640w, " + stem + ".webp " + item.width + "w";
+    source.sizes = "100vw";
     const img = document.createElement("img");
     img.src = item.src;
+    img.srcset = stem + "-640.jpg 640w, " + item.src + " " + item.width + "w";
+    img.sizes = "100vw";
     img.alt = item.alt;
-    img.width = 1280;
-    img.height = 720;
+    img.width = item.width;
+    img.height = item.height;
     img.loading = "lazy";
     img.decoding = "async";
-    slide.appendChild(img);
+    picture.append(source, img);
+    slide.appendChild(picture);
     scroller.appendChild(slide);
     known.add(item.src);
   });
