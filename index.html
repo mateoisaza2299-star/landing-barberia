@@ -29,7 +29,7 @@
   <link rel="preload" href="assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/playball.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/hero-corte.webp" type="image/webp" imagesrcset="assets/hero-corte-640.webp 640w, assets/hero-corte.webp 1280w" imagesizes="100vw" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/hero/06-local.webp" type="image/webp" imagesrcset="assets/hero/06-local-640.webp 640w, assets/hero/06-local.webp 1280w" imagesizes="100vw" fetchpriority="high">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://ifgyhjkkpvoocbblknjy.supabase.co" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
@@ -109,8 +109,8 @@
         <div class="hero-slides" data-hero-slides>
           <div class="hero-slide is-active">
             <picture>
-              <source type="image/webp" srcset="assets/hero-corte-640.webp 640w, assets/hero-corte.webp 1280w" sizes="100vw">
-              <img src="assets/hero-corte.jpg" srcset="assets/hero-corte-640.jpg 640w, assets/hero-corte.jpg 1280w" sizes="100vw" width="1280" height="720" alt="Barbero cortando el cabello de un cliente bajo luz cálida en Miami Cuts" fetchpriority="high" loading="eager" decoding="async">
+              <source type="image/webp" srcset="assets/hero/06-local-640.webp 640w, assets/hero/06-local.webp 1280w" sizes="100vw">
+              <img class="hero-local" src="assets/hero/06-local.jpg" srcset="assets/hero/06-local-640.jpg 640w, assets/hero/06-local.jpg 1280w" sizes="100vw" width="1280" height="1707" alt="Interior de Miami Cuts en Fusagasugá, con espejo, sillón y luz cálida" fetchpriority="high" loading="eager" decoding="async">
             </picture>
           </div>
         </div>
@@ -152,10 +152,16 @@
           </ul>
         </div>
         <div class="about-media reveal" data-delay="1">
-          <picture>
-            <source type="image/webp" srcset="assets/about-interior-640.webp 640w, assets/about-interior.webp 1152w" sizes="(min-width: 900px) 46vw, 100vw">
-            <img src="assets/about-interior.jpg" srcset="assets/about-interior-640.jpg 640w, assets/about-interior.jpg 1152w" sizes="(min-width: 900px) 46vw, 100vw" width="1152" height="864" alt="Sillón de barbería en cuero, madera oscura y luz de un aplique de latón" loading="lazy" decoding="async">
-          </picture>
+          <div class="about-photos">
+            <picture>
+              <source type="image/webp" srcset="assets/nosotros/brayan-acabado-640.webp 640w, assets/nosotros/brayan-acabado.webp 850w" sizes="(min-width: 900px) 22vw, (min-width: 721px) 42vw, 92vw">
+              <img src="assets/nosotros/brayan-acabado.jpg" srcset="assets/nosotros/brayan-acabado-640.jpg 640w, assets/nosotros/brayan-acabado.jpg 850w" sizes="(min-width: 900px) 22vw, (min-width: 721px) 42vw, 92vw" width="850" height="1179" alt="Brayan Andres Romero dando el acabado a un corte en Miami Cuts" loading="lazy" decoding="async">
+            </picture>
+            <picture>
+              <source type="image/webp" srcset="assets/nosotros/brayan-corte-640.webp 640w, assets/nosotros/brayan-corte.webp 1040w" sizes="(min-width: 900px) 22vw, (min-width: 721px) 42vw, 92vw">
+              <img src="assets/nosotros/brayan-corte.jpg" srcset="assets/nosotros/brayan-corte-640.jpg 640w, assets/nosotros/brayan-corte.jpg 1040w" sizes="(min-width: 900px) 22vw, (min-width: 721px) 42vw, 92vw" width="1040" height="1190" alt="Brayan Andres Romero cortando el cabello de un cliente en Miami Cuts" loading="lazy" decoding="async">
+            </picture>
+          </div>
           <span class="about-frame" aria-hidden="true"></span>
         </div>
       </div>
