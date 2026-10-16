@@ -620,7 +620,7 @@ import {
     if (!slots.length) {
       const regla = negocio.horario.find((item) => item.dias.includes(weekdayOf(iso)));
       hoursNote.hidden = false;
-      hoursNote.textContent = regla && regla.cerrado ? "Ese día no abrimos. Elige otro día." : "EDITAR";
+      hoursNote.textContent = regla && regla.cerrado ? "Ese día no abrimos. Elige otro día." : "Ese día no hay horas. Elige otro día.";
       return;
     }
     const now = bogotaParts();
@@ -941,7 +941,7 @@ import {
     }
     if (!slotsFor(fecha).length) {
       const regla = negocio.horario.find((item) => item.dias.includes(weekdayOf(fecha)));
-      showError(regla && regla.cerrado ? "Ese día no abrimos. Elige otro." : "EDITAR: horario por confirmar.");
+      showError(regla && regla.cerrado ? "Ese día no abrimos. Elige otro." : "Ese día no hay horas disponibles. Elige otro.");
       focusField("fecha");
       return;
     }

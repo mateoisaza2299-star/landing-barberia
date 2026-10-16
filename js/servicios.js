@@ -1,41 +1,35 @@
-import { negocio, formatoPrecio } from "./config.js";
+import { negocio, formatoPrecio, enlaceWhatsapp } from "./config.js";
 
 const base = [
   {
     nombre: "Corte normal",
-    precio: "EDITAR",
+    precio: null,
     ritmo: "Según el cabello, sin prisa",
     duracion: "Según el cabello, sin prisa",
     descripcion: "Tijera y máquina, con lavado y el acabado que te queda natural. Lo trabajamos con calma para que se vea sencillo y se sienta bien al salir.",
     incluye: ["Corte con tijera y máquina", "Lavado", "Acabado natural"],
     ideal: "Para quien quiere un corte limpio, sin un estilo que pida demasiado.",
     cuidado: "Al día siguiente, péinalo como sueles hacerlo. Si algo no te queda en casa, lo vemos en la siguiente visita.",
-    fotos: [
-      { src: "assets/servicios/corte-normal/1.jpg", width: 1080, height: 1049, alt: "Corte con degradado medio y cabello corto peinado hacia atrás, visto de perfil." },
-      { src: "assets/servicios/corte-normal/2.jpg", width: 902, height: 1599, alt: "Corte texturizado corto con degradado bajo, visto de perfil." },
-      { src: "assets/servicios/corte-normal/3.jpg", width: 1080, height: 1465, alt: "Corte con línea definida en el lateral y cabello oscuro peinado hacia un lado." },
-      { src: "assets/servicios/corte-normal/4.jpg", width: 1170, height: 1595, alt: "Corte con rulos arriba, puntas claras y degradado en los lados." },
-      { src: "assets/servicios/corte-normal/5.jpg", width: 1050, height: 1600, alt: "Corte con un diseño de araña rapado en el lateral y cabello corto arriba." },
-      { src: "assets/servicios/corte-normal/6.jpg", width: 1079, height: 1533, alt: "Corte con un diseño de mariposa rapado en el lateral." },
-      { src: "assets/servicios/corte-normal/7.jpg", width: 1079, height: 1437, alt: "Corte con degradado y líneas rapadas en el lateral, cabello peinado hacia atrás." },
-      { src: "assets/servicios/corte-normal/8.jpg", width: 1163, height: 1600, alt: "Corte con rulos largos atrás y un diseño rapado en el lateral." },
-      { src: "assets/servicios/corte-normal/9.jpg", width: 1170, height: 1194, alt: "Corte con degradado y un corazón rapado en la nuca." },
-      { src: "assets/servicios/corte-normal/10.jpg", width: 1200, height: 1600, alt: "Corte con un diseño de flor rapado en el lateral y cabello corto arriba." }
-    ]
+    fotos: []
   },
   {
     nombre: "Fade definido",
-    precio: "EDITAR",
+    precio: null,
     ritmo: "Según el degradado, sin prisa",
     duracion: "Según el degradado, sin prisa",
     descripcion: "Degradado limpio, línea precisa y textura arriba. Lo dejamos para que dure la semana, sin apretar el proceso.",
     incluye: ["Degradado", "Línea precisa", "Textura arriba"],
     ideal: "Para quien busca un corte marcado que se mantenga claro varios días.",
-    cuidado: "El degradado se ve mejor si lo peinas seco los primeros días. Cuando la línea pida un retoque, vuelves."
+    cuidado: "El degradado se ve mejor si lo peinas seco los primeros días. Cuando la línea pida un retoque, vuelves.",
+    fotos: [
+      { src: "assets/servicios/fade-definido/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello corto peinado hacia atrás, visto de perfil." },
+      { src: "assets/servicios/fade-definido/2.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." },
+      { src: "assets/servicios/fade-definido/3.jpg", width: 1170, height: 1595, alt: "Degradado con rulos arriba y puntas claras, visto de perfil." }
+    ]
   },
   {
     nombre: "Barba y perfilado",
-    precio: "EDITAR",
+    precio: null,
     ritmo: "Según la barba, sin prisa",
     duracion: "Según la barba, sin prisa",
     descripcion: "Navaja caliente, toalla de vapor y un contorno que no se ve forzado. La barba queda tuya, solo más precisa.",
@@ -45,7 +39,7 @@ const base = [
   },
   {
     nombre: "Afeitado clásico",
-    precio: "EDITAR",
+    precio: null,
     ritmo: "Un ritual, sin prisa",
     duracion: "Un ritual, sin prisa",
     descripcion: "Ritual de navaja, vapor y bálsamo. Sales más ligero de lo que entraste. El tiempo es parte del servicio.",
@@ -55,7 +49,7 @@ const base = [
   },
   {
     nombre: "Corte + barba",
-    precio: "EDITAR",
+    precio: null,
     ritmo: "Corte y barba en la misma cita, sin prisa",
     duracion: "Corte y barba en la misma cita, sin prisa",
     descripcion: "El combo completo en una sola cita. Corte y barba, uno después del otro, con el mismo cuidado. Es lo que más se reserva.",
@@ -65,25 +59,35 @@ const base = [
   },
   {
     nombre: "Diseño y línea",
-    precio: "EDITAR",
+    precio: null,
     ritmo: "Según el detalle, sin prisa",
     duracion: "Según el detalle, sin prisa",
     descripcion: "Líneas definidas y detalles a máquina, sin recargar el corte. Un acento, no un dibujo de más.",
     incluye: ["Líneas definidas", "Detalle a máquina"],
     ideal: "Para quien quiere un detalle preciso sin cambiar todo el corte.",
-    cuidado: "Las líneas se suavizan con los días. Cuando se abran, se pueden retomar en otra visita."
+    cuidado: "Las líneas se suavizan con los días. Cuando se abran, se pueden retomar en otra visita.",
+    fotos: [
+      { src: "assets/servicios/diseno-y-linea/1.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado, vista de perfil." },
+      { src: "assets/servicios/diseno-y-linea/2.jpg", width: 1050, height: 1600, alt: "Diseño de araña rapado en el lateral, con el cabello corto arriba." },
+      { src: "assets/servicios/diseno-y-linea/3.jpg", width: 1079, height: 1533, alt: "Diseño de mariposa rapado en el lateral." },
+      { src: "assets/servicios/diseno-y-linea/4.jpg", width: 1079, height: 1437, alt: "Líneas rapadas en abanico sobre un degradado, con el cabello peinado hacia atrás." },
+      { src: "assets/servicios/diseno-y-linea/5.jpg", width: 1163, height: 1600, alt: "Diseño rapado en el lateral de un corte con rulos largos atrás." },
+      { src: "assets/servicios/diseno-y-linea/6.jpg", width: 1170, height: 1194, alt: "Corazón rapado en la nuca, con degradado." },
+      { src: "assets/servicios/diseno-y-linea/7.jpg", width: 1200, height: 1600, alt: "Diseño de flor rapado en el lateral, con el cabello corto arriba." }
+    ]
   }
 ];
 
 export const servicios = base.map((item) => {
-  const valor = negocio.precios[item.nombre];
   const minutos = Number(negocio.minutos[item.nombre]);
-  const numero = Number(valor);
-  const precio = Number.isFinite(numero) && numero > 0 ? formatoPrecio(numero) : "EDITAR";
+  const numero = Number(String(item.precio ?? "").replace(/[^\d]/g, ""));
+  const tienePrecio = Number.isFinite(numero) && numero > 0;
+  const precio = tienePrecio ? formatoPrecio(numero) : "";
   const duracion = Number.isFinite(minutos) && minutos > 0 ? minutos + " min · " + item.ritmo : item.duracion;
   return {
     nombre: item.nombre,
     precio,
+    precioNumero: tienePrecio ? numero : 0,
     duracion,
     minutos: Number.isFinite(minutos) ? minutos : 0,
     descripcion: item.descripcion,
@@ -93,6 +97,21 @@ export const servicios = base.map((item) => {
     fotos: item.fotos || []
   };
 });
+
+export function pintarPrecio(node, item) {
+  node.replaceChildren();
+  if (item.precio) {
+    node.textContent = item.precio;
+    return;
+  }
+  const link = document.createElement("a");
+  link.href = enlaceWhatsapp("Hola, quiero consultar el precio de " + item.nombre + " en " + negocio.nombre + ".");
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "Consultar precio";
+  link.addEventListener("click", (event) => event.stopPropagation());
+  node.appendChild(link);
+}
 
 const pictureOf = (foto, sizes, lazy) => {
   const picture = document.createElement("picture");
@@ -303,7 +322,7 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
 
   const fill = (item) => {
     title.textContent = item.nombre;
-    price.textContent = item.precio;
+    pintarPrecio(price, item);
     duration.textContent = item.duracion;
     desc.textContent = item.descripcion;
     ideal.textContent = item.ideal;
@@ -402,7 +421,8 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
   };
 
   document.querySelectorAll("[data-service]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (event) => {
+      if (event.target.closest("a")) return;
       const name = button.getAttribute("data-service");
       const item = servicios.find((entry) => entry.nombre === name);
       if (!item) return;

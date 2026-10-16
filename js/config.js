@@ -4,7 +4,7 @@ export const negocio = {
   sitio: "",
   telefonoVisible: "320 960 4364",
   whatsapp: "573209604364",
-  email: "EDITAR: correo de la barbería",
+  email: "",
   direccion: {
     calle: "Carrera 7 con Calle 17",
     barrio: "",
@@ -15,15 +15,13 @@ export const negocio = {
   mapa: "https://maps.google.com/?q=Carrera+7+con+Calle+17,+Fusagasug%C3%A1,+Cundinamarca",
   mapaEmbed: "https://maps.google.com/maps?q=Carrera%207%20con%20Calle%2017%2C%20Fusagasug%C3%A1%2C%20Cundinamarca&z=16&output=embed",
   zona: "America/Bogota",
-  horasAntesDeCerrar: 2,
+  horasAntesDeCerrar: 1,
   bloqueMinutos: 60,
   horario: [
-    { etiqueta: "Lunes a viernes", dias: [1, 2, 3, 4, 5], abre: "", cierra: "" },
-    { etiqueta: "Sábados", dias: [6], abre: "", cierra: "" },
-    { etiqueta: "Domingos", dias: [0], abre: "", cierra: "" }
+    { etiqueta: "Lunes a domingo", dias: [0, 1, 2, 3, 4, 5, 6], abre: "09:00", cierra: "17:00" }
   ],
   redes: {
-    instagram: "https://instagram.com/miami_cuts",
+    instagram: "https://www.instagram.com/miami__cuts/",
     resenas: ""
   },
   precios: {
@@ -42,15 +40,13 @@ export const negocio = {
     "Corte + barba": 75,
     "Diseño y línea": 25
   },
-  politicaReserva: "Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp. EDITAR: ajusta este plazo si el local usa otro.",
-  avisoDatos: "Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas. EDITAR: revisa este aviso antes de publicarlo.",
+  politicaReserva: "Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp.",
+  avisoDatos: "Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas.",
   privacidad: [
-    "EDITAR: este texto es un aviso claro para tus clientes, no un contrato. Revísalo antes de publicarlo.",
     "Cuando reservas guardamos tu nombre, tu celular, el servicio y la fecha. También la hora, la nota que escribas y que la cita es con Brayan Andres Romero. Los usamos para agendar la cita, confirmarla y avisarte si hay un cambio.",
     "No vendemos esos datos. Los ve Brayan Andres Romero para atenderte.",
     "Para las estadísticas del sitio guardamos un identificador anónimo en tu navegador. No es tu nombre ni tu celular. Sirve para contar visitas y reservas sin identificarte.",
-    "Si quieres que borremos tu reserva o tus datos, escríbenos por WhatsApp y dinos el nombre y el celular con los que reservaste. EDITAR: indica en cuántos días responden.",
-    "EDITAR: añade aquí si guardas la cita en otro lado."
+    "Si quieres que borremos tu reserva o tus datos, escríbenos por WhatsApp y dinos el nombre y el celular con los que reservaste."
   ],
   mensajeReserva: "Hola, quiero reservar una cita en Miami Cuts."
 };
@@ -146,12 +142,12 @@ export function horarioPublicado() {
 
 export function textoHorario(regla) {
   if (regla && regla.cerrado) return "Cerrado";
-  if (!regla || !regla.abre || !regla.cierra) return "EDITAR";
+  if (!regla || !regla.abre || !regla.cierra) return "";
   return hora12(regla.abre) + " – " + hora12(regla.cierra);
 }
 
 export function estadoApertura(date) {
-  if (!horarioPublicado()) return { abierto: false, texto: "EDITAR", pendiente: true };
+  if (!horarioPublicado()) return { abierto: false, texto: "Cita previa", pendiente: true };
   const ahora = partesBogota(date);
   const hoy = reglaDe(ahora.dia);
   if (hoy && !hoy.cerrado && hoy.abre && hoy.cierra) {

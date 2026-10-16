@@ -55,7 +55,14 @@
       { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corte + barba" } },
       { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Diseño y línea" } }
     ],
-    "hasMap": "https://maps.google.com/?q=Carrera+7+con+Calle+17,+Fusagasug%C3%A1,+Cundinamarca"
+    "hasMap": "https://maps.google.com/?q=Carrera+7+con+Calle+17,+Fusagasug%C3%A1,+Cundinamarca",
+    "sameAs": ["https://www.instagram.com/miami__cuts/"],
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "09:00",
+      "closes": "17:00"
+    }]
   }
   </script>
   <script src="js/absoluto.js"></script>
@@ -136,8 +143,7 @@
         <div class="about-copy reveal">
           <p class="kicker">01 — Nosotros</p>
           <h2>Oficio moderno, trato de barrio.</h2>
-          <p>Miami Cuts es la barbería de Brayan Andres Romero en Fusagasugá.</p>
-          <p>EDITAR: texto del local.</p>
+          <p>Miami Cuts es la barbería de Brayan Andres Romero en Fusagasugá. Cortes, barba y afeitado con atención al detalle.</p>
           <p class="about-actions"><a class="btn btn-dark" href="historia.html">Conoce nuestra historia</a></p>
           <blockquote class="pull">Un buen corte se siente antes de verse.</blockquote>
           <ul class="stats">
@@ -159,35 +165,35 @@
         <header class="section-head reveal">
           <p class="kicker">02 — Servicios</p>
           <h2>Lo esencial, bien hecho.</h2>
-          <p>EDITAR: precios. Si no sabes qué pedirte, lo decidimos juntos en la silla.</p>
+          <p>Si no sabes qué pedirte, lo decidimos juntos en la silla.</p>
         </header>
 
         <ul class="service-grid">
           <li class="service-card reveal">
             <button class="service-open" type="button" data-service="Corte normal" aria-haspopup="dialog" aria-controls="servicio-ficha">
-              <span class="service-cover">
-                <picture>
-                  <source type="image/webp" srcset="assets/servicios/corte-normal/1-640.webp 640w, assets/servicios/corte-normal/1.webp 1080w" sizes="(min-width: 900px) 30vw, 100vw">
-                  <img src="assets/servicios/corte-normal/1.jpg" srcset="assets/servicios/corte-normal/1-640.jpg 640w, assets/servicios/corte-normal/1.jpg 1080w" sizes="(min-width: 900px) 30vw, 100vw" width="1080" height="1049" alt="Corte con degradado medio y cabello corto peinado hacia atrás, visto de perfil." loading="lazy" decoding="async">
-                </picture>
-              </span>
               <span class="icon" aria-hidden="true">
                 <svg viewBox="0 0 32 32"><circle cx="9" cy="8" r="3.2"/><circle cx="9" cy="24" r="3.2"/><path d="M11.4 10.2 26 23.5M11.4 21.8 26 8.5"/></svg>
               </span>
               <h3>Corte normal</h3>
               <p>Tijera y máquina, con lavado y el acabado que te queda natural.</p>
-              <p class="price">EDITAR</p>
+              <p class="price">Consultar precio</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
           <li class="service-card reveal" data-delay="1">
             <button class="service-open" type="button" data-service="Fade definido" aria-haspopup="dialog" aria-controls="servicio-ficha">
+              <span class="service-cover">
+                <picture>
+                  <source type="image/webp" srcset="assets/servicios/fade-definido/1-640.webp 640w, assets/servicios/fade-definido/1.webp 1080w" sizes="(min-width: 900px) 30vw, 100vw">
+                  <img src="assets/servicios/fade-definido/1.jpg" srcset="assets/servicios/fade-definido/1-640.jpg 640w, assets/servicios/fade-definido/1.jpg 1080w" sizes="(min-width: 900px) 30vw, 100vw" width="1080" height="1049" alt="Degradado medio con el cabello corto peinado hacia atrás, visto de perfil." loading="lazy" decoding="async">
+                </picture>
+              </span>
               <span class="icon" aria-hidden="true">
                 <svg viewBox="0 0 32 32"><path d="M8 22c2.5-7 5-12 8-12s5.5 5 8 12"/><path d="M7 22h18M11 14.5c1.4-2 2.8-3 5-3s3.6 1 5 3"/></svg>
               </span>
               <h3>Fade definido</h3>
               <p>Degradado limpio, línea precisa y textura arriba. Dura la semana.</p>
-              <p class="price">EDITAR</p>
+              <p class="price">Consultar precio</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
@@ -198,7 +204,7 @@
               </span>
               <h3>Barba y perfilado</h3>
               <p>Navaja caliente, toalla de vapor y un contorno que no se ve forzado.</p>
-              <p class="price">EDITAR</p>
+              <p class="price">Consultar precio</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
@@ -209,7 +215,7 @@
               </span>
               <h3>Afeitado clásico</h3>
               <p>Ritual de navaja, vapor y bálsamo. Sales más ligero de lo que entraste.</p>
-              <p class="price">EDITAR</p>
+              <p class="price">Consultar precio</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
@@ -220,18 +226,24 @@
               </span>
               <h3>Corte + barba</h3>
               <p>El combo completo en una sola cita. Lo que más se reserva.</p>
-              <p class="price">EDITAR</p>
+              <p class="price">Consultar precio</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
           <li class="service-card reveal" data-delay="2">
             <button class="service-open" type="button" data-service="Diseño y línea" aria-haspopup="dialog" aria-controls="servicio-ficha">
+              <span class="service-cover">
+                <picture>
+                  <source type="image/webp" srcset="assets/servicios/diseno-y-linea/1-640.webp 640w, assets/servicios/diseno-y-linea/1.webp 1080w" sizes="(min-width: 900px) 30vw, 100vw">
+                  <img src="assets/servicios/diseno-y-linea/1.jpg" srcset="assets/servicios/diseno-y-linea/1-640.jpg 640w, assets/servicios/diseno-y-linea/1.jpg 1080w" sizes="(min-width: 900px) 30vw, 100vw" width="1080" height="1465" alt="Línea curva rapada sobre un degradado, vista de perfil." loading="lazy" decoding="async">
+                </picture>
+              </span>
               <span class="icon" aria-hidden="true">
                 <svg viewBox="0 0 32 32"><path d="M8 24 24 8"/><path d="M8 16h6M18 16h6M16 8v6M16 18v6"/></svg>
               </span>
               <h3>Diseño y línea</h3>
               <p>Líneas definidas y detalles a máquina, sin recargar el corte.</p>
-              <p class="price">EDITAR</p>
+              <p class="price">Consultar precio</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
@@ -259,11 +271,9 @@
 
           <h3 class="hours-title">Horario</h3>
           <ul class="hours" data-horario>
-            <li><span>Lunes a viernes</span><span>EDITAR</span></li>
-            <li><span>Sábados</span><span>EDITAR</span></li>
-            <li><span>Domingos</span><span>EDITAR</span></li>
+            <li><span>Lunes a domingo</span><span>9:00 am – 5:00 pm</span></li>
           </ul>
-          <p class="visit-note">Si pasas sin reserva, te decimos el hueco más cercano. EDITAR: horario.</p>
+          <p class="visit-note">Si pasas sin reserva, te decimos el hueco más cercano.</p>
           <a class="btn btn-dark" data-open-reserva href="https://wa.me/573209604364?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20Miami%20Cuts.">Reserva tu cita</a>
         </div>
 
@@ -283,9 +293,9 @@
         <div>
           <ul class="social-links">
             <li>
-              <a data-red="instagram" href="https://instagram.com/miami_cuts" target="_blank" rel="noopener">
+              <a data-red="instagram" href="https://www.instagram.com/miami__cuts/" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"/></svg>
-                Instagram
+                @miami__cuts
               </a>
             </li>
           </ul>
@@ -306,27 +316,27 @@
           <div class="faq-fallback">
             <details>
               <summary>¿Cómo reservo?</summary>
-              <p>Abre Reserva tu cita, escribe tu nombre, tu celular y el servicio, y elige día y hora. La cita queda pendiente hasta que la confirmemos. EDITAR: si también atienden por teléfono, dilo aquí.</p>
+              <p>Abre Reserva tu cita, escribe tu nombre, tu celular y el servicio, y elige día y hora. La cita queda pendiente hasta que la confirmemos.</p>
             </details>
             <details>
               <summary>¿Cómo cancelo?</summary>
-              <p>En la tarjeta Tu cita pulsa Cancelar cita. Si la página ya no deja cancelarla, escríbenos por WhatsApp con al menos 2 horas de aviso. EDITAR: confirma ese plazo.</p>
+              <p>En la tarjeta Tu cita pulsa Cancelar cita. Si la página ya no deja cancelarla, escríbenos por WhatsApp con al menos 2 horas de aviso.</p>
             </details>
             <details>
               <summary>¿Tengo que pagar por adelantado?</summary>
-              <p>No. Pagas en la barbería al terminar. EDITAR: cambia esto si pides anticipo.</p>
+              <p>No. Pagas en la barbería al terminar.</p>
             </details>
             <details>
               <summary>¿Qué pasa si llego tarde?</summary>
-              <p>Si llegas con más de 15 minutos de retraso, la hora puede pasar a otra persona. Escríbenos si vas en camino. EDITAR: define los minutos de espera.</p>
+              <p>Si llegas con más de 15 minutos de retraso, la hora puede pasar a otra persona. Escríbenos si vas en camino.</p>
             </details>
             <details>
               <summary>¿Qué medios de pago aceptan?</summary>
-              <p>Efectivo y transferencias. EDITAR: añade Nequi, Daviplata o tarjetas si las reciben.</p>
+              <p>Efectivo y transferencias.</p>
             </details>
             <details>
               <summary>¿Atienden sin cita?</summary>
-              <p>Si hay un hueco, sí. Con reserva te guardamos la hora. EDITAR: confirma si aceptan visitas sin reserva y qué días cierran.</p>
+              <p>Si hay un hueco, sí. Con reserva te guardamos la hora.</p>
             </details>
           </div>
         </div>
@@ -345,7 +355,7 @@
         <p data-direccion>Carrera 7 con Calle 17<br>Fusagasugá, Cundinamarca</p>
         <p><a data-tel href="tel:+573209604364">320 960 4364</a></p>
         <p><a href="https://wa.me/573209604364" target="_blank" rel="noopener">WhatsApp</a></p>
-        <p data-email-wrap hidden><a data-email href="mailto:EDITAR">EDITAR</a></p>
+        <p data-email-wrap hidden><a data-email href=""></a></p>
       </div>
       <div>
         <h2>Horario</h2>
@@ -353,13 +363,13 @@
           <span class="status-dot" aria-hidden="true"></span>
           <span data-open-label>Cita previa</span>
         </p>
-        <p data-horario-resumen>Lun – Vie · EDITAR<br>Sáb · EDITAR<br>Dom · EDITAR</p>
+        <p data-horario-resumen>Lun – Dom · 9:00 am – 5:00 pm</p>
       </div>
       <div class="footer-cta">
         <h2>Tu silla</h2>
         <a class="btn" data-open-reserva href="https://wa.me/573209604364?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20Miami%20Cuts.">Reserva tu cita</a>
         <ul class="social">
-          <li><a data-red="instagram" href="https://instagram.com/miami_cuts" target="_blank" rel="noopener" aria-label="Instagram">
+          <li><a data-red="instagram" href="https://www.instagram.com/miami__cuts/" target="_blank" rel="noopener" aria-label="Instagram @miami__cuts">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"/></svg>
           </a></li>
           <li><a href="https://wa.me/573209604364" target="_blank" rel="noopener" aria-label="WhatsApp">
@@ -464,8 +474,8 @@
             Nota
             <textarea name="nota" rows="3" placeholder="Largo, detalle, algo que debamos saber"></textarea>
           </label>
-          <p class="policy-note" data-politica>Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp. EDITAR: ajusta este plazo si el local usa otro.</p>
-          <p class="privacy-note" data-aviso-datos>Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas. EDITAR: revisa este aviso antes de publicarlo. <a href="privacidad.html" target="_blank" rel="noopener">Política de datos</a>.</p>
+          <p class="policy-note" data-politica>Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp.</p>
+          <p class="privacy-note" data-aviso-datos>Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas. <a href="privacidad.html" target="_blank" rel="noopener">Política de datos</a>.</p>
           <label class="check">
             <input name="datos" type="checkbox" required>
             <span>Acepto la política de datos para esta cita.</span>

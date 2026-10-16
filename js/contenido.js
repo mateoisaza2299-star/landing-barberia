@@ -1,9 +1,8 @@
 import { faq } from "./faq.js";
-import { servicios } from "./servicios.js";
+import { servicios, pintarPrecio } from "./servicios.js";
 import {
   negocio,
   formatoPrecio,
-  rangoPrecio,
   direccionLinea,
   enlaceWhatsapp,
   textoHorario,
@@ -73,6 +72,13 @@ const applyLinks = () => {
       return;
     }
     link.href = href;
+    if (link.getAttribute("data-red") === "instagram") {
+      const handle = "@" + href.replace(/\/+$/, "").split("/").pop();
+      [...link.childNodes].forEach((node) => {
+        if (node.nodeType === 3 && node.textContent.trim()) node.textContent = " " + handle;
+      });
+      if (link.hasAttribute("aria-label")) link.setAttribute("aria-label", "Instagram " + handle);
+    }
     item.hidden = false;
   });
   document.querySelectorAll("[data-resenas]").forEach((link) => {
@@ -88,7 +94,7 @@ const applyLinks = () => {
   document.querySelectorAll("[data-email]").forEach((link) => {
     const email = String(negocio.email || "");
     const wrap = link.closest("[data-email-wrap]") || link;
-    if (!email.includes("@") || email.includes("EDITAR")) {
+    if (!email.includes("@")) {
       wrap.hidden = true;
       return;
     }
@@ -134,7 +140,10 @@ const applyHorario = () => {
     node.replaceChildren();
     negocio.horario.forEach((regla, index) => {
       if (index) node.appendChild(document.createElement("br"));
-      const corto = regla.dias.includes(1) ? "Lun – Vie" : regla.dias.includes(6) ? "Sáb" : "Dom";
+      const dias = regla.dias || [];
+      const corto = [0, 1, 2, 3, 4, 5, 6].every((dia) => dias.includes(dia))
+        ? "Lun – Dom"
+        : dias.includes(1) ? "Lun – Vie" : dias.includes(6) ? "Sáb" : "Dom";
       const cuando = textoHorario(regla);
       node.appendChild(document.createTextNode(corto + " · " + cuando));
     });
@@ -153,7 +162,7 @@ const applyPrecios = () => {
     const item = servicios.find((entry) => entry.nombre === button.getAttribute("data-service"));
     if (!item) return;
     const price = button.querySelector(".price");
-    if (price) price.textContent = item.precio;
+    if (price) pintarPrecio(price, item);
   });
   document.querySelectorAll("select[name='servicio']").forEach((select) => {
     const current = select.value;
@@ -224,7 +233,7 @@ const applySchema = () => {
         description: item.descripcion
       }
     };
-    const price = Number(negocio.precios[item.nombre]);
+    const price = Number(item.precioNumero);
     if (Number.isFinite(price) && price > 0) {
       offer.price = String(price);
       offer.priceCurrency = "COP";
@@ -256,10 +265,15 @@ const applySchema = () => {
     makesOffer: offers,
     hasMap: negocio.mapa
   };
-  const rango = rangoPrecio();
-  if (rango) data.priceRange = rango;
+  const valores = servicios.map((item) => item.precioNumero).filter((n) => n > 0);
+  if (valores.length) {
+    const min = Math.min(...valores);
+    const max = Math.max(...valores);
+    data.priceRange = min === max ? formatoPrecio(min) : formatoPrecio(min) + "–" + formatoPrecio(max);
+  }
   if (hours.length) data.openingHoursSpecification = hours;
-  if (negocio.email.includes("@") && !negocio.email.includes("EDITAR")) data.email = negocio.email;
+  if (/^https?:\/\//i.test(negocio.redes.instagram || "")) data.sameAs = [negocio.redes.instagram];
+  if (negocio.email.includes("@")) data.email = negocio.email;
   node.textContent = JSON.stringify(data);
 };
 

@@ -1,85 +1,70 @@
-import { negocio, direccionLinea, textoHorario } from "./config.js";
+import { direccionLinea, textoHorario, negocio } from "./config.js";
 
-const horarioTexto = negocio.horario.some((regla) => !regla.cerrado && regla.abre && regla.cierra)
-  ? negocio.horario.filter((regla) => !regla.cerrado && regla.abre && regla.cierra).map((regla) => {
-    return regla.etiqueta + " de " + textoHorario(regla).replace(" – ", " a ");
-  }).join(". ")
-  : "EDITAR";
+const horarioTexto = negocio.horario
+  .filter((regla) => !regla.cerrado && regla.abre && regla.cierra)
+  .map((regla) => regla.etiqueta + " de " + textoHorario(regla).replace(" – ", " a "))
+  .join(". ");
 
-const historia = {
-  intro: [
-    negocio.nombre + " es la barbería de " + negocio.barbero + " en " + negocio.direccion.ciudad + ".",
-    "EDITAR: la historia del local."
-  ],
-  momentos: [
-    {
-      ano: "Hoy",
-      titulo: "Un barbero",
-      texto: negocio.barbero + " atiende " + negocio.nombre + " en la " + negocio.direccion.calle + ", " + negocio.direccion.ciudad + "."
-    },
-    {
-      ano: "EDITAR",
-      titulo: "EDITAR",
-      texto: "EDITAR: un momento de la historia."
-    }
-  ],
-  bloques: [
-    {
-      foto: "assets/historia/01-inicio.jpg",
-      ancho: 1280,
-      alto: 720,
-      alt: "Barbero cortando el cabello de un cliente bajo luz cálida. EDITAR: describe la foto definitiva.",
-      titulo: "Tijera, navaja y tiempo",
-      texto: "EDITAR: el oficio en el local.",
-      nota: "EDITAR: sustituye esta foto y, si quieres, este párrafo."
-    },
-    {
-      foto: "assets/historia/02-sillon.jpg",
-      ancho: 1152,
-      alto: 864,
-      alt: "Sillón de barbería en cuero, madera oscura y luz de un aplique. EDITAR: describe la foto definitiva.",
-      titulo: "La silla",
-      texto: "EDITAR: qué significa la silla.",
-      nota: "EDITAR: aquí puedes contar qué significa esta silla para la casa."
-    },
-    {
-      foto: "assets/historia/03-oficio.jpg",
-      ancho: 1280,
-      alto: 720,
-      alt: "Detalle de un corte. EDITAR: describe la foto definitiva.",
-      titulo: "El oficio",
-      texto: "Un buen corte se siente antes de verse.",
-      nota: "EDITAR: añade un detalle del día a día que quieras conservar."
-    },
-    {
-      foto: "assets/historia/04-barrio.jpg",
-      ancho: 1152,
-      alto: 864,
-      alt: "Interior cálido de una barbería. EDITAR: describe la foto definitiva.",
-      titulo: negocio.direccion.ciudad,
-      texto: direccionLinea() + ".",
-      nota: "EDITAR: foto del local cuando la haya."
-    }
-  ]
+const momentos = [
+  {
+    ano: "Ene 2024",
+    titulo: "Perfeccionamiento en tijera",
+    texto: "Seminario de beunik PRO y AGON EVENTS, el 25 de enero de 2024 en Guatapé, Antioquia. 8 horas de técnicas y perfeccionamiento en tijera."
+  },
+  {
+    ano: "May 2024",
+    titulo: "Técnicas de cortes europeos, barbería clásica, tijera, freestyle y colorimetría",
+    texto: "Seminario internacional de beunik PRO y aWe, el 8 de mayo de 2024 en Bogotá. 8 horas de colorimetría, cortes de tendencia europea, barbería clásica, manejo de barba, fundamentos de tijera, freestyle y técnicas de peinado y moldeo de competencia en cabezote."
+  }
+];
+
+const certificados = [
+  {
+    titulo: "Perfeccionamiento en tijera",
+    institucion: "beunik PRO y AGON EVENTS",
+    ano: "2024",
+    src: "assets/historia/perfeccionamiento-tijera.jpg",
+    width: 720,
+    height: 540,
+    alt: "Certificado del seminario Perfeccionamiento en tijera, de beunik PRO y AGON EVENTS, en 2024."
+  },
+  {
+    titulo: "Técnicas de cortes europeos, barbería clásica, tijera, freestyle y colorimetría",
+    institucion: "beunik PRO y aWe",
+    ano: "2024",
+    src: "assets/historia/seminario-cortes.jpg",
+    width: 740,
+    height: 572,
+    alt: "Certificado del seminario internacional de técnicas de cortes europeos, barbería clásica, tijera, freestyle y colorimetría, de beunik PRO y aWe, en 2024."
+  }
+];
+
+const pictureOf = (item) => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  const stem = item.src.replace(/\.jpe?g$/, "");
+  source.type = "image/webp";
+  source.srcset = stem + "-640.webp 640w, " + stem + ".webp " + item.width + "w";
+  source.sizes = "(min-width: 800px) 46vw, 100vw";
+  const img = document.createElement("img");
+  img.src = item.src;
+  img.srcset = stem + "-640.jpg 640w, " + item.src + " " + item.width + "w";
+  img.sizes = "(min-width: 800px) 46vw, 100vw";
+  img.alt = item.alt;
+  img.width = item.width;
+  img.height = item.height;
+  img.loading = "lazy";
+  img.decoding = "async";
+  picture.append(source, img);
+  return picture;
 };
 
-const intro = document.querySelector("[data-historia-intro]");
 const timeline = document.querySelector("[data-historia-timeline]");
-const blocks = document.querySelector("[data-historia-blocks]");
-
-if (intro) {
-  historia.intro.forEach((paragraph) => {
-    const p = document.createElement("p");
-    p.textContent = paragraph;
-    intro.appendChild(p);
-  });
-}
-
 if (timeline) {
-  historia.momentos.forEach((momento, index) => {
+  momentos.forEach((momento, index) => {
     const item = document.createElement("li");
     item.className = "timeline-item reveal";
-    if (index % 3 === 1) item.dataset.delay = "1";
+    if (index % 2 === 1) item.dataset.delay = "1";
     const year = document.createElement("p");
     year.className = "timeline-year";
     year.textContent = momento.ano;
@@ -94,49 +79,84 @@ if (timeline) {
   });
 }
 
-if (blocks) {
-  historia.bloques.forEach((bloque, index) => {
-    const article = document.createElement("article");
-    article.className = "historia-block reveal" + (index % 2 === 1 ? " is-flip" : "");
-    if (index % 2 === 1) article.dataset.delay = "1";
+const grid = document.querySelector("[data-certificados]");
+if (grid) {
+  const lightbox = document.createElement("div");
+  lightbox.className = "photo-lightbox";
+  lightbox.hidden = true;
+  const backdrop = document.createElement("button");
+  backdrop.type = "button";
+  backdrop.className = "photo-lightbox-backdrop";
+  backdrop.setAttribute("aria-label", "Cerrar certificado");
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.type = "image/webp";
+  const img = document.createElement("img");
+  img.alt = "";
+  picture.append(source, img);
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "photo-lightbox-close";
+  close.setAttribute("aria-label", "Cerrar");
+  close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  lightbox.append(backdrop, picture, close);
+  document.body.appendChild(lightbox);
+  let back = null;
 
-    const photo = document.createElement("div");
-    photo.className = "historia-photo";
-    const picture = document.createElement("picture");
-    const source = document.createElement("source");
-    const stem = bloque.foto.replace(/\.jpe?g$/, "");
-    const width = bloque.ancho || 1152;
-    const height = bloque.alto || 864;
-    source.type = "image/webp";
-    source.srcset = stem + "-640.webp 640w, " + stem + ".webp " + width + "w";
-    source.sizes = "(min-width: 800px) 46vw, 100vw";
-    const img = document.createElement("img");
-    img.src = bloque.foto;
-    img.srcset = stem + "-640.jpg 640w, " + bloque.foto + " " + width + "w";
-    img.sizes = "(min-width: 800px) 46vw, 100vw";
-    img.alt = bloque.alt;
-    img.width = width;
-    img.height = height;
-    img.loading = "lazy";
-    img.decoding = "async";
-    picture.append(source, img);
-    photo.appendChild(picture);
+  const closeLightbox = () => {
+    if (lightbox.hidden) return;
+    lightbox.hidden = true;
+    img.removeAttribute("src");
+    source.removeAttribute("srcset");
+    const node = back;
+    back = null;
+    if (node && typeof node.focus === "function") node.focus();
+  };
 
+  const openLightbox = (item, trigger) => {
+    const stem = item.src.replace(/\.jpe?g$/, "");
+    source.srcset = stem + ".webp";
+    img.src = item.src;
+    img.alt = item.alt;
+    img.width = item.width;
+    img.height = item.height;
+    back = trigger || null;
+    lightbox.hidden = false;
+    close.focus();
+  };
+
+  close.addEventListener("click", closeLightbox);
+  backdrop.addEventListener("click", closeLightbox);
+  document.addEventListener("keydown", (event) => {
+    if (lightbox.hidden || event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeLightbox();
+  }, true);
+
+  certificados.forEach((item) => {
+    const card = document.createElement("article");
+    card.className = "cert-card reveal";
+    const shot = document.createElement("button");
+    shot.type = "button";
+    shot.className = "cert-shot";
+    shot.setAttribute("aria-label", "Ampliar certificado: " + item.titulo);
+    shot.appendChild(pictureOf(item));
+    shot.addEventListener("click", () => openLightbox(item, shot));
     const copy = document.createElement("div");
-    copy.className = "historia-block-copy";
+    copy.className = "cert-copy";
     const heading = document.createElement("h3");
-    heading.textContent = bloque.titulo;
-    const text = document.createElement("p");
-    text.textContent = bloque.texto;
-    const note = document.createElement("p");
-    note.className = "historia-note";
-    note.textContent = bloque.nota;
-    copy.append(heading, text, note);
-
-    article.append(photo, copy);
-    blocks.appendChild(article);
+    heading.textContent = item.titulo;
+    const place = document.createElement("p");
+    place.textContent = item.institucion;
+    const year = document.createElement("p");
+    year.className = "cert-year";
+    year.textContent = item.ano;
+    copy.append(heading, place, year);
+    card.append(shot, copy);
+    grid.appendChild(card);
   });
 }
 
 const cierre = document.querySelector("[data-cierre]");
-if (cierre) cierre.textContent = direccionLinea() + ". " + horarioTexto + ".";
+if (cierre) cierre.textContent = direccionLinea() + (horarioTexto ? ". " + horarioTexto + "." : ".");
