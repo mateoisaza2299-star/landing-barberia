@@ -6,7 +6,7 @@ import {
   rangoPrecio,
   direccionLinea,
   enlaceWhatsapp,
-  hora12,
+  textoHorario,
   estadoApertura,
   avisoDuracion
 } from "./config.js";
@@ -22,7 +22,7 @@ const seo = {
   },
   historia: {
     title: "Nuestra historia — " + negocio.nombre,
-    description: "La historia de " + negocio.nombre + " en " + negocio.direccion.ciudad + ", desde 2014. Doce años, tres barberos y una cita a la vez."
+    description: "La historia de " + negocio.nombre + " en " + negocio.direccion.ciudad + ". " + negocio.barbero + ", barbero."
   },
   privacidad: {
     title: "Política de datos — " + negocio.nombre,
@@ -67,7 +67,13 @@ const applyLinks = () => {
   });
   document.querySelectorAll("[data-red]").forEach((link) => {
     const href = negocio.redes[link.getAttribute("data-red")];
-    if (href) link.href = href;
+    const item = link.closest("li") || link;
+    if (!href) {
+      item.hidden = true;
+      return;
+    }
+    link.href = href;
+    item.hidden = false;
   });
   document.querySelectorAll("[data-resenas]").forEach((link) => {
     const url = String(negocio.redes.resenas || "");
@@ -98,11 +104,12 @@ const applyDireccion = () => {
       node.textContent = direccionLinea();
       return;
     }
+    const d = negocio.direccion;
     const br = document.createElement("br");
     node.replaceChildren(
-      document.createTextNode(negocio.direccion.calle),
+      document.createTextNode(d.calle),
       br,
-      document.createTextNode(negocio.direccion.barrio + ", " + negocio.direccion.ciudad)
+      document.createTextNode([d.barrio, d.ciudad, d.region].filter(Boolean).join(", "))
     );
   });
   document.querySelectorAll("[data-nombre]").forEach((node) => {
@@ -118,7 +125,7 @@ const applyHorario = () => {
       const name = document.createElement("span");
       name.textContent = regla.etiqueta;
       const time = document.createElement("span");
-      time.textContent = regla.cerrado ? "Cerrado" : hora12(regla.abre) + " – " + hora12(regla.cierra);
+      time.textContent = textoHorario(regla);
       item.append(name, time);
       list.appendChild(item);
     });
@@ -128,14 +135,14 @@ const applyHorario = () => {
     negocio.horario.forEach((regla, index) => {
       if (index) node.appendChild(document.createElement("br"));
       const corto = regla.dias.includes(1) ? "Lun – Vie" : regla.dias.includes(6) ? "Sáb" : "Dom";
-      const cuando = regla.cerrado ? "Cerrado" : hora12(regla.abre) + " – " + hora12(regla.cierra);
+      const cuando = textoHorario(regla);
       node.appendChild(document.createTextNode(corto + " · " + cuando));
     });
   });
   const estado = estadoApertura();
   document.querySelectorAll("[data-open-status]").forEach((node) => {
-    node.classList.toggle("is-open", estado.abierto);
-    node.classList.toggle("is-closed", !estado.abierto);
+    node.classList.toggle("is-open", !!estado.abierto);
+    node.classList.toggle("is-closed", estado.abierto === false && !estado.pendiente);
     const label = node.querySelector("[data-open-label]");
     if (label) label.textContent = estado.texto;
   });
@@ -199,7 +206,7 @@ const applyTextos = () => {
     node.appendChild(p);
   });
   document.querySelectorAll("[data-frase]").forEach((node) => {
-    node.textContent = "Corte con oficio, sin afán. Barbería en " + negocio.direccion.ciudad + " desde 2014.";
+    node.textContent = "Corte con oficio, sin afán. Barbería en " + negocio.direccion.ciudad + ".";
   });
 };
 
@@ -208,17 +215,23 @@ const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 const applySchema = () => {
   const node = document.getElementById("schema-negocio");
   if (!node) return;
-  const offers = servicios.map((item) => ({
-    "@type": "Offer",
-    price: String(negocio.precios[item.nombre] || ""),
-    priceCurrency: "COP",
-    itemOffered: {
-      "@type": "Service",
-      name: item.nombre,
-      description: item.descripcion
+  const offers = servicios.map((item) => {
+    const offer = {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: item.nombre,
+        description: item.descripcion
+      }
+    };
+    const price = Number(negocio.precios[item.nombre]);
+    if (Number.isFinite(price) && price > 0) {
+      offer.price = String(price);
+      offer.priceCurrency = "COP";
     }
-  }));
-  const hours = negocio.horario.filter((regla) => !regla.cerrado && regla.abre).map((regla) => ({
+    return offer;
+  });
+  const hours = negocio.horario.filter((regla) => !regla.cerrado && regla.abre && regla.cierra).map((regla) => ({
     "@type": "OpeningHoursSpecification",
     dayOfWeek: regla.dias.map((dia) => dayNames[dia === 0 ? 6 : dia - 1]),
     opens: regla.abre,
@@ -232,19 +245,20 @@ const applySchema = () => {
     image: folder + "assets/og.jpg",
     url: location.origin + location.pathname,
     telephone: "+" + negocio.whatsapp,
-    priceRange: rangoPrecio(),
     currenciesAccepted: "COP",
     address: {
       "@type": "PostalAddress",
-      streetAddress: negocio.direccion.calle + ", " + negocio.direccion.barrio,
+      streetAddress: [negocio.direccion.calle, negocio.direccion.barrio].filter(Boolean).join(", "),
       addressLocality: negocio.direccion.ciudad,
       addressRegion: negocio.direccion.region,
       addressCountry: negocio.direccion.pais
     },
-    openingHoursSpecification: hours,
     makesOffer: offers,
     hasMap: negocio.mapa
   };
+  const rango = rangoPrecio();
+  if (rango) data.priceRange = rango;
+  if (hours.length) data.openingHoursSpecification = hours;
   if (negocio.email.includes("@") && !negocio.email.includes("EDITAR")) data.email = negocio.email;
   node.textContent = JSON.stringify(data);
 };

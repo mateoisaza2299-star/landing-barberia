@@ -1,42 +1,41 @@
 export const negocio = {
-  nombre: "Pupilos Barber",
+  nombre: "Miami Cuts",
+  barbero: "Brayan Andres Romero",
   sitio: "",
-  telefonoVisible: "300 123 4567",
-  whatsapp: "573001234567",
-  whatsappAviso: "EDITAR: número real",
+  telefonoVisible: "320 960 4364",
+  whatsapp: "573209604364",
   email: "EDITAR: correo de la barbería",
   direccion: {
-    calle: "Cra 6 #23-70",
-    barrio: "Zuame",
-    ciudad: "Funza",
+    calle: "Carrera 7 con Calle 17",
+    barrio: "",
+    ciudad: "Fusagasugá",
     region: "Cundinamarca",
     pais: "CO"
   },
-  mapa: "https://maps.google.com/?q=Cra+6+%2323-70,+Zuame,+Funza",
-  mapaEmbed: "https://maps.google.com/maps?q=Cra%206%20%2323-70%2C%20Zuame%2C%20Funza&z=16&output=embed",
+  mapa: "https://maps.google.com/?q=Carrera+7+con+Calle+17,+Fusagasug%C3%A1,+Cundinamarca",
+  mapaEmbed: "https://maps.google.com/maps?q=Carrera%207%20con%20Calle%2017%2C%20Fusagasug%C3%A1%2C%20Cundinamarca&z=16&output=embed",
   zona: "America/Bogota",
   horasAntesDeCerrar: 2,
   bloqueMinutos: 60,
   horario: [
-    { etiqueta: "Lunes a viernes", dias: [1, 2, 3, 4, 5], abre: "09:00", cierra: "19:00" },
-    { etiqueta: "Sábados", dias: [6], abre: "09:00", cierra: "17:00" },
-    { etiqueta: "Domingos", dias: [0], cerrado: true }
+    { etiqueta: "Lunes a viernes", dias: [1, 2, 3, 4, 5], abre: "", cierra: "" },
+    { etiqueta: "Sábados", dias: [6], abre: "", cierra: "" },
+    { etiqueta: "Domingos", dias: [0], abre: "", cierra: "" }
   ],
   redes: {
-    instagram: "https://instagram.com/pupilosbarber",
-    tiktok: "https://www.tiktok.com/@pupilosbarber",
+    instagram: "https://instagram.com/miami_cuts",
     resenas: ""
   },
   precios: {
-    "Corte clásico": 25000,
-    "Fade definido": 32000,
-    "Barba y perfilado": 18000,
-    "Afeitado clásico": 28000,
-    "Corte + barba": 38000,
-    "Diseño y línea": 15000
+    "Corte normal": null,
+    "Fade definido": null,
+    "Barba y perfilado": null,
+    "Afeitado clásico": null,
+    "Corte + barba": null,
+    "Diseño y línea": null
   },
   minutos: {
-    "Corte clásico": 45,
+    "Corte normal": 45,
     "Fade definido": 50,
     "Barba y perfilado": 30,
     "Afeitado clásico": 45,
@@ -47,13 +46,13 @@ export const negocio = {
   avisoDatos: "Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas. EDITAR: revisa este aviso antes de publicarlo.",
   privacidad: [
     "EDITAR: este texto es un aviso claro para tus clientes, no un contrato. Revísalo antes de publicarlo.",
-    "Cuando reservas guardamos tu nombre, tu celular, el servicio y la fecha. También la hora, el barbero si lo elegiste y la nota que escribas. Los usamos para agendar la cita, confirmarla y avisarte si hay un cambio.",
-    "No vendemos esos datos. Los ve el equipo de la barbería para atenderte.",
+    "Cuando reservas guardamos tu nombre, tu celular, el servicio y la fecha. También la hora, la nota que escribas y que la cita es con Brayan Andres Romero. Los usamos para agendar la cita, confirmarla y avisarte si hay un cambio.",
+    "No vendemos esos datos. Los ve Brayan Andres Romero para atenderte.",
     "Para las estadísticas del sitio guardamos un identificador anónimo en tu navegador. No es tu nombre ni tu celular. Sirve para contar visitas y reservas sin identificarte.",
     "Si quieres que borremos tu reserva o tus datos, escríbenos por WhatsApp y dinos el nombre y el celular con los que reservaste. EDITAR: indica en cuántos días responden.",
-    "EDITAR: añade aquí si guardas la cita en otro lado o si otra persona del equipo ve los datos."
+    "EDITAR: añade aquí si guardas la cita en otro lado."
   ],
-  mensajeReserva: "Hola, quiero reservar una cita en Pupilos Barber."
+  mensajeReserva: "Hola, quiero reservar una cita en Miami Cuts."
 };
 
 export function formatoPrecio(valor) {
@@ -72,7 +71,7 @@ export function rangoPrecio() {
 
 export function direccionLinea() {
   const d = negocio.direccion;
-  return d.calle + ", " + d.barrio + ", " + d.ciudad;
+  return [d.calle, d.barrio, d.ciudad, d.region].filter(Boolean).join(", ");
 }
 
 export function enlaceWhatsapp(texto) {
@@ -141,7 +140,18 @@ export function horasDelDia(iso) {
   return slots;
 }
 
+export function horarioPublicado() {
+  return negocio.horario.some((item) => !item.cerrado && item.abre && item.cierra);
+}
+
+export function textoHorario(regla) {
+  if (regla && regla.cerrado) return "Cerrado";
+  if (!regla || !regla.abre || !regla.cierra) return "EDITAR";
+  return hora12(regla.abre) + " – " + hora12(regla.cierra);
+}
+
 export function estadoApertura(date) {
+  if (!horarioPublicado()) return { abierto: false, texto: "EDITAR", pendiente: true };
   const ahora = partesBogota(date);
   const hoy = reglaDe(ahora.dia);
   if (hoy && !hoy.cerrado && hoy.abre && hoy.cierra) {
@@ -172,7 +182,7 @@ export function celularColombia(valor) {
     return { ok: true, digitos: digits };
   }
   if (!digits) return { ok: false, mensaje: "Escribe tu celular." };
-  return { ok: false, mensaje: "El celular debe tener 10 dígitos y empezar por 3. Ejemplo: 300 123 4567." };
+  return { ok: false, mensaje: "El celular debe tener 10 dígitos y empezar por 3. Ejemplo: 320 960 4364." };
 }
 
 export function avisoDuracion(nombre) {

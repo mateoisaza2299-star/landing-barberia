@@ -1,39 +1,26 @@
-import { negocio, direccionLinea, hora12 } from "./config.js";
+import { negocio, direccionLinea, textoHorario } from "./config.js";
 
-const horarioTexto = negocio.horario.filter((regla) => !regla.cerrado).map((regla) => {
-  return regla.etiqueta + " de " + hora12(regla.abre) + " a " + hora12(regla.cierra);
-}).join(". ");
+const horarioTexto = negocio.horario.some((regla) => !regla.cerrado && regla.abre && regla.cierra)
+  ? negocio.horario.filter((regla) => !regla.cerrado && regla.abre && regla.cierra).map((regla) => {
+    return regla.etiqueta + " de " + textoHorario(regla).replace(" – ", " a ");
+  }).join(". ")
+  : "EDITAR";
 
 const historia = {
   intro: [
-    "Pupilos Barber lleva doce años en el mismo punto de Funza. Desde 2014 el oficio ha sido el mismo: tijera, navaja y tiempo.",
-    "EDITAR: cuenta aquí cómo empezó el local, quién abrió la primera silla y qué querían cuidar desde el primer día."
+    negocio.nombre + " es la barbería de " + negocio.barbero + " en " + negocio.direccion.ciudad + ".",
+    "EDITAR: la historia del local."
   ],
   momentos: [
     {
-      ano: "2014",
-      titulo: "Abrimos en Funza",
-      texto: "Pupilos Barber empieza en Funza. El mismo barrio y el mismo oficio, sin cambiar de esquina."
+      ano: "Hoy",
+      titulo: "Un barbero",
+      texto: negocio.barbero + " atiende " + negocio.nombre + " en la " + negocio.direccion.calle + ", " + negocio.direccion.ciudad + "."
     },
     {
       ano: "EDITAR",
-      titulo: "EDITAR: un momento del camino",
-      texto: "EDITAR: sustituye este recuerdo. Puede ser la primera silla, un cliente que volvió o el día en que el local tomó su forma."
-    },
-    {
-      ano: "12 años",
-      titulo: "El mismo punto",
-      texto: "No crecimos por moda. La gente vuelve cuando el corte queda bien y la conversación no estorba. Seguimos en el mismo punto de Funza."
-    },
-    {
-      ano: "3 barberos",
-      titulo: "Una cita a la vez",
-      texto: "Hoy atienden Miguel, Camilo Herrera y Andrés Vega. Tres barberos, una cita a la vez, con calma."
-    },
-    {
-      ano: "Hoy",
-      titulo: "La puerta de siempre",
-      texto: direccionLinea() + ". " + horarioTexto + ". Los domingos descansamos la tijera."
+      titulo: "EDITAR",
+      texto: "EDITAR: un momento de la historia."
     }
   ],
   bloques: [
@@ -43,7 +30,7 @@ const historia = {
       alto: 720,
       alt: "Barbero cortando el cabello de un cliente bajo luz cálida. EDITAR: describe la foto definitiva.",
       titulo: "Tijera, navaja y tiempo",
-      texto: "El local es oscuro, cálido y simple a propósito. El corte se hace sin prisa y sin ruido.",
+      texto: "EDITAR: el oficio en el local.",
       nota: "EDITAR: sustituye esta foto y, si quieres, este párrafo."
     },
     {
@@ -52,26 +39,26 @@ const historia = {
       alto: 864,
       alt: "Sillón de barbería en cuero, madera oscura y luz de un aplique. EDITAR: describe la foto definitiva.",
       titulo: "La silla",
-      texto: "Una cita a la vez. El sitio se siente cuidado, sin pose y sin letra pequeña.",
+      texto: "EDITAR: qué significa la silla.",
       nota: "EDITAR: aquí puedes contar qué significa esta silla para la casa."
     },
     {
       foto: "assets/historia/03-oficio.jpg",
       ancho: 1280,
       alto: 720,
-      alt: "Detalle de un corte en Pupilos Barber. EDITAR: describe la foto definitiva.",
+      alt: "Detalle de un corte. EDITAR: describe la foto definitiva.",
       titulo: "El oficio",
-      texto: "Un buen corte se siente antes de verse. Por eso el trabajo sigue siendo de tijera, navaja y tiempo.",
+      texto: "Un buen corte se siente antes de verse.",
       nota: "EDITAR: añade un detalle del día a día que quieras conservar."
     },
     {
       foto: "assets/historia/04-barrio.jpg",
       ancho: 1152,
       alto: 864,
-      alt: "Interior cálido de la barbería. EDITAR: describe la foto definitiva.",
-      titulo: "El barrio",
-      texto: "Seguimos en " + negocio.direccion.ciudad + ", en la " + negocio.direccion.calle + ", " + negocio.direccion.barrio + ". Quien llega de paso y quien vuelve encuentra la misma puerta.",
-      nota: "EDITAR: si hubo un cambio de local o de fachada, escríbelo aquí. Si no, borra esta línea."
+      alt: "Interior cálido de una barbería. EDITAR: describe la foto definitiva.",
+      titulo: negocio.direccion.ciudad,
+      texto: direccionLinea() + ".",
+      nota: "EDITAR: foto del local cuando la haya."
     }
   ]
 };

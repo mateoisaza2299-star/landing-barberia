@@ -21,6 +21,6 @@ export const faq = [
   },
   {
     pregunta: "¿Atienden sin cita?",
-    respuesta: "Si hay un hueco, sí. Con reserva te guardamos la hora. Los domingos no abrimos. EDITAR: confirma si aceptan visitas sin reserva."
+    respuesta: "Si hay un hueco, sí. Con reserva te guardamos la hora. EDITAR: confirma si aceptan visitas sin reserva y qué días cierran."
   }
 ];

@@ -17,10 +17,10 @@ import {
   const nav = document.querySelector("[data-nav]");
   const toggle = document.querySelector("[data-nav-toggle]");
   const modal = document.querySelector("[data-modal]");
-  const whatsapp = negocio.whatsapp || document.body.dataset.whatsapp || "573001234567";
+  const whatsapp = negocio.whatsapp || document.body.dataset.whatsapp || "573209604364";
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const contactKey = "pb_contacto";
-  const fichaKey = "pb_fichas";
+  const contactKey = "mc_contacto";
+  const fichaKey = "mc_fichas";
   let reagendarToken = "";
   let lastBooking = null;
 
@@ -95,7 +95,7 @@ import {
     );
     reveals.forEach((el) => revealObserver.observe(el));
   }
-  window.__pupilosMotion = "ready";
+  window.__mcMotion = "ready";
 
   /* Carrusel de reseñas */
   const carousel = document.querySelector("[data-carousel]");
@@ -205,8 +205,8 @@ import {
       const closeBtn = card && card.querySelector("[data-cita-close]");
       if (!card || !live || !serviceEl || !whenEl || !stateEl || !closeBtn) return empty;
 
-      const storageKey = "pb_citas";
-      const hideKey = "pb_cita_hide";
+      const storageKey = "mc_citas";
+      const hideKey = "mc_cita_hide";
       const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const messages = {
         pendiente: "Esperando confirmación del barbero",
@@ -616,9 +616,11 @@ import {
       hoursNote.textContent = "Elige una fecha para ver las horas.";
       return;
     }
-    if (weekdayOf(iso) === 0) {
+    const slots = slotsFor(iso);
+    if (!slots.length) {
+      const regla = negocio.horario.find((item) => item.dias.includes(weekdayOf(iso)));
       hoursNote.hidden = false;
-      hoursNote.textContent = "Los domingos no abrimos. Elige otro día.";
+      hoursNote.textContent = regla && regla.cerrado ? "Ese día no abrimos. Elige otro día." : "EDITAR";
       return;
     }
     const now = bogotaParts();
@@ -626,7 +628,7 @@ import {
     const nowMinute = Number(now.find((item) => item.type === "minute").value);
     const isToday = iso === bogotaToday();
     hoursNote.hidden = true;
-    slotsFor(iso).forEach((slot) => {
+    slots.forEach((slot) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "slot";
@@ -652,7 +654,7 @@ import {
 
   const loadHours = async (iso) => {
     if (!hoursBox || !hoursNote) return;
-    if (!iso || weekdayOf(iso) === 0) {
+    if (!iso || !slotsFor(iso).length) {
       renderHours(iso, new Set());
       return;
     }
@@ -883,7 +885,7 @@ import {
     });
   });
 
-  document.addEventListener("pupilos:reservar", (event) => {
+  document.addEventListener("mc:reservar", (event) => {
     const detail = (event && event.detail) || {};
     const select = reservaForm ? reservaForm.querySelector("[name='servicio']") : null;
     if (select && detail.servicio) {
@@ -907,7 +909,7 @@ import {
     const nombre = String(data.get("nombre") || "").trim();
     const telefono = String(data.get("telefono") || "").trim();
     const servicio = String(data.get("servicio") || "").trim();
-    const barbero = String(data.get("barbero") || "").trim();
+    const barbero = negocio.barbero;
     const fecha = String(data.get("fecha") || "").trim();
     const nota = String(data.get("nota") || "").trim();
     const cel = celularColombia(telefono);
@@ -937,8 +939,9 @@ import {
       focusField("fecha");
       return;
     }
-    if (weekdayOf(fecha) === 0 || !slotsFor(fecha).length) {
-      showError("Ese día no abrimos. Elige otro.");
+    if (!slotsFor(fecha).length) {
+      const regla = negocio.horario.find((item) => item.dias.includes(weekdayOf(fecha)));
+      showError(regla && regla.cerrado ? "Ese día no abrimos. Elige otro." : "EDITAR: horario por confirmar.");
       focusField("fecha");
       return;
     }
@@ -1071,11 +1074,11 @@ import {
   const downloadIcs = (booking) => {
     const start = icsStamp(booking.fecha, booking.hora);
     const end = icsEnd(booking.fecha, booking.hora, booking.minutos || 60);
-    const uid = (booking.token || "cita") + "@pupilos";
+    const uid = (booking.token || "cita") + "@miamicuts";
     const lines = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//Pupilos Barber//Cita//ES",
+      "PRODID:-//Miami Cuts//Cita//ES",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
       "BEGIN:VTIMEZONE",
@@ -1102,7 +1105,7 @@ import {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "cita-pupilos.ics";
+    link.download = "cita-miami-cuts.ics";
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -1116,8 +1119,8 @@ import {
 
   const apertura = estadoApertura();
   document.querySelectorAll("[data-open-status]").forEach((status) => {
-    status.classList.toggle("is-open", apertura.abierto);
-    status.classList.toggle("is-closed", !apertura.abierto);
+    status.classList.toggle("is-open", !!apertura.abierto);
+    status.classList.toggle("is-closed", apertura.abierto === false && !apertura.pendiente);
     const label = status.querySelector("[data-open-label]");
     if (label) label.textContent = apertura.texto;
   });

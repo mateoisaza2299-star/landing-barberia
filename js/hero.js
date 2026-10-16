@@ -12,7 +12,7 @@
   const catalog = [
     {
       src: "assets/hero-corte.jpg",
-      alt: "Barbero cortando el cabello de un cliente bajo luz cálida en Pupilos Barber",
+      alt: "Barbero cortando el cabello de un cliente bajo luz cálida en Miami Cuts",
       width: 1280,
       height: 720
     },
@@ -24,13 +24,13 @@
     },
     {
       src: "assets/hero/01-corte.jpg",
-      alt: "Corte en la silla de Pupilos Barber",
+      alt: "Corte en la silla de Miami Cuts",
       width: 1280,
       height: 720
     },
     {
       src: "assets/hero/04-luz.jpg",
-      alt: "Interior de Pupilos Barber con luz de aplique",
+      alt: "Interior de la barbería con luz de aplique",
       width: 1152,
       height: 864
     },
@@ -42,7 +42,7 @@
     },
     {
       src: "assets/hero/05-interior.jpg",
-      alt: "Espacio de la barbería en Funza",
+      alt: "Espacio de la barbería en Fusagasugá",
       width: 1280,
       height: 720
     }

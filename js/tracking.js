@@ -3,9 +3,9 @@ import { supabase } from "./supabase.js";
 const file = (window.location.pathname || "").split("/").pop() || "";
 const adminPage = file === "admin.html" || file === "admin-login.html";
 
-const visitorKey = "pb_visitor";
-const visitKey = "pb_visit";
-const inicioKey = "pb_inicio_reserva";
+const visitorKey = "mc_visitor";
+const visitKey = "mc_visit";
+const inicioKey = "mc_inicio_reserva";
 
 const clean = (value, max) => String(value || "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, max || 120);
 
@@ -161,7 +161,7 @@ const boot = () => {
         if (origin.closest("[data-open-reserva]")) noteInicio();
       } catch (error) {}
     });
-    document.addEventListener("pupilos:reservar", () => {
+    document.addEventListener("mc:reservar", () => {
       try { noteInicio(); } catch (error) {}
     });
     recordVisit();
