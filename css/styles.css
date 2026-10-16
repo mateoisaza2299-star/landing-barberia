@@ -579,13 +579,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 0 16px 16px 0;
 }
 
+.about-photos {
+  display: grid;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
 .about-media img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: auto;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   position: relative;
   z-index: 1;
 }
+
+.about-photos picture:first-child img { object-position: center 12%; }
+
+.about-photos picture:last-child img { object-position: center 38%; }
 
 .about-frame {
   position: absolute;
@@ -1233,6 +1245,7 @@ body.is-locked .fab {
 }
 
 @media (min-width: 721px) {
+  .about-photos { grid-template-columns: 1fr 1fr; }
   .logo-text { font-size: 1.5rem; }
   .service-grid { grid-template-columns: 1fr 1fr; }
   .modal { place-items: center; }
@@ -1577,6 +1590,8 @@ body.is-locked .cita-card {
 .hero-slide {
   grid-area: 1 / 1;
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.9s var(--ease);
@@ -1595,6 +1610,8 @@ body.is-locked .cita-card {
   height: 100%;
 }
 
+.about-media .about-photos picture { height: auto; }
+
 .hero-slide img {
   width: 100%;
   height: 100%;
@@ -1602,6 +1619,8 @@ body.is-locked .cita-card {
   object-position: 62% 30%;
   transform: scale(1);
 }
+
+.hero-slide img.hero-local { object-position: center 72%; }
 
 .hero-slide.is-active img { animation: hero-ken 12s linear forwards; }
 

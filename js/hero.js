@@ -11,6 +11,12 @@
   const hero = root.closest(".hero") || root;
   const catalog = [
     {
+      src: "assets/hero/06-local.jpg",
+      alt: "Interior de Miami Cuts en Fusagasugá, con espejo, sillón y luz cálida",
+      width: 1280,
+      height: 1707
+    },
+    {
       src: "assets/hero-corte.jpg",
       alt: "Barbero cortando el cabello de un cliente bajo luz cálida en Miami Cuts",
       width: 1280,
