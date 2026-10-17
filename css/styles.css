@@ -1703,9 +1703,23 @@ body.is-locked .cita-card {
 
 .service-cover {
   display: block;
+  position: relative;
   margin: -1.6rem -1.4rem 1.15rem;
   overflow: hidden;
   aspect-ratio: 4 / 5;
+}
+
+.service-cover picture {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.service-cover picture.is-active,
+.service-cover picture:only-child {
+  opacity: 1;
 }
 
 .service-cover img {
@@ -2617,5 +2631,6 @@ body:has(.page-legal) .site-header {
   .to-top,
   .faq-q,
   .social-links a,
-  .cita-actions button { transition: none; }
+  .cita-actions button,
+  .service-cover picture { transition: none; }
 }

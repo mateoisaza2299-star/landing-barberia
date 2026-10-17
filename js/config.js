@@ -25,21 +25,14 @@ export const negocio = {
     resenas: ""
   },
   precios: {
-    "Corte normal": null,
-    "Fade definido": null,
-    "Barba y perfilado": null,
-    "Afeitado clásico": null,
-    "Corte + barba": null,
-    "Diseño y línea": null
+    "Corte + bebida": 24000,
+    "Corte especial": 30000,
+    "Corte Miami Cuts": 35000,
+    "Diseño": 5000,
+    "Barba y cejas": 10000,
+    "Limpieza facial": 12000
   },
-  minutos: {
-    "Corte normal": 45,
-    "Fade definido": 50,
-    "Barba y perfilado": 30,
-    "Afeitado clásico": 45,
-    "Corte + barba": 75,
-    "Diseño y línea": 25
-  },
+  minutos: {},
   politicaReserva: "Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp.",
   avisoDatos: "Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas.",
   privacidad: [

@@ -17,7 +17,7 @@ const pageKey = !file || file === "index.html" ? "index" : file.replace(/\.html$
 const seo = {
   index: {
     title: negocio.nombre + " — Barbería en " + negocio.direccion.ciudad,
-    description: negocio.nombre + " en " + negocio.direccion.ciudad + ". Cortes, barba y afeitado clásico con calma. Reserva tu cita. " + direccionLinea() + "."
+    description: negocio.nombre + " en " + negocio.direccion.ciudad + ". Cortes, barba y cejas con calma. Reserva tu cita. " + direccionLinea() + "."
   },
   historia: {
     title: "Nuestra historia — " + negocio.nombre,

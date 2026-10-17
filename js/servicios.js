@@ -2,98 +2,89 @@ import { negocio, formatoPrecio, enlaceWhatsapp } from "./config.js";
 
 const base = [
   {
-    nombre: "Corte normal",
-    precio: null,
-    ritmo: "Según el cabello, sin prisa",
-    duracion: "Según el cabello, sin prisa",
-    descripcion: "Tijera y máquina, con lavado y el acabado que te queda natural. Lo trabajamos con calma para que se vea sencillo y se sienta bien al salir.",
-    incluye: ["Corte con tijera y máquina", "Lavado", "Acabado natural"],
-    ideal: "Para quien quiere un corte limpio, sin un estilo que pida demasiado.",
-    cuidado: "Al día siguiente, péinalo como sueles hacerlo. Si algo no te queda en casa, lo vemos en la siguiente visita.",
-    fotos: []
-  },
-  {
-    nombre: "Fade definido",
-    precio: null,
-    ritmo: "Según el degradado, sin prisa",
-    duracion: "Según el degradado, sin prisa",
-    descripcion: "Degradado limpio, línea precisa y textura arriba. Lo dejamos para que dure la semana, sin apretar el proceso.",
-    incluye: ["Degradado", "Línea precisa", "Textura arriba"],
-    ideal: "Para quien busca un corte marcado que se mantenga claro varios días.",
-    cuidado: "El degradado se ve mejor si lo peinas seco los primeros días. Cuando la línea pida un retoque, vuelves.",
+    id: "corte-bebida",
+    nombre: "Corte + bebida",
+    precio: 24000,
+    descripcion: "Asesoría, corte y cejas, con una bebida para acompañar.",
+    incluye: ["Asesoría", "Corte", "Cejas", "Bebida"],
     fotos: [
-      { src: "assets/servicios/fade-definido/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello corto peinado hacia atrás, visto de perfil." },
-      { src: "assets/servicios/fade-definido/2.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." },
-      { src: "assets/servicios/fade-definido/3.jpg", width: 1170, height: 1595, alt: "Degradado con rulos arriba y puntas claras, visto de perfil." }
+      { src: "assets/servicios/corte-bebida/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." },
+      { src: "assets/servicios/corte-miami-cuts/1.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." }
     ]
   },
   {
-    nombre: "Barba y perfilado",
-    precio: null,
-    ritmo: "Según la barba, sin prisa",
-    duracion: "Según la barba, sin prisa",
-    descripcion: "Navaja caliente, toalla de vapor y un contorno que no se ve forzado. La barba queda tuya, solo más precisa.",
-    incluye: ["Navaja caliente", "Toalla de vapor", "Contorno de la barba"],
-    ideal: "Para quien quiere ordenar la barba sin dejarla de revista.",
-    cuidado: "Evita rasparte la zona el mismo día. Si el contorno se abre con los días, lo cerramos en la próxima cita."
-  },
-  {
-    nombre: "Afeitado clásico",
-    precio: null,
-    ritmo: "Un ritual, sin prisa",
-    duracion: "Un ritual, sin prisa",
-    descripcion: "Ritual de navaja, vapor y bálsamo. Sales más ligero de lo que entraste. El tiempo es parte del servicio.",
-    incluye: ["Navaja", "Vapor", "Bálsamo"],
-    ideal: "Para quien quiere un afeitado completo y salir con la piel más ligera.",
-    cuidado: "Esa noche, deja la piel en paz: sin rasurar de nuevo. Si sientes tirantez, un bálsamo suave basta."
-  },
-  {
-    nombre: "Corte + barba",
-    precio: null,
-    ritmo: "Corte y barba en la misma cita, sin prisa",
-    duracion: "Corte y barba en la misma cita, sin prisa",
-    descripcion: "El combo completo en una sola cita. Corte y barba, uno después del otro, con el mismo cuidado. Es lo que más se reserva.",
-    incluye: ["Corte", "Barba y perfilado", "Una sola cita"],
-    ideal: "Para quien quiere salir con el corte y la barba resueltos el mismo día.",
-    cuidado: "En casa, el cabello y la barba se cuidan por separado. Si uno de los dos pide un ajuste, lo vemos juntos."
-  },
-  {
-    nombre: "Diseño y línea",
-    precio: null,
-    ritmo: "Según el detalle, sin prisa",
-    duracion: "Según el detalle, sin prisa",
-    descripcion: "Líneas definidas y detalles a máquina, sin recargar el corte. Un acento, no un dibujo de más.",
-    incluye: ["Líneas definidas", "Detalle a máquina"],
-    ideal: "Para quien quiere un detalle preciso sin cambiar todo el corte.",
-    cuidado: "Las líneas se suavizan con los días. Cuando se abran, se pueden retomar en otra visita.",
+    id: "corte-especial",
+    nombre: "Corte especial",
+    precio: 30000,
+    descripcion: "Corte con exfoliación, limpieza facial, cejas, mascarilla y barba.",
+    incluye: ["Corte", "Exfoliación", "Limpieza facial", "Cejas", "Mascarilla", "Barba"],
     fotos: [
-      { src: "assets/servicios/diseno-y-linea/1.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado, vista de perfil." },
-      { src: "assets/servicios/diseno-y-linea/2.jpg", width: 1050, height: 1600, alt: "Diseño de araña rapado en el lateral, con el cabello corto arriba." },
-      { src: "assets/servicios/diseno-y-linea/3.jpg", width: 1079, height: 1533, alt: "Diseño de mariposa rapado en el lateral." },
-      { src: "assets/servicios/diseno-y-linea/4.jpg", width: 1079, height: 1437, alt: "Líneas rapadas en abanico sobre un degradado, con el cabello peinado hacia atrás." },
-      { src: "assets/servicios/diseno-y-linea/5.jpg", width: 1163, height: 1600, alt: "Diseño rapado en el lateral de un corte con rulos largos atrás." },
-      { src: "assets/servicios/diseno-y-linea/6.jpg", width: 1170, height: 1194, alt: "Corazón rapado en la nuca, con degradado." },
-      { src: "assets/servicios/diseno-y-linea/7.jpg", width: 1200, height: 1600, alt: "Diseño de flor rapado en el lateral, con el cabello corto arriba." }
+      { src: "assets/servicios/corte-especial/1.jpg", width: 1170, height: 1595, alt: "Degradado con rulos arriba y puntas claras, visto de perfil." },
+      { src: "assets/servicios/corte-bebida/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." }
+    ]
+  },
+  {
+    id: "corte-miami-cuts",
+    nombre: "Corte Miami Cuts",
+    precio: 35000,
+    descripcion: "Todo el corte especial, más lavado capilar, tratamiento capilar y bebida.",
+    incluye: ["Corte", "Exfoliación", "Limpieza facial", "Cejas", "Mascarilla", "Barba", "Lavado capilar", "Tratamiento capilar", "Bebida"],
+    fotos: [
+      { src: "assets/servicios/corte-miami-cuts/1.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." },
+      { src: "assets/servicios/corte-especial/1.jpg", width: 1170, height: 1595, alt: "Degradado con rulos arriba y puntas claras, visto de perfil." }
+    ]
+  },
+  {
+    id: "diseno",
+    nombre: "Diseño",
+    precio: 5000,
+    descripcion: "Diseño en tu corte, con asesoramiento.",
+    incluye: ["Diseño", "Asesoramiento"],
+    fotos: [
+      { src: "assets/servicios/diseno/1.jpg", width: 1050, height: 1600, alt: "Araña rapada en el lateral de un corte corto." },
+      { src: "assets/servicios/diseno/2.jpg", width: 1079, height: 1437, alt: "Líneas rapadas en abanico sobre un degradado." },
+      { src: "assets/servicios/diseno/3.jpg", width: 1170, height: 1194, alt: "Corazón rapado en la nuca, sobre un degradado." },
+      { src: "assets/servicios/diseno/4.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
+    ]
+  },
+  {
+    id: "barba-cejas",
+    nombre: "Barba y cejas",
+    precio: 10000,
+    descripcion: "Asesoramiento, perfilado de barba y cejas.",
+    incluye: ["Asesoramiento", "Perfilado de barba", "Cejas"],
+    fotos: [
+      { src: "assets/servicios/barba-cejas/1.jpg", width: 1079, height: 1533, alt: "Perfil con la ceja visible y una mariposa rapada en el lateral." },
+      { src: "assets/servicios/barba-cejas/2.jpg", width: 1200, height: 1600, alt: "Perfil con la ceja y la mejilla visibles, y una flor rapada en el lateral." }
+    ]
+  },
+  {
+    id: "limpieza-facial",
+    nombre: "Limpieza facial",
+    precio: 12000,
+    descripcion: "Exfoliación, mascarilla y tratamiento facial.",
+    incluye: ["Exfoliación", "Mascarilla", "Tratamiento facial"],
+    fotos: [
+      { src: "assets/servicios/limpieza-facial/1.jpg", width: 1163, height: 1600, alt: "Perfil con la mejilla y la piel visibles, y un diseño en el lateral." },
+      { src: "assets/servicios/corte-especial/1.jpg", width: 1170, height: 1595, alt: "Perfil con la mejilla visible, degradado y rulos arriba." }
     ]
   }
 ];
 
 export const servicios = base.map((item) => {
-  const minutos = Number(negocio.minutos[item.nombre]);
-  const numero = Number(String(item.precio ?? "").replace(/[^\d]/g, ""));
+  const numero = Number(item.precio);
   const tienePrecio = Number.isFinite(numero) && numero > 0;
-  const precio = tienePrecio ? formatoPrecio(numero) : "";
-  const duracion = Number.isFinite(minutos) && minutos > 0 ? minutos + " min · " + item.ritmo : item.duracion;
   return {
+    id: item.id,
     nombre: item.nombre,
-    precio,
+    precio: tienePrecio ? formatoPrecio(numero) : "",
     precioNumero: tienePrecio ? numero : 0,
-    duracion,
-    minutos: Number.isFinite(minutos) ? minutos : 0,
+    duracion: "",
+    minutos: 0,
     descripcion: item.descripcion,
     incluye: item.incluye,
-    ideal: item.ideal,
-    cuidado: item.cuidado,
+    ideal: "",
+    cuidado: "",
     fotos: item.fotos || []
   };
 });
@@ -128,19 +119,101 @@ const pictureOf = (foto, sizes, lazy) => {
   img.width = foto.width;
   img.height = foto.height;
   img.decoding = "async";
-  if (lazy) img.loading = "lazy";
+  img.loading = lazy ? "lazy" : "eager";
   picture.append(source, img);
   return picture;
 };
 
-document.querySelectorAll("[data-service]").forEach((button) => {
-  const item = servicios.find((entry) => entry.nombre === button.getAttribute("data-service"));
-  if (!item || !item.fotos.length || button.querySelector(".service-cover")) return;
-  const cover = document.createElement("span");
-  cover.className = "service-cover";
-  cover.appendChild(pictureOf(item.fotos[0], "(min-width: 900px) 30vw, 100vw", true));
-  button.insertBefore(cover, button.firstChild);
-});
+const mountCovers = () => {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const buttons = [...document.querySelectorAll("[data-service]")];
+  const period = 3500;
+  const step = Math.round(period / Math.max(buttons.length, 1));
+  buttons.forEach((button, index) => {
+    const item = servicios.find((entry) => entry.nombre === button.getAttribute("data-service"));
+    if (!item || !item.fotos.length) return;
+    let cover = button.querySelector(".service-cover");
+    if (!cover) {
+      cover = document.createElement("span");
+      cover.className = "service-cover";
+      button.insertBefore(cover, button.firstChild);
+    }
+    const fotos = reduce ? item.fotos.slice(0, 1) : item.fotos;
+    cover.replaceChildren();
+    fotos.forEach((foto, i) => {
+      const picture = pictureOf(foto, "(min-width: 900px) 30vw, 100vw", i > 0);
+      if (i === 0) picture.classList.add("is-active");
+      cover.appendChild(picture);
+    });
+    if (reduce || fotos.length < 2) return;
+    let current = 0;
+    let timer = 0;
+    let paused = false;
+    let seen = false;
+    let nextAt = 0;
+    const tick = () => {
+      const frames = [...cover.children];
+      if (frames.length < 2) return;
+      frames[current].classList.remove("is-active");
+      current = (current + 1) % frames.length;
+      frames[current].classList.add("is-active");
+    };
+    const arm = () => {
+      window.clearTimeout(timer);
+      timer = 0;
+      if (paused || !seen) return;
+      const now = performance.now();
+      if (!nextAt) nextAt = now + period + index * step;
+      timer = window.setTimeout(() => {
+        tick();
+        nextAt = performance.now() + period;
+        arm();
+      }, Math.max(0, nextAt - now));
+    };
+    const hold = (on) => {
+      paused = on;
+      window.clearTimeout(timer);
+      timer = 0;
+      if (!on) arm();
+    };
+    button.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") hold(true);
+    });
+    button.addEventListener("pointerleave", (event) => {
+      if (event.pointerType === "mouse") hold(false);
+    });
+    let touchId = null;
+    const endTouch = (event) => {
+      if (touchId == null || event.pointerId !== touchId) return;
+      touchId = null;
+      hold(false);
+    };
+    button.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse") return;
+      touchId = event.pointerId;
+      hold(true);
+    });
+    button.addEventListener("pointerup", endTouch);
+    button.addEventListener("pointercancel", endTouch);
+    button.addEventListener("pointerleave", endTouch);
+    if (!("IntersectionObserver" in window)) {
+      seen = true;
+      arm();
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      seen = entries.some((entry) => entry.isIntersecting);
+      if (seen) arm();
+      else {
+        window.clearTimeout(timer);
+        timer = 0;
+      }
+    }, { threshold: 0.35 });
+    observer.observe(button);
+  });
+};
+
+mountCovers();
 
 const modal = document.querySelector("[data-service-modal]");
 const panel = document.querySelector("[data-service-panel]");
@@ -323,10 +396,16 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
   const fill = (item) => {
     title.textContent = item.nombre;
     pintarPrecio(price, item);
-    duration.textContent = item.duracion;
+    duration.hidden = true;
+    duration.textContent = "";
     desc.textContent = item.descripcion;
-    ideal.textContent = item.ideal;
-    tip.textContent = item.cuidado;
+    const idealHeading = ideal.previousElementSibling;
+    if (idealHeading) idealHeading.hidden = true;
+    ideal.hidden = true;
+    ideal.textContent = "";
+    const after = tip.closest(".service-tip");
+    if (after) after.hidden = true;
+    tip.textContent = "";
     includes.replaceChildren();
     item.incluye.forEach((line) => {
       const li = document.createElement("li");
