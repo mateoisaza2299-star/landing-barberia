@@ -6,10 +6,11 @@ const base = [
     nombre: "Corte + bebida",
     precio: 24000,
     descripcion: "Asesoría, corte y cejas, con una bebida para acompañar.",
+    experiencia: "Llegas, te sientas y te tomas algo mientras Brayan te asesora el corte que va con tu cara y tu estilo. Rápido, cómodo y con las cejas listas para salir impecable.",
     incluye: ["Asesoría", "Corte", "Cejas", "Bebida"],
     fotos: [
       { src: "assets/servicios/corte-bebida/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." },
-      { src: "assets/servicios/corte-miami-cuts/1.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." }
+      { src: "assets/servicios/corte-bebida/2.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
     ]
   },
   {
@@ -17,10 +18,11 @@ const base = [
     nombre: "Corte especial",
     precio: 30000,
     descripcion: "Corte con exfoliación, limpieza facial, cejas, mascarilla y barba.",
+    experiencia: "Más que un corte: un rato para ti. La exfoliación, la limpieza facial y la mascarilla te dejan la piel fresca, y el corte con barba y cejas cierra el look completo, sin afán.",
     incluye: ["Corte", "Exfoliación", "Limpieza facial", "Cejas", "Mascarilla", "Barba"],
     fotos: [
       { src: "assets/servicios/corte-especial/1.jpg", width: 1170, height: 1595, alt: "Degradado con rulos arriba y puntas claras, visto de perfil." },
-      { src: "assets/servicios/corte-bebida/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." }
+      { src: "assets/servicios/corte-especial/2.jpg", width: 1079, height: 1437, alt: "Líneas rapadas en abanico sobre un degradado." }
     ]
   },
   {
@@ -28,10 +30,12 @@ const base = [
     nombre: "Corte Miami Cuts",
     precio: 35000,
     descripcion: "Todo el corte especial, más lavado capilar, tratamiento capilar y bebida.",
+    experiencia: "La experiencia completa de la casa. Cuidado del rostro, lavado y tratamiento capilar, barba, cejas y una bebida para acompañar. Sales renovado de pies a cabeza.",
     incluye: ["Corte", "Exfoliación", "Limpieza facial", "Cejas", "Mascarilla", "Barba", "Lavado capilar", "Tratamiento capilar", "Bebida"],
     fotos: [
       { src: "assets/servicios/corte-miami-cuts/1.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." },
-      { src: "assets/servicios/corte-especial/1.jpg", width: 1170, height: 1595, alt: "Degradado con rulos arriba y puntas claras, visto de perfil." }
+      { src: "assets/servicios/corte-miami-cuts/2.jpg", width: 1200, height: 1600, alt: "Perfil con la ceja y la mejilla visibles, y una flor rapada en el lateral." },
+      { src: "assets/servicios/corte-miami-cuts/3.jpg", width: 1170, height: 1194, alt: "Corazón rapado en la nuca, sobre un degradado." }
     ]
   },
   {
@@ -39,12 +43,10 @@ const base = [
     nombre: "Diseño",
     precio: 5000,
     descripcion: "Diseño en tu corte, con asesoramiento.",
+    experiencia: "Líneas y detalles pensados para ti. Brayan te asesora el diseño que mejor se ve con tu corte, para que tengas un acabado que se nota y es solo tuyo.",
     incluye: ["Diseño", "Asesoramiento"],
     fotos: [
-      { src: "assets/servicios/diseno/1.jpg", width: 1050, height: 1600, alt: "Araña rapada en el lateral de un corte corto." },
-      { src: "assets/servicios/diseno/2.jpg", width: 1079, height: 1437, alt: "Líneas rapadas en abanico sobre un degradado." },
-      { src: "assets/servicios/diseno/3.jpg", width: 1170, height: 1194, alt: "Corazón rapado en la nuca, sobre un degradado." },
-      { src: "assets/servicios/diseno/4.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
+      { src: "assets/servicios/diseno/1.jpg", width: 1050, height: 1600, alt: "Araña rapada en el lateral de un corte corto." }
     ]
   },
   {
@@ -52,10 +54,10 @@ const base = [
     nombre: "Barba y cejas",
     precio: 10000,
     descripcion: "Asesoramiento, perfilado de barba y cejas.",
+    experiencia: "Barba y cejas con precisión. Te asesoramos la forma que va con tu rostro y las dejamos definidas, limpias y con un acabado natural.",
     incluye: ["Asesoramiento", "Perfilado de barba", "Cejas"],
     fotos: [
-      { src: "assets/servicios/barba-cejas/1.jpg", width: 1079, height: 1533, alt: "Perfil con la ceja visible y una mariposa rapada en el lateral." },
-      { src: "assets/servicios/barba-cejas/2.jpg", width: 1200, height: 1600, alt: "Perfil con la ceja y la mejilla visibles, y una flor rapada en el lateral." }
+      { src: "assets/servicios/barba-cejas/1.jpg", width: 1079, height: 1533, alt: "Perfil con la ceja visible y una mariposa rapada en el lateral." }
     ]
   },
   {
@@ -63,10 +65,10 @@ const base = [
     nombre: "Limpieza facial",
     precio: 12000,
     descripcion: "Exfoliación, mascarilla y tratamiento facial.",
+    experiencia: "Un respiro para tu piel. Exfoliación, mascarilla y tratamiento facial que la dejan limpia, suave y fresca, en un momento cómodo y sin prisa.",
     incluye: ["Exfoliación", "Mascarilla", "Tratamiento facial"],
     fotos: [
-      { src: "assets/servicios/limpieza-facial/1.jpg", width: 1163, height: 1600, alt: "Perfil con la mejilla y la piel visibles, y un diseño en el lateral." },
-      { src: "assets/servicios/corte-especial/1.jpg", width: 1170, height: 1595, alt: "Perfil con la mejilla visible, degradado y rulos arriba." }
+      { src: "assets/servicios/limpieza-facial/1.jpg", width: 1163, height: 1600, alt: "Perfil con la mejilla y la piel visibles, y un diseño en el lateral." }
     ]
   }
 ];
@@ -82,6 +84,7 @@ export const servicios = base.map((item) => {
     duracion: "",
     minutos: 0,
     descripcion: item.descripcion,
+    experiencia: item.experiencia,
     incluye: item.incluye,
     ideal: "",
     cuidado: "",
@@ -124,110 +127,20 @@ const pictureOf = (foto, sizes, lazy) => {
   return picture;
 };
 
-const mountCovers = () => {
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const buttons = [...document.querySelectorAll("[data-service]")];
-  const period = 3500;
-  const step = Math.round(period / Math.max(buttons.length, 1));
-  buttons.forEach((button, index) => {
-    const item = servicios.find((entry) => entry.nombre === button.getAttribute("data-service"));
-    if (!item || !item.fotos.length) return;
-    let cover = button.querySelector(".service-cover");
-    if (!cover) {
-      cover = document.createElement("span");
-      cover.className = "service-cover";
-      button.insertBefore(cover, button.firstChild);
-    }
-    const fotos = reduce ? item.fotos.slice(0, 1) : item.fotos;
-    cover.replaceChildren();
-    fotos.forEach((foto, i) => {
-      const picture = pictureOf(foto, "(min-width: 900px) 30vw, 100vw", i > 0);
-      if (i === 0) picture.classList.add("is-active");
-      cover.appendChild(picture);
-    });
-    if (reduce || fotos.length < 2) return;
-    let current = 0;
-    let timer = 0;
-    let paused = false;
-    let seen = false;
-    let nextAt = 0;
-    const tick = () => {
-      const frames = [...cover.children];
-      if (frames.length < 2) return;
-      frames[current].classList.remove("is-active");
-      current = (current + 1) % frames.length;
-      frames[current].classList.add("is-active");
-    };
-    const arm = () => {
-      window.clearTimeout(timer);
-      timer = 0;
-      if (paused || !seen) return;
-      const now = performance.now();
-      if (!nextAt) nextAt = now + period + index * step;
-      timer = window.setTimeout(() => {
-        tick();
-        nextAt = performance.now() + period;
-        arm();
-      }, Math.max(0, nextAt - now));
-    };
-    const hold = (on) => {
-      paused = on;
-      window.clearTimeout(timer);
-      timer = 0;
-      if (!on) arm();
-    };
-    button.addEventListener("pointerenter", (event) => {
-      if (event.pointerType === "mouse") hold(true);
-    });
-    button.addEventListener("pointerleave", (event) => {
-      if (event.pointerType === "mouse") hold(false);
-    });
-    let touchId = null;
-    const endTouch = (event) => {
-      if (touchId == null || event.pointerId !== touchId) return;
-      touchId = null;
-      hold(false);
-    };
-    button.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "mouse") return;
-      touchId = event.pointerId;
-      hold(true);
-    });
-    button.addEventListener("pointerup", endTouch);
-    button.addEventListener("pointercancel", endTouch);
-    button.addEventListener("pointerleave", endTouch);
-    if (!("IntersectionObserver" in window)) {
-      seen = true;
-      arm();
-      return;
-    }
-    const observer = new IntersectionObserver((entries) => {
-      seen = entries.some((entry) => entry.isIntersecting);
-      if (seen) arm();
-      else {
-        window.clearTimeout(timer);
-        timer = 0;
-      }
-    }, { threshold: 0.35 });
-    observer.observe(button);
-  });
-};
-
-mountCovers();
-
 const modal = document.querySelector("[data-service-modal]");
 const panel = document.querySelector("[data-service-panel]");
 const title = document.querySelector("#servicio-title");
 const price = document.querySelector("[data-service-price]");
 const duration = document.querySelector("[data-service-duration]");
 const desc = document.querySelector("[data-service-desc]");
+const experience = document.querySelector("[data-service-experience]");
 const includes = document.querySelector("[data-service-includes]");
 const ideal = document.querySelector("[data-service-ideal]");
 const tip = document.querySelector("[data-service-tip]");
 const reserve = document.querySelector("[data-service-reserve]");
 const gallery = document.querySelector("[data-service-gallery]");
 
-if (modal && panel && title && price && duration && desc && includes && ideal && tip && reserve && gallery) {
+if (modal && panel && title && price && duration && desc && experience && includes && ideal && tip && reserve && gallery) {
   let lastFocus = null;
 
   const focusable = () => [...panel.querySelectorAll("button, a[href], input, select, textarea")].filter((el) => {
@@ -399,6 +312,7 @@ if (modal && panel && title && price && duration && desc && includes && ideal &&
     duration.hidden = true;
     duration.textContent = "";
     desc.textContent = item.descripcion;
+    experience.textContent = item.experiencia;
     const idealHeading = ideal.previousElementSibling;
     if (idealHeading) idealHeading.hidden = true;
     ideal.hidden = true;

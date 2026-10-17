@@ -1713,13 +1713,6 @@ body.is-locked .cita-card {
   position: absolute;
   inset: 0;
   margin: 0;
-  opacity: 0;
-  transition: opacity 0.7s ease;
-}
-
-.service-cover picture.is-active,
-.service-cover picture:only-child {
-  opacity: 1;
 }
 
 .service-cover img {
@@ -1954,6 +1947,13 @@ body.is-locked .cita-card {
 .service-sheet-duration {
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.service-experience {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
 }
 
 .service-includes {
@@ -2631,6 +2631,5 @@ body:has(.page-legal) .site-header {
   .to-top,
   .faq-q,
   .social-links a,
-  .cita-actions button,
-  .service-cover picture { transition: none; }
+  .cita-actions button { transition: none; }
 }
