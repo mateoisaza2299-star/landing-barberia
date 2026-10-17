@@ -157,29 +157,64 @@ import {
   const reservaWa = document.querySelector("[data-reserva-wa]");
   const submitBtn = document.querySelector("[data-reserva-submit]");
   let chosenHour = "";
+  let hoursToken = 0;
+  let horasTimer = 0;
+  const avisoHoy = "Ya no hay horas disponibles hoy. Elige otro día.";
+  const avisoPaso = "Esa hora ya pasó, elige otra";
 
-  const bogotaParts = () => new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Bogota",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).formatToParts(new Date());
-
-  const bogotaToday = () => {
-    const parts = bogotaParts();
+  const bogotaNow = () => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Bogota",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(new Date());
     const pick = (type) => parts.find((item) => item.type === type).value;
-    return pick("year") + "-" + pick("month") + "-" + pick("day");
+    let hour = Number(pick("hour"));
+    if (hour === 24) hour = 0;
+    return {
+      iso: pick("year") + "-" + pick("month") + "-" + pick("day"),
+      minutos: hour * 60 + Number(pick("minute"))
+    };
   };
 
-  const today = bogotaToday();
-  if (dateInput) dateInput.min = today;
+  const bogotaToday = () => bogotaNow().iso;
+
+  const aplicarMinFecha = () => {
+    const today = bogotaToday();
+    if (dateInput) dateInput.min = today;
+    return today;
+  };
+
+  aplicarMinFecha();
 
   const weekdayOf = (iso) => diaSemana(iso);
 
   const slotsFor = (iso) => horasDelDia(iso);
+
+  const sumarDias = (iso, dias) => {
+    const [year, month, day] = String(iso || "").split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day + dias));
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(date.getUTCDate()).padStart(2, "0");
+    return y + "-" + m + "-" + d;
+  };
+
+  const minutosDeSlot = (hhmm) => Number(String(hhmm || "0").slice(0, 2)) * 60;
+
+  const horaPasada = (iso, hhmm) => {
+    if (!iso || !hhmm) return false;
+    const ahora = bogotaNow();
+    return iso === ahora.iso && minutosDeSlot(hhmm) <= ahora.minutos;
+  };
+
+  const ocupadasDe = (data) => new Set((data || []).map((row) => String(row.hora || row).slice(0, 5)));
+
+  const horaLibre = (iso, slot, taken) => !horaPasada(iso, slot) && !taken.has(slot);
 
   const hourLabel = (hhmm) => {
     const hour = Number(hhmm.slice(0, 2));
@@ -607,7 +642,7 @@ import {
     if (panel) panel.setAttribute("aria-labelledby", "reserva-title");
   };
 
-  const renderHours = (iso, taken) => {
+  const renderHours = (iso, taken, notice) => {
     if (!hoursBox || !hoursNote) return;
     hoursBox.replaceChildren();
     chosenHour = "";
@@ -623,23 +658,30 @@ import {
       hoursNote.textContent = regla && regla.cerrado ? "Ese día no abrimos. Elige otro día." : "Ese día no hay horas. Elige otro día.";
       return;
     }
-    const now = bogotaParts();
-    const nowHour = Number(now.find((item) => item.type === "hour").value);
-    const nowMinute = Number(now.find((item) => item.type === "minute").value);
-    const isToday = iso === bogotaToday();
-    hoursNote.hidden = true;
+    if (notice) {
+      hoursNote.hidden = false;
+      hoursNote.textContent = notice;
+    } else {
+      hoursNote.hidden = true;
+    }
     slots.forEach((slot) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "slot";
+      button.dataset.slot = slot;
       button.textContent = hourLabel(slot);
-      const slotHour = Number(slot.slice(0, 2));
-      const past = isToday && (slotHour < nowHour || (slotHour === nowHour && nowMinute > 0));
+      const past = horaPasada(iso, slot);
       const busy = taken.has(slot);
+      if (busy) button.dataset.busy = "1";
       button.disabled = past || busy;
       if (busy) button.title = "Hora ocupada";
       button.setAttribute("aria-pressed", "false");
       button.addEventListener("click", () => {
+        if (button.disabled || horaPasada(iso, slot)) {
+          button.disabled = true;
+          if (iso === bogotaNow().iso && !hoursBox.querySelector(".slot:not(:disabled)")) loadHours(iso);
+          return;
+        }
         chosenHour = slot;
         hoursBox.querySelectorAll(".slot").forEach((item) => {
           const selected = item === button;
@@ -652,30 +694,121 @@ import {
     });
   };
 
-  const loadHours = async (iso) => {
+  const buscarSiguienteLibre = async (desde, request) => {
+    for (let salto = 1; salto <= 21; salto += 1) {
+      if (request !== hoursToken) return null;
+      const iso = sumarDias(desde, salto);
+      const slots = slotsFor(iso);
+      if (!slots.length) continue;
+      const { data, error } = await supabase.rpc("horas_ocupadas", { p_fecha: iso });
+      if (request !== hoursToken) return null;
+      if (error) throw error;
+      const taken = ocupadasDe(data);
+      if (slots.some((slot) => horaLibre(iso, slot, taken))) return { iso, taken };
+    }
+    return null;
+  };
+
+  const loadHours = async (iso, notice) => {
     if (!hoursBox || !hoursNote) return;
+    const request = ++hoursToken;
     if (!iso || !slotsFor(iso).length) {
-      renderHours(iso, new Set());
+      renderHours(iso, new Set(), notice);
       return;
     }
     hoursNote.hidden = false;
-    hoursNote.textContent = "Cargando horas…";
+    hoursNote.textContent = notice || "Cargando horas…";
     hoursBox.replaceChildren();
+    chosenHour = "";
     try {
       const { data, error } = await supabase.rpc("horas_ocupadas", { p_fecha: iso });
+      if (request !== hoursToken) return;
       if (error) throw error;
-      const taken = new Set((data || []).map((row) => String(row.hora || row).slice(0, 5)));
-      renderHours(iso, taken);
+      const taken = ocupadasDe(data);
+      const slots = slotsFor(iso);
+      if (iso === bogotaNow().iso && !slots.some((slot) => horaLibre(iso, slot, taken))) {
+        hoursNote.hidden = false;
+        hoursNote.textContent = avisoHoy;
+        const next = await buscarSiguienteLibre(iso, request);
+        if (request !== hoursToken) return;
+        if (next && dateInput) {
+          dateInput.value = next.iso;
+          renderHours(next.iso, next.taken, avisoHoy);
+          return;
+        }
+        hoursBox.replaceChildren();
+        return;
+      }
+      renderHours(iso, taken, notice);
     } catch (error) {
+      if (request !== hoursToken) return;
       hoursNote.hidden = false;
       hoursNote.textContent = "No pudimos cargar las horas. Intenta de nuevo.";
       hoursBox.replaceChildren();
     }
   };
 
+  const soltarHora = () => {
+    chosenHour = "";
+    if (!hoursBox) return;
+    hoursBox.querySelectorAll(".slot").forEach((item) => {
+      item.classList.remove("is-selected");
+      item.setAttribute("aria-pressed", "false");
+      if (horaPasada(dateInput ? dateInput.value : "", item.dataset.slot || "")) item.disabled = true;
+    });
+  };
+
+  const refrescarHoras = () => {
+    if (!modal || modal.hidden || !dateInput) return;
+    const today = aplicarMinFecha();
+    const iso = dateInput.value;
+    if (!iso) return;
+    if (iso < today) {
+      dateInput.value = "";
+      soltarHora();
+      renderHours("", new Set());
+      return;
+    }
+    if (iso !== today || !hoursBox || !hoursBox.querySelector(".slot")) return;
+    let libres = 0;
+    hoursBox.querySelectorAll(".slot").forEach((button) => {
+      const slot = button.dataset.slot || "";
+      const past = horaPasada(iso, slot);
+      const busy = button.dataset.busy === "1";
+      button.disabled = past || busy;
+      if (!button.disabled) libres += 1;
+    });
+    if (libres === 0) loadHours(iso);
+  };
+
+  const vigilarHoras = () => {
+    if (horasTimer) window.clearInterval(horasTimer);
+    horasTimer = window.setInterval(refrescarHoras, 60000);
+  };
+
+  const detenerHoras = () => {
+    if (!horasTimer) return;
+    window.clearInterval(horasTimer);
+    horasTimer = 0;
+  };
+
   if (dateInput) {
+    dateInput.addEventListener("focus", aplicarMinFecha);
+    dateInput.addEventListener("input", () => {
+      if (!dateInput.value || dateInput.value >= aplicarMinFecha()) return;
+      dateInput.value = "";
+      soltarHora();
+      renderHours("", new Set());
+    });
     dateInput.addEventListener("change", () => {
       showError("");
+      aplicarMinFecha();
+      if (!dateInput.value || dateInput.value < dateInput.min) {
+        dateInput.value = "";
+        soltarHora();
+        renderHours("", new Set());
+        return;
+      }
       loadHours(dateInput.value);
     });
   }
@@ -794,6 +927,15 @@ import {
       }
     }
     paintDuracion();
+    aplicarMinFecha();
+    if (dateInput && dateInput.value && dateInput.value < dateInput.min) {
+      dateInput.value = "";
+      soltarHora();
+      renderHours("", new Set());
+    } else if (dateInput && dateInput.value) {
+      loadHours(dateInput.value);
+    }
+    vigilarHoras();
     modal.hidden = false;
     lock(true);
     const focusTarget = reagendarToken ? modal.querySelector("[name='fecha']") : modal.querySelector("[name='nombre']");
@@ -802,6 +944,7 @@ import {
 
   const closeModal = () => {
     if (!modal || modal.hidden || closingModal) return;
+    detenerHoras();
     const token = ++closeToken;
     const finish = () => {
       if (token !== closeToken || modal.hidden) return;
@@ -951,6 +1094,12 @@ import {
       if (slot) slot.focus();
       return;
     }
+    if (horaPasada(fecha, chosenHour)) {
+      soltarHora();
+      showError(avisoPaso);
+      if (hoursBox && fecha === bogotaToday() && !hoursBox.querySelector(".slot:not(:disabled)")) loadHours(fecha);
+      return;
+    }
     if (datosOk && !datosOk.checked) {
       showError("Acepta la política de datos para reservar.");
       datosOk.focus();
@@ -987,6 +1136,12 @@ import {
     submitBtn.textContent = submitLabel;
 
     if (error) {
+      if (String(error.code || "") === "42501") {
+        soltarHora();
+        showError(avisoPaso);
+        loadHours(fecha);
+        return;
+      }
       const duplicate = error.code === "23505" || /duplicate|unique|duplicad/i.test(error.message || "");
       showError(duplicate
         ? "Esa hora ya fue tomada. Elige otra."
