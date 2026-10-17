@@ -29,7 +29,7 @@
   <link rel="preload" href="assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/playball.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/hero/06-local.webp" type="image/webp" imagesrcset="assets/hero/06-local-640.webp 640w, assets/hero/06-local.webp 1280w" imagesizes="100vw" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/hero/local-1280.webp" type="image/webp" imagesrcset="assets/hero/local-640.webp 640w, assets/hero/local-1280.webp 1280w, assets/hero/local-1920.webp 1920w" imagesizes="100vw" fetchpriority="high">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://ifgyhjkkpvoocbblknjy.supabase.co" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
@@ -105,15 +105,11 @@
 
   <main id="contenido" tabindex="-1">
     <section class="hero" id="inicio">
-      <div class="hero-media" data-hero tabindex="0" role="region" aria-roledescription="carrusel" aria-label="Fotos de Miami Cuts">
-        <div class="hero-slides" data-hero-slides>
-          <div class="hero-slide is-active">
-            <picture>
-              <source type="image/webp" srcset="assets/hero/06-local-640.webp 640w, assets/hero/06-local.webp 1280w" sizes="100vw">
-              <img class="hero-local" src="assets/hero/06-local.jpg" srcset="assets/hero/06-local-640.jpg 640w, assets/hero/06-local.jpg 1280w" sizes="100vw" width="1280" height="1707" alt="Interior de Miami Cuts en Fusagasugá, con espejo, sillón y luz cálida" fetchpriority="high" loading="eager" decoding="async">
-            </picture>
-          </div>
-        </div>
+      <div class="hero-media">
+        <picture>
+          <source type="image/webp" srcset="assets/hero/local-640.webp 640w, assets/hero/local-1280.webp 1280w, assets/hero/local-1920.webp 1920w" sizes="100vw">
+          <img src="assets/hero/local-1280.jpg" srcset="assets/hero/local-640.jpg 640w, assets/hero/local-1280.jpg 1280w, assets/hero/local-1920.jpg 1920w" sizes="100vw" width="1280" height="1707" alt="Interior de Miami Cuts en Fusagasugá, con sillón, espejo de mármol y luz cálida" fetchpriority="high" decoding="async">
+        </picture>
       </div>
       <div class="hero-overlay" aria-hidden="true"></div>
       <p class="hero-side" aria-hidden="true">Corte · Barba · Cejas</p>
@@ -126,15 +122,6 @@
           <a class="btn" data-open-reserva href="https://wa.me/573209604364?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20Miami%20Cuts.">Reserva tu cita</a>
           <a class="text-link" href="#servicios">Ver servicios</a>
         </div>
-      </div>
-      <div class="hero-controls" data-hero-controls role="group" aria-label="Controles de fotos">
-        <button class="hero-arrow" type="button" data-hero-prev aria-label="Foto anterior">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
-        </button>
-        <div class="hero-dots" data-hero-dots role="tablist" aria-label="Elegir foto"></div>
-        <button class="hero-arrow" type="button" data-hero-next aria-label="Foto siguiente">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
-        </button>
       </div>
       <a class="scroll-hint" href="#nosotros" aria-label="Bajar a la sección nosotros"><span></span></a>
     </section>
@@ -534,7 +521,6 @@
 
   <script type="module" src="js/contenido.js"></script>
   <script type="module" src="js/main.js"></script>
-  <script type="module" src="js/hero.js"></script>
   <script type="module" src="js/servicios.js"></script>
   <script type="module" src="js/tracking.js"></script>
 </body>
