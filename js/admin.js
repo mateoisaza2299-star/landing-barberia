@@ -1062,17 +1062,21 @@ const tuneCharts = () => {
 const refreshAll = (opts) => Promise.all([loadDash(opts), loadReservas()]);
 
 const guard = async () => {
+  if (!navigator.onLine) return;
   const { data: { session } } = await supabase.auth.getSession();
+  if (!navigator.onLine) return;
   if (!session) {
     window.location.replace("admin-login.html");
     return;
   }
   const { data, error } = await supabase.from("admins").select("id").limit(1);
+  if (!navigator.onLine) return;
   if (error || !data || !data.length) {
     await supabase.auth.signOut();
     window.location.replace("admin-login.html");
     return;
   }
+  document.documentElement.dataset.panelReady = "1";
   document.querySelector("[data-admin-email]").textContent = session.user.email || "";
   tuneCharts();
   paintHeader();

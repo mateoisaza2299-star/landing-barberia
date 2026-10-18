@@ -4,10 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#161210">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>Panel — Miami Cuts</title>
+  <link rel="manifest" href="admin.webmanifest">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,6 +20,10 @@
   <link rel="stylesheet" href="css/admin.css">
 </head>
 <body class="admin-body">
+  <script src="js/pwa.js"></script>
+  <div class="offline-screen" data-offline role="status">
+    <p>Sin conexión. Conéctate para ver tus citas.</p>
+  </div>
   <div class="dash">
     <aside class="dash-side">
       <a class="logo" href="index.html" aria-label="Miami Cuts, inicio">
@@ -44,6 +53,7 @@
         <div class="dash-top-actions">
           <p class="dash-updated">Última actualización <time data-updated>—</time></p>
           <div class="dash-action-buttons">
+            <button class="dash-btn" type="button" data-install hidden>Instalar app</button>
             <button class="dash-btn" type="button" data-refresh>Actualizar</button>
             <button class="btn" type="button" data-logout>Salir</button>
           </div>
@@ -159,6 +169,19 @@
     <button type="button" data-view="servicios">Servicios</button>
     <button type="button" data-view="audiencia">Audiencia</button>
   </nav>
+
+  <div class="install-guide" data-install-guide hidden>
+    <div class="install-guide-card" role="dialog" aria-modal="true" aria-labelledby="install-title">
+      <p class="kicker">Panel</p>
+      <h2 id="install-title">Instalar app</h2>
+      <ol>
+        <li><span>Toca <strong>Compartir</strong>.</span></li>
+        <li><span>Elige <strong>Agregar a pantalla de inicio</strong>.</span></li>
+        <li><span>Toca <strong>Agregar</strong>.</span></li>
+      </ol>
+      <button class="btn btn-dark btn-block" type="button" data-install-close>Listo</button>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
   <script type="module" src="js/admin.js"></script>

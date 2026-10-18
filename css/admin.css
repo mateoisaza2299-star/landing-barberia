@@ -817,3 +817,94 @@
   [data-funnel].is-loading,
   .stat-grid li.is-loading strong { animation: none; }
 }
+
+.offline-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  place-items: center;
+  padding: calc(2rem + env(safe-area-inset-top)) 1.5rem calc(2rem + env(safe-area-inset-bottom));
+  background: var(--cream);
+  color: var(--ink);
+  text-align: center;
+}
+
+html.is-offline .offline-screen { display: grid; }
+
+html.is-offline .dash,
+html.is-offline .dash-note,
+html.is-offline .dash-tabs,
+html.is-offline .admin-bar,
+html.is-offline .login-main,
+html.is-offline .install-guide { display: none; }
+
+.offline-screen p {
+  position: relative;
+  margin: 0;
+  max-width: 14rem;
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 7vw, 3rem);
+  line-height: 1.02;
+}
+
+.offline-screen p::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 1px;
+  margin: 0 auto 1rem;
+  background: var(--gold);
+}
+
+.install-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(22, 18, 16, 0.46);
+}
+
+.install-guide[hidden] { display: none; }
+
+.install-guide-card {
+  width: min(420px, 100%);
+  padding: 1.6rem 1.3rem 1.4rem;
+  background: var(--ivory);
+  border-top: 2px solid var(--gold);
+}
+
+.install-guide-card h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(2.2rem, 6vw, 2.8rem);
+}
+
+.install-guide-card ol {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  counter-reset: step;
+}
+
+.install-guide-card li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.install-guide-card li::before {
+  counter-increment: step;
+  content: counter(step);
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--gold-deep);
+}

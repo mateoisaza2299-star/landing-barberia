@@ -15,8 +15,16 @@ const isAdmin = async () => {
 };
 
 const gate = async () => {
+  if (!navigator.onLine) return;
   const { data: { session } } = await supabase.auth.getSession();
-  if (session && await isAdmin()) window.location.replace("admin.html");
+  if (!navigator.onLine) return;
+  if (session && await isAdmin()) {
+    if (!navigator.onLine) return;
+    window.location.replace("admin.html");
+    return;
+  }
+  if (!navigator.onLine) return;
+  document.documentElement.dataset.panelReady = "1";
 };
 
 form.addEventListener("submit", async (event) => {
