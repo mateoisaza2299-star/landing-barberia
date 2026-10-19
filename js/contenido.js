@@ -4,6 +4,7 @@ import {
   negocio,
   formatoPrecio,
   direccionLinea,
+  enlaceMapa,
   enlaceWhatsapp,
   textoHorario,
   estadoApertura,
@@ -64,7 +65,7 @@ const applyLinks = () => {
     if (!link.querySelector("svg")) link.textContent = negocio.telefonoVisible;
   });
   document.querySelectorAll("[data-maps]").forEach((link) => {
-    link.href = negocio.mapa;
+    link.href = enlaceMapa();
   });
   document.querySelectorAll("[data-red]").forEach((link) => {
     const href = negocio.redes[link.getAttribute("data-red")];
@@ -278,7 +279,7 @@ const applySchema = () => {
       addressCountry: negocio.direccion.pais
     },
     makesOffer: offers,
-    hasMap: negocio.mapa
+    hasMap: enlaceMapa()
   };
   const valores = servicios.map((item) => item.precioNumero).filter((n) => n > 0);
   if (valores.length) {

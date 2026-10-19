@@ -12,7 +12,7 @@ export const negocio = {
     region: "Cundinamarca",
     pais: "CO"
   },
-  mapa: "https://maps.google.com/?q=Carrera+7+con+Calle+17,+Fusagasug%C3%A1,+Cundinamarca",
+  mapsUrl: "https://maps.google.com/?q=Carrera+7+con+Calle+17,+Fusagasug%C3%A1,+Cundinamarca",
   mapaEmbed: "https://maps.google.com/maps?q=Carrera%207%20con%20Calle%2017%2C%20Fusagasug%C3%A1%2C%20Cundinamarca&z=16&output=embed",
   zona: "America/Bogota",
   horasAntesDeCerrar: 1,
@@ -43,6 +43,13 @@ export const negocio = {
   ],
   mensajeReserva: "Hola, quiero reservar una cita en Miami Cuts."
 };
+
+export function enlaceMapa() {
+  const guardado = String(negocio.mapsUrl || "").trim();
+  if (guardado) return guardado;
+  const query = [negocio.nombre, direccionLinea()].filter(Boolean).join(", ");
+  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+}
 
 export function formatoPrecio(valor) {
   const n = Number(valor) || 0;

@@ -1131,6 +1131,7 @@ body.is-locked .fab {
 .slot:focus-visible,
 .faq-q:focus-visible,
 .cita-actions button:focus-visible,
+.cita-actions a:focus-visible,
 .to-top:focus-visible {
   outline: 2px solid var(--gold-deep);
   outline-offset: 3px;
@@ -2299,7 +2300,8 @@ html.motion-ready .reveal {
   margin-top: 0.5rem;
 }
 
-.cita-actions button {
+.cita-actions button,
+.cita-actions a {
   border: 1px solid rgba(201, 162, 75, 0.7);
   background: transparent;
   color: #f7f3eb;
@@ -2311,7 +2313,26 @@ html.motion-ready .reveal {
   cursor: pointer;
 }
 
-.cita-actions button[hidden] { display: none; }
+.cita-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  text-decoration: none;
+}
+
+.cita-actions a svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cita-actions button[hidden],
+.cita-actions a[hidden] { display: none; }
 
 .cita-note {
   margin: 0.4rem 0 0;
@@ -2513,7 +2534,8 @@ body:has(.page-legal) .site-header {
   .to-top,
   .faq-q,
   .social-links a,
-  .cita-actions button { transition: none; }
+  .cita-actions button,
+  .cita-actions a { transition: none; }
 }
 
 .footer-text-btn {
