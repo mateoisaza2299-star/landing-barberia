@@ -400,14 +400,16 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   width: 100%;
-  max-width: 440px;
+  max-width: 520px;
   min-width: 0;
 }
 
 .when-block {
   display: grid;
+  align-content: center;
   gap: 4px;
   min-width: 0;
+  min-height: 72px;
   padding: 8px 10px;
   border: 1px solid rgba(26, 21, 18, 0.06);
   border-radius: 8px;
@@ -426,12 +428,11 @@
 
 .when-value {
   font-family: var(--serif);
-  font-size: clamp(1.28rem, 4.4vw, 1.7rem);
+  font-size: clamp(1.2rem, 3.4vw, 1.55rem);
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--ink);
-  white-space: nowrap;
 }
 
 .booking h3 {
@@ -445,6 +446,15 @@
 }
 
 .booking p { margin: 4px 0 0; }
+
+.booking-id {
+  color: var(--muted);
+  font-family: var(--ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 
 .booking-service,
 .booking-phone,
@@ -977,6 +987,10 @@
   .svc-table td:first-child { display: block; text-align: left; }
   .res-table td:first-child::before,
   .svc-table td:first-child::before { content: none; }
+}
+
+@media (min-width: 640px) {
+  .booking-when { grid-template-columns: minmax(0, 1.35fr) minmax(148px, 0.8fr); }
 }
 
 @media (min-width: 800px) {

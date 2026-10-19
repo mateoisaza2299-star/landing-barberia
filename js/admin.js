@@ -97,19 +97,6 @@ const shortDay = (iso) => new Intl.DateTimeFormat("es-CO", {
   month: "short"
 }).format(new Date(iso + "T00:00:00Z"));
 
-const fechaCorta = (iso) => {
-  const clean = String(iso || "").slice(0, 10);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
-  const text = new Intl.DateTimeFormat("es-CO", {
-    timeZone: "UTC",
-    weekday: "short",
-    day: "numeric",
-    month: "short"
-  }).format(new Date(clean + "T00:00:00Z"));
-  const tidy = text.replace(/\./g, "").replace(/,/g, "").replace(/\bde\b/gi, "").replace(/\s+/g, " ").trim();
-  return tidy ? tidy.charAt(0).toUpperCase() + tidy.slice(1) : clean;
-};
-
 const diaTexto = (iso) => {
   const clean = String(iso || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
@@ -144,6 +131,45 @@ const hourLabel = (value) => {
   const suffix = hour < 12 ? "am" : "pm";
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return hour12 + ":00 " + suffix;
+};
+
+const capitalizar = (value) => {
+  const text = String(value || "").replace(/\./g, "");
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+};
+
+const fechaCita = (iso) => {
+  const clean = String(iso || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return "Sin fecha";
+  const parts = new Intl.DateTimeFormat("es-CO", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  }).formatToParts(new Date(clean + "T00:00:00Z"));
+  const pick = (type) => {
+    const part = parts.find((item) => item.type === type);
+    return part ? part.value : "";
+  };
+  return capitalizar(pick("weekday")) + ", " + pick("day") + " " + capitalizar(pick("month")) + " " + pick("year");
+};
+
+const horaCita = (value) => {
+  const match = String(value ?? "").trim().match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return "Sin hora";
+  const hour = Number(match[1]);
+  if (hour < 0 || hour > 23) return "Sin hora";
+  const suffix = hour < 12 ? "AM" : "PM";
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+  return String(hour12).padStart(2, "0") + ":" + match[2] + " " + suffix;
+};
+
+const refCita = (row) => {
+  const id = String((row && row.id) ?? "").trim();
+  if (!id) return "";
+  if (/^\d+$/.test(id)) return "#" + id;
+  return "#" + id.replace(/-/g, "").slice(0, 4).toUpperCase();
 };
 
 const fechaDe = (row) => String(row.fecha || "").slice(0, 10);
@@ -352,18 +378,21 @@ const whenBlock = (label, value, dateTime) => {
 const bookingCard = (row) => {
   const article = el("article", "booking");
   const header = el("header", "booking-head");
-  const when = el("div", "booking-when");
   const fecha = fechaDe(row);
   const hora = String(row.hora || "").slice(0, 5);
+  const when = el("div", "booking-when");
   when.append(
-    whenBlock("Fecha", fechaCorta(fecha), fecha || ""),
-    whenBlock("Hora", hourLabel(row.hora), fecha && hora ? fecha + "T" + hora : "")
+    whenBlock("Fecha", fechaCita(fecha), /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : ""),
+    whenBlock("Hora", horaCita(row.hora), fecha && hora ? fecha + "T" + hora : "")
   );
   const badges = el("div", "badges");
   badges.appendChild(el("span", "badge badge-" + (row.estado || ""), STATUS[row.estado] || row.estado || ""));
   if (row.gratis === true) badges.appendChild(el("span", "badge badge-gratis", "Gratis"));
   header.append(when, badges);
-  article.append(header, el("h3", null, row.nombre || "Sin nombre"), el("p", "booking-service", row.servicio || ""));
+  article.append(header, el("h3", null, row.nombre || "Sin nombre"));
+  const ref = refCita(row);
+  if (ref) article.appendChild(el("p", "booking-id", "Cita " + ref));
+  if (String(row.servicio || "").trim()) article.appendChild(el("p", "booking-service", String(row.servicio).trim()));
   const phone = el("p", "booking-phone");
   const link = document.createElement("a");
   link.href = waNumero(row.telefono);
@@ -1046,7 +1075,7 @@ const pintarChoques = (rows) => {
   box.hidden = false;
   box.replaceChildren(el("p", "block-note", "Hay citas en ese horario."));
   rows.forEach((row) => {
-    box.appendChild(el("p", "block-cita", [row.nombre || "Sin nombre", fechaDe(row), hourLabel(row.hora)].filter(Boolean).join(" · ")));
+    box.appendChild(el("p", "block-cita", [row.nombre || "Sin nombre", fechaCita(fechaDe(row)), horaCita(row.hora)].filter(Boolean).join(" · ")));
   });
   if (cancelar) cancelar.hidden = false;
   if (conservar) conservar.hidden = false;

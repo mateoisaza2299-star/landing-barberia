@@ -19,8 +19,6 @@ import {
   const whatsapp = negocio.whatsapp || document.body.dataset.whatsapp || "573209604364";
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const contactKey = "mc_contacto";
-  const fichaKey = "mc_fichas";
-  let reagendarToken = "";
   let lastBooking = null;
 
   document.documentElement.classList.add("js");
@@ -231,7 +229,7 @@ import {
   };
 
   const citaTracker = (() => {
-      const empty = { track() {}, hush() {}, datos() { return null; }, marcar() {}, revelar() {} };
+      const empty = { track() {}, hush() {}, revelar() {} };
     try {
       const card = document.querySelector("[data-cita]");
       const live = document.querySelector("[data-reserva-estado]");
@@ -504,16 +502,8 @@ import {
       };
 
       const cancelBtn = card.querySelector("[data-cita-cancel]");
+      const mapLink = card.querySelector("[data-maps]");
       const note = card.querySelector("[data-cita-note]");
-
-      const fichaDe = (token) => {
-        try {
-          const all = JSON.parse(localStorage.getItem(fichaKey) || "{}");
-          return (all && all[token]) || {};
-        } catch (error) {
-          return {};
-        }
-      };
 
       const setNote = (message, link) => {
         if (!note) return;
@@ -536,12 +526,9 @@ import {
       };
 
       const paintActions = (item) => {
-        if (cancelBtn) {
-          const can = !!(item && (item.estado === "pendiente" || item.estado === "confirmada"));
-          cancelBtn.hidden = !can;
-        }
-        const moveBtn = card.querySelector("[data-cita-reagendar]");
-        if (moveBtn) moveBtn.hidden = !item;
+        const can = !!(item && (item.estado === "pendiente" || item.estado === "confirmada"));
+        if (cancelBtn) cancelBtn.hidden = !can;
+        if (mapLink) mapLink.hidden = !can;
       };
 
       closeBtn.addEventListener("click", () => {
@@ -628,32 +615,6 @@ import {
             liveMark = "";
             live.hidden = true;
             live.classList.remove("is-highlight");
-          } catch (error) {}
-        },
-        datos() {
-          try {
-            const item = current();
-            if (!item) return null;
-            const extra = fichaDe(item.token);
-            const row = item.row || {};
-            return {
-              token: item.token,
-              servicio: row.servicio || extra.servicio || "",
-              nombre: row.nombre || extra.nombre || "",
-              telefono: row.telefono || extra.telefono || "",
-              barbero: row.barbero || extra.barbero || "",
-              nota: row.nota || extra.nota || ""
-            };
-          } catch (error) {
-            return null;
-          }
-        },
-        marcar(token, estado) {
-          try {
-            const row = cache.get(token) || {};
-            cache.set(token, { ...row, estado });
-            seen.set(token, estado);
-            paint();
           } catch (error) {}
         },
         revelar() {
@@ -900,17 +861,6 @@ import {
     } catch (error) {}
   };
 
-  const writeFicha = (token, ficha) => {
-    try {
-      if (!token) return;
-      const all = JSON.parse(localStorage.getItem(fichaKey) || "{}");
-      all[token] = ficha;
-      const keys = Object.keys(all);
-      keys.slice(0, Math.max(0, keys.length - 5)).forEach((key) => delete all[key]);
-      localStorage.setItem(fichaKey, JSON.stringify(all));
-    } catch (error) {}
-  };
-
   const paintDuracion = () => {
     if (!reservaForm) return;
     const note = reservaForm.querySelector("[data-duracion-note]");
@@ -931,7 +881,7 @@ import {
   let closingModal = false;
   let closeToken = 0;
 
-  const openModal = (trigger, prefill) => {
+  const openModal = (trigger) => {
     if (!modal) return;
     closeToken += 1;
     closingModal = false;
@@ -939,35 +889,12 @@ import {
     lastTrigger = trigger;
     setMenu(false);
     showForm();
-    reagendarToken = prefill && prefill.token ? prefill.token : "";
     const title = modal.querySelector("#reserva-title");
     const lead = modal.querySelector("[data-reserva-lead]");
-    if (title) title.textContent = reagendarToken ? "Elige la nueva fecha y hora" : "Tu cita en " + negocio.nombre;
-    if (lead) {
-      lead.textContent = reagendarToken
-        ? "Completa día y hora. La cita anterior se cancela cuando guardemos la nueva."
-        : "Elige día y hora. La cita queda pendiente hasta que la confirmemos.";
-    }
-    if (submitBtn) submitBtn.textContent = reagendarToken ? "Reagendar cita" : "Reservar cita";
-    if (reservaForm && prefill) {
-      const set = (name, value) => {
-        const field = reservaForm.querySelector("[name='" + name + "']");
-        if (field && value) field.value = value;
-      };
-      set("nombre", prefill.nombre);
-      set("telefono", prefill.telefono);
-      set("servicio", prefill.servicio);
-      set("barbero", prefill.barbero);
-      if (prefill.nota) set("nota", prefill.nota);
-      const fecha = reservaForm.querySelector("[name='fecha']");
-      if (fecha) fecha.value = "";
-      if (hoursBox) hoursBox.replaceChildren();
-      if (hoursNote) {
-        hoursNote.hidden = false;
-        hoursNote.textContent = "Elige una nueva fecha para ver las horas.";
-      }
-      chosenHour = "";
-    } else if (reservaForm) {
+    if (title) title.textContent = "Tu cita en " + negocio.nombre;
+    if (lead) lead.textContent = "Elige día y hora. La cita queda pendiente hasta que la confirmemos.";
+    if (submitBtn) submitBtn.textContent = "Reservar cita";
+    if (reservaForm) {
       const saved = readContact();
       if (saved) {
         const nombre = reservaForm.querySelector("[name='nombre']");
@@ -988,7 +915,7 @@ import {
     vigilarHoras();
     modal.hidden = false;
     lock(true);
-    const focusTarget = reagendarToken ? modal.querySelector("[name='fecha']") : modal.querySelector("[name='nombre']");
+    const focusTarget = modal.querySelector("[name='nombre']");
     if (focusTarget) focusTarget.focus();
   };
 
@@ -1071,14 +998,6 @@ import {
     }
   }, true);
 
-  document.querySelectorAll("[data-cita-reagendar]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const datos = citaTracker.datos();
-      if (!datos) return;
-      openModal(button, datos);
-    });
-  });
-
   document.addEventListener("mc:reservar", (event) => {
     const detail = (event && event.detail) || {};
     const select = reservaForm ? reservaForm.querySelector("[name='servicio']") : null;
@@ -1157,7 +1076,7 @@ import {
       return;
     }
 
-    const submitLabel = reagendarToken ? "Reagendar cita" : "Reservar cita";
+    const submitLabel = "Reservar cita";
     const telefonoLimpio = cel.digitos.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
     submitBtn.disabled = true;
     submitBtn.textContent = "Guardando…";
@@ -1201,15 +1120,11 @@ import {
       return;
     }
 
-    const previo = reagendarToken;
-    reagendarToken = "";
     marcarPolitica();
     let seguimiento = "";
-    let avisoPrevia = "";
     try {
       if (token) {
         seguimiento = window.location.origin + window.location.pathname + "?cita=" + token;
-        writeFicha(token, { nombre, telefono: telefonoLimpio, servicio, barbero, nota });
         citaTracker.track(token, {
           servicio,
           fecha,
@@ -1223,16 +1138,6 @@ import {
       }
     } catch (err) {}
     writeContact(nombre, telefonoLimpio, data.get("recordar") === "on");
-    if (previo && previo !== token) {
-      try {
-        const cancel = await supabase.rpc("cancelar_reserva", { p_token: previo });
-        const denied = !cancel || cancel.error || cancel.data === false || cancel.data === "false";
-        if (denied) avisoPrevia = " No pudimos cancelar la cita anterior. Escríbenos por WhatsApp.";
-        else citaTracker.marcar(previo, "cancelada");
-      } catch (err) {
-        avisoPrevia = " No pudimos cancelar la cita anterior. Escríbenos por WhatsApp.";
-      }
-    }
 
     const lines = [
       "Hola, soy " + nombre + ". Acabo de reservar en " + negocio.nombre + ".",
@@ -1251,7 +1156,7 @@ import {
       hora: chosenHour,
       minutos: minutosDe(servicio)
     };
-    reservaSummary.textContent = nombre + " · " + servicio + " · " + fecha + " · " + hourLabel(chosenHour) + avisoPrevia;
+    reservaSummary.textContent = nombre + " · " + servicio + " · " + fecha + " · " + hourLabel(chosenHour);
     reservaWa.href = enlaceWhatsapp(lines.join("\n"));
     const panel = modal && modal.querySelector(".modal-panel");
     if (panel) panel.setAttribute("aria-labelledby", "reserva-done-title");
