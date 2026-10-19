@@ -43,6 +43,7 @@ let saving = false;
 let askResolve = null;
 let sheetId = null;
 let sheetPhone = "";
+let copyTimer = 0;
 const hitos = new Map();
 
 const el = (tag, className, text) => {
@@ -144,6 +145,12 @@ const fail = (message) => {
 
 const digitos = (telefono) => String(telefono || "").replace(/\D/g, "").slice(-10);
 
+const paginaPublica = () => {
+  const sitio = String(negocio.sitio || "").trim();
+  if (sitio) return sitio;
+  return new URL("index.html", window.location.href).href;
+};
+
 const waNumero = (telefono) => "https://wa.me/57" + digitos(telefono);
 
 const waMensaje = (telefono, texto) => waNumero(telefono) + "?text=" + encodeURIComponent(texto);
@@ -191,11 +198,13 @@ const mensajeConfirmacion = (row, hechos) => {
     "Hola " + nombre + " 👋, tu cita en " + negocio.nombre + " quedó *confirmada*.",
     "",
     "📅 " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora),
-    "✂️ " + lineaServicio(row)
+    "✂️ " + lineaServicio(row),
+    "📍 " + direccionLinea(),
+    ""
   ];
-  const direccion = direccionLinea();
-  if (direccion) lineas.push("📍 " + direccion);
-  lineas.push("", "Si necesitas cancelarla o cambiarla, avísanos por aquí. ¡Te esperamos!");
+  const token = String(row.token || "").trim();
+  if (token) lineas.push("Si necesitas cancelarla o cambiarla, avísanos por aquí o desde este link: " + paginaPublica() + "?cita=" + token);
+  lineas.push("¡Te esperamos!");
   if (hechos) lineas.push("🎉 Con esta cita completas " + hechos + " cortes: ¡tu próximo corte es gratis!");
   return lineas.join("\n");
 };
@@ -203,17 +212,17 @@ const mensajeConfirmacion = (row, hechos) => {
 const mensajeCancelacion = (row) => {
   const nombre = nombreDe(row);
   const servicio = String(row.servicio || "").trim() || "servicio";
-  return "Hola " + nombre + ", lamentamos avisarte que tu cita del " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " (" + servicio + ") en " + negocio.nombre + " fue *cancelada*. ¿Quieres que la reagendemos? Respóndenos por aquí.";
+  return "Hola " + nombre + ", lamentamos avisarte que tu cita del " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " (" + servicio + ") en " + negocio.nombre + " fue *cancelada*. ¿Quieres que la reagendemos? Reserva de nuevo aquí: " + paginaPublica();
 };
 
 const mensajeGratis = (row, hechos) => {
   const nombre = nombreDe(row);
-  return "¡Hola " + nombre + "! 🎉 Completaste " + hechos + " cortes en " + negocio.nombre + " y tu próximo corte es gratis. Cuando quieras reservarlo, escríbenos por aquí.";
+  return "¡Hola " + nombre + "! Completaste " + hechos + " cortes en " + negocio.nombre + " y tu próximo corte es gratis. Reserva cuando quieras: " + paginaPublica();
 };
 
 const mensajeBloqueo = (row) => {
-  const nombre = String((row && row.nombre) || "").trim() || "cliente";
-  return "Hola " + nombre + ", por un imprevisto no podremos atenderte el " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + ". Disculpa las molestias, ¿te reagendamos? Respóndenos por aquí.";
+  const dia = diaTexto(fechaDe(row));
+  return "Hola " + (row.nombre || "") + ", por un imprevisto no podremos atenderte el " + dia + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + ". Disculpa las molestias, ¿te reagendamos? " + paginaPublica();
 };
 
 const diaSeleccionado = () => {
@@ -360,8 +369,8 @@ const bookingCard = (row) => {
     article.appendChild(actions);
   }
   if (row.estado === "confirmada" || row.estado === "cancelada") {
-    if (row.avisado === false) article.appendChild(el("p", "aviso-falta", "Falta avisar al cliente"));
-    else if (row.avisado === true) article.appendChild(el("p", "aviso-ok", "Cliente avisado ✓"));
+    const avisado = row.avisado === true;
+    article.appendChild(el("p", avisado ? "aviso-ok" : "aviso-falta", avisado ? "Cliente avisado ✓" : "Falta avisar al cliente"));
     const send = el("button", "act act-send", "Enviar WhatsApp");
     send.type = "button";
     send.addEventListener("click", () => abrirAviso(row));
@@ -1340,13 +1349,19 @@ if (sheetCopy) sheetCopy.addEventListener("click", async () => {
       if (area) {
         area.focus();
         area.select();
+        area.setSelectionRange(0, texto.length);
       }
       copiado = document.execCommand("copy");
     } catch (err) {
       copiado = false;
     }
   }
-  sheetCopy.textContent = copiado ? "Mensaje copiado" : "No se pudo copiar";
+  if (!copiado) return;
+  sheetCopy.textContent = "Mensaje copiado";
+  window.clearTimeout(copyTimer);
+  copyTimer = window.setTimeout(() => {
+    sheetCopy.textContent = "Copiar mensaje";
+  }, 1600);
 });
 prepararBloqueos();
 const logout = document.querySelector("[data-logout]");
