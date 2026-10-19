@@ -715,7 +715,7 @@
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.1rem;
   padding: 0.15rem 0.2rem calc(0.2rem + env(safe-area-inset-bottom));
   background: var(--espresso);
@@ -723,9 +723,11 @@
 }
 
 .dash-tabs button {
-  padding: 0.55rem 0.15rem 0.4rem;
-  font-size: 0.64rem;
-  letter-spacing: 0.04em;
+  padding: 0.5rem 0.08rem 0.35rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  white-space: normal;
 }
 
 .dash-tabs button[aria-current="page"] {
@@ -907,4 +909,145 @@ html.is-offline .install-guide { display: none; }
   font-size: 1.7rem;
   line-height: 1;
   color: var(--gold-deep);
+}
+
+.res-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.badge-gratis,
+.badge-free {
+  background: rgba(201, 162, 75, 0.14);
+}
+
+.res-gratis {
+  margin-top: 0.45rem;
+  border: 1px solid var(--gold);
+  background: transparent;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.res-gratis:hover { background: var(--gold); color: var(--espresso); }
+
+.fid-bar {
+  height: 0.35rem;
+  background: rgba(26, 21, 18, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.fid-fill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+
+.fid-count {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.block-head h2 { margin: 0; }
+
+.block-form,
+.block-item {
+  padding: 1rem;
+  background: var(--ivory);
+  border: 1px solid rgba(26, 21, 18, 0.06);
+  border-top: 2px solid var(--gold);
+}
+
+.block-form { display: grid; gap: 0.8rem; margin-bottom: 1rem; }
+
+.block-form[hidden],
+.block-hours[hidden],
+.block-actions [hidden],
+[data-bloqueo-citas][hidden],
+[data-bloqueo-avisos][hidden] { display: none; }
+
+.block-dates,
+.block-hours,
+.block-shortcuts,
+.block-actions,
+.block-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: end;
+}
+
+.block-mode {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.block-mode label,
+.block-shortcuts button {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.block-shortcuts button,
+.block-mode label {
+  border: 1px solid var(--gold);
+  background: transparent;
+  padding: 0.45rem 0.65rem;
+  cursor: pointer;
+}
+
+.block-list { display: grid; gap: 0.7rem; }
+
+.block-item h3 { margin: 0; font-size: 1.35rem; }
+
+.block-motivo,
+.block-note,
+.block-cita,
+.block-aviso { margin: 0.35rem 0 0; color: var(--muted); }
+
+.block-aviso a { color: var(--ink); }
+
+.milestone {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(22, 18, 16, 0.46);
+}
+
+.milestone[hidden] { display: none; }
+
+.milestone-card {
+  width: min(420px, 100%);
+  padding: 1.4rem 1.2rem;
+  background: var(--ivory);
+  border-top: 2px solid var(--gold);
+}
+
+.milestone-card p {
+  margin: 0 0 1rem;
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  line-height: 1.15;
 }

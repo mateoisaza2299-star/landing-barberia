@@ -8,6 +8,7 @@
   <meta name="robots" content="noindex">
   <link rel="canonical" href="404.html">
   <meta name="theme-color" content="#161210">
+  <link rel="manifest" href="manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CO">
   <meta property="og:site_name" content="Miami Cuts">
@@ -24,7 +25,7 @@
   <meta name="twitter:image" content="assets/og.jpg">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/absoluto.js"></script>
@@ -51,6 +52,12 @@
       </div>
     </div>
   </main>
+  <nav class="app-bar" data-app-bar aria-label="App">
+    <a href="index.html?reservar=1">Reservar</a>
+    <a href="index.html">Mi cita</a>
+    <button type="button" data-fidelidad>Mi tarjeta</button>
+  </nav>
+  <script src="js/cliente.js"></script>
   <script type="module" src="js/contenido.js"></script>
 </body>
 </html>

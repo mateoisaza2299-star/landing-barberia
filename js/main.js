@@ -5,7 +5,6 @@ import {
   horasDelDia,
   diaSemana,
   celularColombia,
-  estadoApertura,
   enlaceWhatsapp,
   minutosDe,
   direccionLinea,
@@ -160,7 +159,9 @@ import {
   let hoursToken = 0;
   let horasTimer = 0;
   const avisoHoy = "Ya no hay horas disponibles hoy. Elige otro día.";
+  const avisoDia = "Este día no hay horas disponibles. Elige otro día.";
   const avisoPaso = "Esa hora ya pasó, elige otra";
+  const avisoBloqueo = "Ese horario ya no está disponible, elige otro";
 
   const bogotaNow = () => {
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -230,7 +231,7 @@ import {
   };
 
   const citaTracker = (() => {
-      const empty = { track() {}, hush() {}, datos() { return null; }, marcar() {} };
+      const empty = { track() {}, hush() {}, datos() { return null; }, marcar() {}, revelar() {} };
     try {
       const card = document.querySelector("[data-cita]");
       const live = document.querySelector("[data-reserva-estado]");
@@ -294,7 +295,9 @@ import {
 
       const writeTokens = () => {
         try {
-          localStorage.setItem(storageKey, JSON.stringify(tokens));
+          const saved = JSON.stringify(tokens);
+          localStorage.setItem(storageKey, saved);
+          localStorage.setItem("pb_citas", saved);
         } catch (error) {}
       };
 
@@ -624,6 +627,15 @@ import {
             seen.set(token, estado);
             paint();
           } catch (error) {}
+        },
+        revelar() {
+          try {
+            hiddenToken = "";
+            hiddenEstado = "";
+            writeHide();
+            paint();
+            if (!card.hidden) card.scrollIntoView({ block: "center" });
+          } catch (error) {}
         }
       };
     } catch (error) {
@@ -726,6 +738,10 @@ import {
       if (error) throw error;
       const taken = ocupadasDe(data);
       const slots = slotsFor(iso);
+      if (slots.length && slots.every((slot) => taken.has(slot))) {
+        renderHours(iso, taken, avisoDia);
+        return;
+      }
       if (iso === bogotaNow().iso && !slots.some((slot) => horaLibre(iso, slot, taken))) {
         hoursNote.hidden = false;
         hoursNote.textContent = avisoHoy;
@@ -1138,7 +1154,7 @@ import {
     if (error) {
       if (String(error.code || "") === "42501") {
         soltarHora();
-        showError(avisoPaso);
+        showError(avisoBloqueo);
         loadHours(fecha);
         return;
       }
@@ -1272,13 +1288,7 @@ import {
     if (lastBooking) downloadIcs(lastBooking);
   });
 
-  const apertura = estadoApertura();
-  document.querySelectorAll("[data-open-status]").forEach((status) => {
-    status.classList.toggle("is-open", !!apertura.abierto);
-    status.classList.toggle("is-closed", apertura.abierto === false && !apertura.pendiente);
-    const label = status.querySelector("[data-open-label]");
-    if (label) label.textContent = apertura.texto;
-  });
+  document.addEventListener("mc-mostrar-cita", () => citaTracker.revelar());
 
   const year = document.querySelector("[data-year]");
   if (year) year.textContent = String(new Date().getFullYear());

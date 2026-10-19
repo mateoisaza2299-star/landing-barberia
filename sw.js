@@ -1,14 +1,27 @@
-const CACHE = "panel-shell-v1";
+const CACHE = "site-shell-v2";
+
+const ADMIN_PAGES = ["admin.html", "admin-login.html"];
+const PUBLIC_PAGES = ["index.html", "historia.html", "privacidad.html", "404.html"];
+const ADMIN_JS = ["js/admin.js", "js/admin-login.js", "js/pwa.js"];
+const PUBLIC_JS = [
+  "js/absoluto.js",
+  "js/cliente.js",
+  "js/contenido.js",
+  "js/faq.js",
+  "js/historia.js",
+  "js/main.js",
+  "js/movimiento.js",
+  "js/tracking.js"
+];
 
 const SHELL = [
-  "admin.html",
-  "admin-login.html",
+  ...ADMIN_PAGES,
+  ...PUBLIC_PAGES,
   "css/admin.css",
   "css/styles.css",
-  "js/admin.js",
-  "js/admin-login.js",
+  ...ADMIN_JS,
+  ...PUBLIC_JS,
   "js/config.js",
-  "js/pwa.js",
   "js/servicios.js",
   "js/supabase.js",
   "assets/icons/icon-192.png",
@@ -18,7 +31,10 @@ const SHELL = [
 ];
 
 const SHELL_SET = new Set(SHELL);
-const ADMIN_PAGES = new Set(["admin.html", "admin-login.html"]);
+const ADMIN_PAGE_SET = new Set(ADMIN_PAGES);
+const PUBLIC_PAGE_SET = new Set(PUBLIC_PAGES);
+const ADMIN_JS_SET = new Set(ADMIN_JS);
+const PUBLIC_JS_SET = new Set(PUBLIC_JS);
 
 const relativePath = (url) => {
   const scope = new URL(self.registration.scope);
@@ -43,19 +59,26 @@ const leaveAlone = (url, request) => {
   return false;
 };
 
-const fromAdmin = (request) => {
+const laneOf = (request) => {
   const path = relativePath(new URL(request.url));
-  if (request.mode === "navigate" || request.destination === "document") return ADMIN_PAGES.has(path);
-  if (!request.referrer) return false;
+  if (!SHELL_SET.has(path)) return "";
+  if (request.mode === "navigate" || request.destination === "document") {
+    if (ADMIN_PAGE_SET.has(path)) return "admin";
+    if (PUBLIC_PAGE_SET.has(path)) return "public";
+    return "";
+  }
+  if (!request.referrer) return "";
   let referrer;
   try {
     referrer = new URL(request.referrer);
   } catch (error) {
-    return false;
+    return "";
   }
   const ref = relativePath(referrer);
-  if (ADMIN_PAGES.has(ref)) return true;
-  return SHELL_SET.has(ref) && ref.startsWith("js/");
+  if (ADMIN_PAGE_SET.has(ref) || ADMIN_JS_SET.has(ref)) return "admin";
+  if (PUBLIC_PAGE_SET.has(ref) || PUBLIC_JS_SET.has(ref)) return "public";
+  if (SHELL_SET.has(ref) && ref.startsWith("js/")) return "public";
+  return "";
 };
 
 const cleanRequest = (path) => new Request(new URL(path, self.registration.scope).href);
@@ -69,12 +92,17 @@ const canStore = (request, response) => {
   return type.includes("text/html") || type.includes("text/css") || type.includes("javascript") || type.includes("image/png");
 };
 
-const offlineDocument = () => new Response(
+const offlineAdmin = () => new Response(
   "<!DOCTYPE html><html lang=\"es-CO\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#161210\"><title>Panel</title><style>html,body{margin:0;height:100%;background:#f7f3eb;color:#1a1512}body{min-height:100%;display:grid;place-items:center;padding:2rem;text-align:center;font-family:Georgia,'Times New Roman',serif}p{margin:0;max-width:14rem;font-size:2rem;line-height:1.05}p::before{content:'';display:block;width:2rem;height:1px;margin:0 auto 1rem;background:#c9a24b}</style></head><body><p>Sin conexión. Conéctate para ver tus citas.</p><script>addEventListener('online',function(){location.reload()})</script></body></html>",
   { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } }
 );
 
-const networkFirst = async (request) => {
+const offlinePublic = () => new Response(
+  "<!DOCTYPE html><html lang=\"es-CO\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#161210\"><title>Sin conexión</title><style>html,body{margin:0;height:100%;background:#f7f3eb;color:#1a1512}body{min-height:100%;display:grid;place-items:center;padding:2rem;text-align:center;font-family:Georgia,'Times New Roman',serif}p{margin:0;max-width:14rem;font-size:2rem;line-height:1.05}p::before{content:'';display:block;width:2rem;height:1px;margin:0 auto 1rem;background:#c9a24b}</style></head><body><p>Sin conexión</p><script>addEventListener('online',function(){location.reload()})</script></body></html>",
+  { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } }
+);
+
+const networkFirst = async (request, lane) => {
   const path = relativePath(new URL(request.url));
   const cache = await caches.open(CACHE);
   try {
@@ -88,7 +116,9 @@ const networkFirst = async (request) => {
   } catch (error) {
     const cached = await cache.match(cleanRequest(path));
     if (cached) return cached;
-    if (request.mode === "navigate" || request.destination === "document") return offlineDocument();
+    if (request.mode === "navigate" || request.destination === "document") {
+      return lane === "admin" ? offlineAdmin() : offlinePublic();
+    }
     throw error;
   }
 };
@@ -118,7 +148,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (leaveAlone(url, request)) return;
-  if (!SHELL_SET.has(relativePath(url))) return;
-  if (!fromAdmin(request)) return;
-  event.respondWith(networkFirst(request));
+  const lane = laneOf(request);
+  if (!lane) return;
+  event.respondWith(networkFirst(request, lane));
 });

@@ -34,9 +34,9 @@ export const negocio = {
   },
   minutos: {},
   politicaReserva: "Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp.",
-  avisoDatos: "Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas.",
+  avisoDatos: "Guardamos tu nombre, celular, servicio y fecha para agendar la cita. El celular también se usa para la tarjeta de fidelidad y el corte gratis. También usamos un identificador anónimo para estadísticas.",
   privacidad: [
-    "Cuando reservas guardamos tu nombre, tu celular, el servicio y la fecha. También la hora, la nota que escribas y que la cita es con Brayan Andres Romero. Los usamos para agendar la cita, confirmarla y avisarte si hay un cambio.",
+    "Cuando reservas guardamos tu nombre, tu celular, el servicio y la fecha. También la hora, la nota que escribas y que la cita es con Brayan Andres Romero. Los usamos para agendar la cita, confirmarla y avisarte si hay un cambio. El celular también se usa para la tarjeta de fidelidad y el corte gratis.",
     "No vendemos esos datos. Los ve Brayan Andres Romero para atenderte.",
     "Para las estadísticas del sitio guardamos un identificador anónimo en tu navegador. No es tu nombre ni tu celular. Sirve para contar visitas y reservas sin identificarte.",
     "Si quieres que borremos tu reserva o tus datos, escríbenos por WhatsApp y dinos el nombre y el celular con los que reservaste."

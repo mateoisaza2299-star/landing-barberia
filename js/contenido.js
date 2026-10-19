@@ -7,7 +7,9 @@ import {
   enlaceWhatsapp,
   textoHorario,
   estadoApertura,
-  avisoDuracion
+  avisoDuracion,
+  horasDelDia,
+  partesBogota
 } from "./config.js";
 
 const file = (location.pathname || "").split("/").pop() || "index.html";
@@ -25,7 +27,7 @@ const seo = {
   },
   privacidad: {
     title: "Política de datos — " + negocio.nombre,
-    description: "Qué guarda " + negocio.nombre + " cuando reservas: nombre, celular, servicio y fecha, y cómo pedir que lo borremos por WhatsApp."
+    description: "Qué guarda " + negocio.nombre + " cuando reservas: nombre, celular, servicio y fecha. El celular también se usa para la tarjeta de fidelidad y el corte gratis."
   },
   "404": {
     title: "Página no encontrada — " + negocio.nombre,
@@ -148,13 +150,26 @@ const applyHorario = () => {
       node.appendChild(document.createTextNode(corto + " · " + cuando));
     });
   });
+  const pintarEstado = (estado) => {
+    document.querySelectorAll("[data-open-status]").forEach((node) => {
+      node.classList.toggle("is-open", !!estado.abierto);
+      node.classList.toggle("is-closed", estado.abierto === false && !estado.pendiente);
+      const label = node.querySelector("[data-open-label]");
+      if (label) label.textContent = estado.texto;
+    });
+  };
   const estado = estadoApertura();
-  document.querySelectorAll("[data-open-status]").forEach((node) => {
-    node.classList.toggle("is-open", !!estado.abierto);
-    node.classList.toggle("is-closed", estado.abierto === false && !estado.pendiente);
-    const label = node.querySelector("[data-open-label]");
-    if (label) label.textContent = estado.texto;
-  });
+  pintarEstado(estado);
+  const hoy = partesBogota().iso;
+  const slots = horasDelDia(hoy);
+  if (!slots.length) return;
+  import("./supabase.js").then(async ({ supabase }) => {
+    const { data, error } = await supabase.rpc("horas_ocupadas", { p_fecha: hoy });
+    if (error) return;
+    const taken = new Set((data || []).map((row) => String((row && row.hora) || row).slice(0, 5)));
+    if (!slots.every((slot) => taken.has(slot))) return;
+    pintarEstado({ abierto: false, texto: "Hoy no hay atención", pendiente: false });
+  }).catch(() => {});
 };
 
 const applyPrecios = () => {

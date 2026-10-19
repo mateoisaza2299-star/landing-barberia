@@ -36,6 +36,8 @@
         <button type="button" data-view="reservas">Reservas</button>
         <button type="button" data-view="servicios">Servicios</button>
         <button type="button" data-view="audiencia">Audiencia</button>
+        <button type="button" data-view="fidelidad">Fidelidad</button>
+        <button type="button" data-view="horarios">Horarios</button>
       </nav>
     </aside>
 
@@ -158,6 +160,51 @@
         <h2 class="dash-subtitle">Contacto</h2>
         <div class="contact-grid" data-contacto></div>
       </section>
+
+      <section class="dash-panel" data-panel="fidelidad" hidden aria-label="Fidelidad">
+        <div class="res-tools">
+          <label class="res-search">Buscar
+            <input type="search" data-fid-q placeholder="Nombre o celular" autocomplete="off">
+          </label>
+        </div>
+        <div class="table-scroll" data-fid-table></div>
+      </section>
+
+      <section class="dash-panel" data-panel="horarios" hidden aria-label="Horarios">
+        <div class="block-head">
+          <h2>Horarios</h2>
+          <button class="dash-btn" type="button" data-bloqueo-abrir>Bloquear horario</button>
+        </div>
+        <form class="block-form" data-bloqueo-form hidden>
+          <div class="block-dates">
+            <label>Desde <input type="date" name="desde" required></label>
+            <label>Hasta <input type="date" name="hasta" required></label>
+          </div>
+          <div class="block-shortcuts">
+            <button type="button" data-bloqueo-hoy>Hoy</button>
+            <button type="button" data-bloqueo-manana>Mañana</button>
+          </div>
+          <fieldset class="block-mode">
+            <legend class="sr-only">Tipo de bloqueo</legend>
+            <label><input type="radio" name="modo" value="dia" checked> Todo el día</label>
+            <label><input type="radio" name="modo" value="horas"> Rango de horas</label>
+          </fieldset>
+          <div class="block-hours" data-bloqueo-horas hidden>
+            <label>Desde <select name="hora_desde"></select></label>
+            <label>Hasta <select name="hora_hasta"></select></label>
+          </div>
+          <label>Motivo <input type="text" name="motivo" maxlength="180" autocomplete="off" placeholder="Solo lo ves tú"></label>
+          <p class="form-error" data-bloqueo-error role="alert" hidden></p>
+          <div data-bloqueo-citas hidden></div>
+          <div class="block-actions">
+            <button class="dash-btn" type="submit" data-bloqueo-guardar>Bloquear horario</button>
+            <button class="dash-btn" type="button" data-bloqueo-cancelar-citas hidden>Bloquear y cancelar esas citas</button>
+            <button class="dash-btn" type="button" data-bloqueo-conservar hidden>Bloquear sin tocar esas citas</button>
+          </div>
+        </form>
+        <div data-bloqueo-avisos hidden></div>
+        <div class="block-list" data-bloqueos></div>
+      </section>
     </div>
   </div>
 
@@ -168,7 +215,17 @@
     <button type="button" data-view="reservas">Reservas</button>
     <button type="button" data-view="servicios">Servicios</button>
     <button type="button" data-view="audiencia">Audiencia</button>
+    <button type="button" data-view="fidelidad">Fidelidad</button>
+    <button type="button" data-view="horarios">Horarios</button>
   </nav>
+
+  <div class="milestone" data-milestone hidden>
+    <div class="milestone-card" role="status">
+      <p data-milestone-text></p>
+      <a class="btn btn-dark btn-block" data-milestone-wa target="_blank" rel="noopener">Avisar por WhatsApp</a>
+      <button class="btn btn-block" type="button" data-milestone-close>Cerrar</button>
+    </div>
+  </div>
 
   <div class="install-guide" data-install-guide hidden>
     <div class="install-guide-card" role="dialog" aria-modal="true" aria-labelledby="install-title">

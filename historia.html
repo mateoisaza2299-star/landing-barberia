@@ -7,6 +7,7 @@
   <meta name="description" content="La historia de Miami Cuts en Fusagasugá. Brayan Andres Romero, barbero.">
   <link rel="canonical" href="historia.html">
   <meta name="theme-color" content="#161210">
+  <link rel="manifest" href="manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CO">
   <meta property="og:site_name" content="Miami Cuts">
@@ -25,7 +26,7 @@
   <meta name="twitter:image:alt" content="Barbero cortando el cabello de un cliente bajo luz cálida en Miami Cuts">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -57,6 +58,7 @@
           <li><a class="nav-link" href="index.html#nosotros">Nosotros</a></li>
           <li><a class="nav-link" href="index.html#servicios">Servicios</a></li>
           <li><a class="nav-link" href="index.html#visita">Visita</a></li>
+          <li><button class="nav-link" type="button" data-fidelidad>Mi tarjeta</button></li>
         </ul>
         <a class="btn btn-nav" data-open-reserva href="https://wa.me/573209604364?text=Hola%2C%20quiero%20reservar%20una%20cita%20en%20Miami%20Cuts.">Reserva tu cita</a>
       </nav>
@@ -146,7 +148,8 @@
     </div>
     <div class="wrap footer-bottom">
       <p>© <span data-year>2026</span> <span data-nombre>Miami Cuts</span></p>
-      <p><a href="#contenido">Volver arriba</a> · <a href="privacidad.html">Política de datos</a> · <a class="access-link" href="admin-login.html">Acceso</a></p>
+      <p><a href="#contenido">Volver arriba</a> · <button class="footer-text-btn" type="button" data-fidelidad>Mi tarjeta</button> · <a href="privacidad.html">Política de datos</a> · <a class="access-link" href="admin-login.html">Acceso</a></p>
+      <p data-cliente-install-slot hidden><button class="footer-text-btn" type="button" data-cliente-install>Instalar app</button></p>
     </div>
   </footer>
 
@@ -218,7 +221,7 @@
             <textarea name="nota" rows="3" placeholder="Largo, detalle, algo que debamos saber"></textarea>
           </label>
           <p class="policy-note" data-politica>Para cancelar o cambiar la cita, avisa con al menos 2 horas de anticipación por WhatsApp.</p>
-          <p class="privacy-note" data-aviso-datos>Guardamos tu nombre, celular, servicio y fecha para agendar la cita. También usamos un identificador anónimo para estadísticas. <a href="privacidad.html" target="_blank" rel="noopener">Política de datos</a>.</p>
+          <p class="privacy-note" data-aviso-datos>Guardamos tu nombre, celular, servicio y fecha para agendar la cita. El celular también se usa para la tarjeta de fidelidad y el corte gratis. También usamos un identificador anónimo para estadísticas. <a href="privacidad.html" target="_blank" rel="noopener">Política de datos</a>.</p>
           <label class="check">
             <input name="datos" type="checkbox" required>
             <span>Acepto la política de datos para esta cita.</span>
@@ -238,10 +241,20 @@
         <p class="reserva-estado" data-reserva-estado role="status" hidden></p>
         <button class="btn btn-block" type="button" data-reserva-ics>Agregar a mi calendario</button>
         <a class="btn btn-dark btn-block" data-reserva-wa target="_blank" rel="noopener">Avisar por WhatsApp</a>
+        <div class="install-offer" data-cliente-install-slot hidden>
+          <p>Instala la app y reserva con un toque</p>
+          <button class="btn btn-block" type="button" data-cliente-install>Instalar app</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <nav class="app-bar" data-app-bar aria-label="App">
+    <a data-open-reserva href="index.html?reservar=1">Reservar</a>
+    <button type="button" data-app-cita>Mi cita</button>
+    <button type="button" data-fidelidad>Mi tarjeta</button>
+  </nav>
+  <script src="js/cliente.js"></script>
   <script type="module" src="js/contenido.js"></script>
   <script type="module" src="js/historia.js"></script>
   <script type="module" src="js/main.js"></script>
