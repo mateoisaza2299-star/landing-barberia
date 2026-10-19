@@ -133,6 +133,74 @@ const hourLabel = (value) => {
   return hour12 + ":00 " + suffix;
 };
 
+const capitalizar = (value) => {
+  const text = String(value || "").replace(/\./g, "");
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+};
+
+const fechaCita = (iso) => {
+  const clean = String(iso || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return "Sin fecha";
+  const parts = new Intl.DateTimeFormat("es-CO", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  }).formatToParts(new Date(clean + "T00:00:00Z"));
+  const pick = (type) => {
+    const part = parts.find((item) => item.type === type);
+    return part ? part.value : "";
+  };
+  return capitalizar(pick("weekday")) + ", " + pick("day") + " " + capitalizar(pick("month")) + " " + pick("year");
+};
+
+const horaCita = (value) => {
+  const match = String(value ?? "").trim().match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return "Sin hora";
+  const hour = Number(match[1]);
+  if (hour < 0 || hour > 23) return "Sin hora";
+  const suffix = hour < 12 ? "AM" : "PM";
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+  return String(hour12).padStart(2, "0") + ":" + match[2] + " " + suffix;
+};
+
+const refCita = (row) => {
+  const id = String((row && row.id) ?? "").trim();
+  if (!id) return "";
+  if (/^\d+$/.test(id)) return "#" + id;
+  return "#" + id.replace(/-/g, "").slice(0, 4).toUpperCase();
+};
+
+const iconoCita = (tipo) => {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  const add = (name, attrs) => {
+    const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+    Object.keys(attrs).forEach((key) => node.setAttribute(key, attrs[key]));
+    svg.appendChild(node);
+  };
+  if (tipo === "reloj") {
+    add("circle", { cx: "12", cy: "12", r: "8", fill: "none", stroke: "currentColor", "stroke-width": "1.7" });
+    add("path", { d: "M12 7.5V12l3.2 2", fill: "none", stroke: "currentColor", "stroke-width": "1.7", "stroke-linecap": "round" });
+  } else {
+    add("rect", { x: "4", y: "5", width: "16", height: "15", rx: "1.2", fill: "none", stroke: "currentColor", "stroke-width": "1.7" });
+    add("path", { d: "M4 9.5h16M8 3.5v3.2M16 3.5v3.2", fill: "none", stroke: "currentColor", "stroke-width": "1.7", "stroke-linecap": "round" });
+  }
+  const wrap = el("span", "booking-icon");
+  wrap.appendChild(svg);
+  return wrap;
+};
+
+const chipCita = (tipo, etiqueta, valor) => {
+  const chip = el("div", "booking-chip " + (tipo === "reloj" ? "booking-chip-time" : "booking-chip-date"));
+  const copy = el("span", "booking-chip-copy");
+  copy.append(el("span", "booking-kicker", etiqueta), el("strong", null, valor));
+  chip.append(iconoCita(tipo), copy);
+  return chip;
+};
+
 const fechaDe = (row) => String(row.fecha || "").slice(0, 10);
 
 const nombreDe = (row) => String((row && row.nombre) || "").trim() || "cliente";
@@ -327,15 +395,23 @@ const abrirAviso = (row, hechos) => {
 
 const bookingCard = (row) => {
   const article = el("article", "booking");
-  const header = el("header");
-  const time = document.createElement("time");
-  time.textContent = hourLabel(row.hora);
-  time.dateTime = fechaDe(row) + "T" + String(row.hora || "").slice(0, 5);
+  const header = el("header", "booking-head");
+  const who = el("div", "booking-who");
+  who.appendChild(el("h3", null, row.nombre || "Sin nombre"));
+  const ref = refCita(row);
+  if (ref) who.appendChild(el("p", "booking-id", "Cita " + ref));
   const badges = el("div", "badges");
   badges.appendChild(el("span", "badge badge-" + (row.estado || ""), STATUS[row.estado] || row.estado || ""));
   if (row.gratis === true) badges.appendChild(el("span", "badge badge-gratis", "Gratis"));
-  header.append(time, badges);
-  article.append(header, el("h3", null, row.nombre || "Sin nombre"), el("p", "booking-service", row.servicio || ""));
+  header.append(who, badges);
+  const fecha = fechaDe(row);
+  const hora = String(row.hora || "").slice(0, 5);
+  const when = document.createElement("time");
+  when.className = "booking-when";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) when.dateTime = hora ? fecha + "T" + hora : fecha;
+  when.append(chipCita("cal", "Fecha", fechaCita(fecha)), chipCita("reloj", "Hora", horaCita(row.hora)));
+  const meta = el("div", "booking-meta");
+  if (String(row.servicio || "").trim()) meta.appendChild(el("p", "booking-service", String(row.servicio).trim()));
   const phone = el("p", "booking-phone");
   const link = document.createElement("a");
   link.href = waNumero(row.telefono);
@@ -344,8 +420,9 @@ const bookingCard = (row) => {
   link.textContent = row.telefono || "WhatsApp";
   link.setAttribute("aria-label", "WhatsApp de " + nombreDe(row));
   phone.appendChild(link);
-  article.appendChild(phone);
-  if (String(row.nota || "").trim()) article.appendChild(el("p", "note", String(row.nota).trim()));
+  meta.appendChild(phone);
+  if (String(row.nota || "").trim()) meta.appendChild(el("p", "note", String(row.nota).trim()));
+  article.append(header, when, meta);
   if (row.estado === "pendiente" || row.estado === "confirmada") {
     const actions = el("div", "booking-actions" + (row.estado === "pendiente" ? "" : " is-one"));
     if (row.estado === "pendiente") {
@@ -1015,7 +1092,7 @@ const pintarChoques = (rows) => {
   box.hidden = false;
   box.replaceChildren(el("p", "block-note", "Hay citas en ese horario."));
   rows.forEach((row) => {
-    box.appendChild(el("p", "block-cita", [row.nombre || "Sin nombre", fechaDe(row), hourLabel(row.hora)].filter(Boolean).join(" · ")));
+    box.appendChild(el("p", "block-cita", [row.nombre || "Sin nombre", fechaCita(fechaDe(row)), horaCita(row.hora)].filter(Boolean).join(" · ")));
   });
   if (cancelar) cancelar.hidden = false;
   if (conservar) conservar.hidden = false;
