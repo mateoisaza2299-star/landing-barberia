@@ -145,12 +145,6 @@ const fail = (message) => {
 
 const digitos = (telefono) => String(telefono || "").replace(/\D/g, "").slice(-10);
 
-const paginaPublica = () => {
-  const sitio = String(negocio.sitio || "").trim();
-  if (sitio) return sitio;
-  return new URL("index.html", window.location.href).href;
-};
-
 const waNumero = (telefono) => "https://wa.me/57" + digitos(telefono);
 
 const waMensaje = (telefono, texto) => waNumero(telefono) + "?text=" + encodeURIComponent(texto);
@@ -198,13 +192,11 @@ const mensajeConfirmacion = (row, hechos) => {
     "Hola " + nombre + " 👋, tu cita en " + negocio.nombre + " quedó *confirmada*.",
     "",
     "📅 " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora),
-    "✂️ " + lineaServicio(row),
-    "📍 " + direccionLinea(),
-    ""
+    "✂️ " + lineaServicio(row)
   ];
-  const token = String(row.token || "").trim();
-  if (token) lineas.push("Si necesitas cancelarla o cambiarla, avísanos por aquí o desde este link: " + paginaPublica() + "?cita=" + token);
-  lineas.push("¡Te esperamos!");
+  const direccion = direccionLinea();
+  if (direccion) lineas.push("📍 " + direccion);
+  lineas.push("", "Si necesitas cancelarla o cambiarla, avísanos por aquí. ¡Te esperamos!");
   if (hechos) lineas.push("🎉 Con esta cita completas " + hechos + " cortes: ¡tu próximo corte es gratis!");
   return lineas.join("\n");
 };
@@ -212,17 +204,17 @@ const mensajeConfirmacion = (row, hechos) => {
 const mensajeCancelacion = (row) => {
   const nombre = nombreDe(row);
   const servicio = String(row.servicio || "").trim() || "servicio";
-  return "Hola " + nombre + ", lamentamos avisarte que tu cita del " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " (" + servicio + ") en " + negocio.nombre + " fue *cancelada*. ¿Quieres que la reagendemos? Reserva de nuevo aquí: " + paginaPublica();
+  return "Hola " + nombre + ", lamentamos avisarte que tu cita del " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " (" + servicio + ") en " + negocio.nombre + " fue *cancelada*. ¿Quieres que la reagendemos? Respóndenos por aquí.";
 };
 
 const mensajeGratis = (row, hechos) => {
   const nombre = nombreDe(row);
-  return "¡Hola " + nombre + "! Completaste " + hechos + " cortes en " + negocio.nombre + " y tu próximo corte es gratis. Reserva cuando quieras: " + paginaPublica();
+  return "¡Hola " + nombre + "! 🎉 Completaste " + hechos + " cortes en " + negocio.nombre + " y tu próximo corte es gratis. Cuando quieras reservarlo, escríbenos por aquí.";
 };
 
 const mensajeBloqueo = (row) => {
-  const dia = diaTexto(fechaDe(row));
-  return "Hola " + (row.nombre || "") + ", por un imprevisto no podremos atenderte el " + dia + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + ". Disculpa las molestias, ¿te reagendamos? " + paginaPublica();
+  const nombre = String((row && row.nombre) || "").trim() || "cliente";
+  return "Hola " + nombre + ", por un imprevisto no podremos atenderte el " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + ". Disculpa las molestias, ¿te reagendamos? Respóndenos por aquí.";
 };
 
 const diaSeleccionado = () => {
