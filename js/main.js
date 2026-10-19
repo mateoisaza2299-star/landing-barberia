@@ -671,6 +671,11 @@ import {
     }
   })();
 
+  const marcarPolitica = () => {
+    const datos = reservaForm && reservaForm.querySelector("[name='datos']");
+    if (datos) datos.checked = true;
+  };
+
   const showForm = () => {
     if (!reservaIntro || !reservaDone) return;
     reservaIntro.hidden = false;
@@ -678,6 +683,7 @@ import {
     chosenHour = "";
     showError("");
     citaTracker.hush();
+    marcarPolitica();
     const panel = modal && modal.querySelector(".modal-panel");
     if (panel) panel.setAttribute("aria-labelledby", "reserva-title");
   };
@@ -995,6 +1001,7 @@ import {
       closingModal = false;
       modal.classList.remove("is-closing");
       modal.hidden = true;
+      marcarPolitica();
       lock(nav ? nav.classList.contains("is-open") : false);
       if (lastTrigger && typeof lastTrigger.focus === "function") lastTrigger.focus();
     };
@@ -1145,7 +1152,7 @@ import {
       return;
     }
     if (datosOk && !datosOk.checked) {
-      showError("Acepta la política de datos para reservar.");
+      showError("Para reservar necesitas aceptar la política de datos");
       datosOk.focus();
       return;
     }
@@ -1196,6 +1203,7 @@ import {
 
     const previo = reagendarToken;
     reagendarToken = "";
+    marcarPolitica();
     let seguimiento = "";
     let avisoPrevia = "";
     try {
