@@ -2710,3 +2710,35 @@ html.is-client-offline .app-bar { display: none; }
   line-height: 1;
   color: var(--gold-deep);
 }
+
+.cita-toast {
+  position: fixed;
+  z-index: 70;
+  left: 0.85rem;
+  right: 0.85rem;
+  top: calc(var(--header) + 0.75rem + env(safe-area-inset-top));
+  margin: 0 auto;
+  max-width: 36rem;
+  padding: 1.15rem 1.2rem;
+  background: var(--ivory);
+  color: var(--ink);
+  border-top: 3px solid var(--gold);
+  font-family: var(--serif);
+  font-size: clamp(2rem, 7.5vw, 2.7rem);
+  line-height: 1.05;
+  text-align: center;
+  box-shadow: 0 18px 44px rgba(22, 18, 16, 0.28);
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.cita-toast.is-on {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cita-toast { transition: none; transform: none; }
+}

@@ -382,22 +382,50 @@ import {
         el.textContent = message;
       };
 
+      const avisarCita = (estado) => {
+        const texto = estado === "cancelada" ? "Tu cita fue cancelada" : "Tu cita quedó confirmada";
+        let toast = document.querySelector("[data-cita-toast]");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.className = "cita-toast";
+          toast.setAttribute("data-cita-toast", "");
+          toast.setAttribute("role", "status");
+          document.body.appendChild(toast);
+        }
+        toast.textContent = texto;
+        toast.classList.remove("is-on");
+        void toast.offsetWidth;
+        toast.classList.add("is-on");
+        window.clearTimeout(avisarCita.timer);
+        avisarCita.timer = window.setTimeout(() => {
+          toast.classList.remove("is-on");
+        }, 7000);
+        try {
+          if (navigator.vibrate) navigator.vibrate([220, 80, 220]);
+        } catch (error) {}
+      };
+
       const paint = () => {
         try {
           const item = current();
           let pulseCard = false;
           let pulseLive = false;
+          let aviso = "";
           tokens.forEach((token) => {
             const row = cache.get(token);
             if (!row) return;
             const estado = estadoOf(row);
             const prior = seen.get(token);
-            if (prior && prior !== estado && estado === "confirmada") {
-              if (item && item.token === token) pulseCard = true;
-              if (token === bookedToken) pulseLive = true;
+            if (prior && prior !== estado && (estado === "confirmada" || estado === "cancelada")) {
+              if (!aviso || (item && item.token === token)) aviso = estado;
+              if (estado === "confirmada") {
+                if (item && item.token === token) pulseCard = true;
+                if (token === bookedToken) pulseLive = true;
+              }
             }
             seen.set(token, estado);
           });
+          if (aviso) avisarCita(aviso);
 
           const dismissed = item && item.token === hiddenToken && item.estado === hiddenEstado;
           if (!item || dismissed) {

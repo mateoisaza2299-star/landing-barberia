@@ -32,12 +32,23 @@
       </a>
       <p class="dash-side-label">Panel</p>
       <nav class="dash-nav" aria-label="Secciones del panel">
-        <button type="button" data-view="resumen" aria-current="page">Resumen</button>
-        <button type="button" data-view="reservas">Reservas</button>
-        <button type="button" data-view="servicios">Servicios</button>
-        <button type="button" data-view="audiencia">Audiencia</button>
-        <button type="button" data-view="fidelidad">Fidelidad</button>
-        <button type="button" data-view="horarios">Horarios</button>
+        <button type="button" data-view="reservas" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 9.5h16M8 3.5v3.2M16 3.5v3.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span class="nav-label">Reservas</span>
+          <span class="nav-count" data-pendientes hidden>0</span>
+        </button>
+        <button type="button" data-view="horarios">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3.2 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span class="nav-label">Horarios</span>
+        </button>
+        <button type="button" data-view="fidelidad">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 12h4.2M7 15h2.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="16.2" cy="12.5" r="1.35" fill="currentColor"/></svg>
+          <span class="nav-label">Fidelidad</span>
+        </button>
+        <button type="button" data-view="servicios">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.2" cy="7" r="2.15" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="6.2" cy="17" r="2.15" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.1 8.4 20 18.2M8.1 15.6 20 5.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span class="nav-label">Servicios</span>
+        </button>
       </nav>
     </aside>
 
@@ -62,112 +73,25 @@
         </div>
       </header>
 
-      <div class="dash-filters">
-        <div class="dash-periods" role="group" aria-label="Periodo">
-          <button type="button" data-period="hoy" aria-pressed="true">Hoy</button>
-          <button type="button" data-period="7" aria-pressed="false">7 días</button>
-          <button type="button" data-period="30" aria-pressed="false">30 días</button>
-          <button type="button" data-period="rango" aria-pressed="false">Rango</button>
-        </div>
-        <div class="dash-range" data-range hidden>
-          <label>Desde <input type="date" data-desde></label>
-          <label>Hasta <input type="date" data-hasta></label>
-        </div>
-        <p class="dash-compare">Comparado con el periodo anterior <span data-period-label></span></p>
-        <p class="dash-range-error" data-range-error role="alert" hidden>Elige un rango válido.</p>
-      </div>
-
-      <div class="dash-error" data-dash-error role="alert" hidden>
-        <p data-dash-error-text>No pudimos cargar el resumen.</p>
-        <button type="button" data-retry>Reintentar</button>
-      </div>
       <p class="admin-error" data-admin-error role="alert" hidden></p>
 
-      <section class="dash-panel is-on is-enter" data-panel="resumen" aria-label="Resumen">
-        <ul class="stat-grid">
-          <li data-card="visitantes" class="is-loading"><strong>—</strong><span>Visitantes únicos</span><em data-delta></em></li>
-          <li data-card="visitas" class="is-loading"><strong>—</strong><span>Visitas</span><em data-delta></em></li>
-          <li data-card="reservas" class="is-loading"><strong>—</strong><span>Reservas</span><em data-delta></em></li>
-          <li data-card="conversion" class="is-loading"><strong>—</strong><span>Conversión</span><em data-delta></em></li>
-          <li data-card="pendientes" class="is-loading"><strong>—</strong><span>Pendientes por atender</span><em data-delta></em></li>
-          <li data-card="ingresos" class="is-loading"><strong>—</strong><span>Ingresos estimados</span><em data-delta></em></li>
-        </ul>
-        <div class="dash-grid-2">
-          <article class="dash-card">
-            <h2>Visitantes y reservas</h2>
-            <div class="dash-chart is-loading" data-chart="trafico"></div>
-          </article>
-          <article class="dash-card">
-            <h2>Embudo</h2>
-            <div data-funnel class="is-loading"></div>
-          </article>
+      <section class="dash-panel is-on" data-panel="reservas" aria-label="Reservas">
+        <div class="res-controls">
+          <div class="choice day-switch" role="group" aria-label="Día">
+            <button type="button" data-dia="hoy" aria-pressed="true">Hoy</button>
+            <button type="button" data-dia="manana" aria-pressed="false">Mañana</button>
+            <button type="button" data-dia="fecha" aria-pressed="false">Elegir fecha</button>
+          </div>
+          <label class="day-field" data-dia-pick hidden>Fecha <input type="date" data-dia-input></label>
+          <button class="dash-btn" type="button" data-refresh-citas>Actualizar</button>
         </div>
-        <article class="dash-card">
-          <h2>Hoy</h2>
-          <div class="booking-list" data-hoy></div>
-        </article>
-      </section>
-
-      <section class="dash-panel" data-panel="reservas" hidden aria-label="Reservas">
-        <div class="res-tools">
-          <label>Estado
-            <select data-res-estado>
-              <option value="">Todos</option>
-              <option value="pendiente">Pendientes</option>
-              <option value="confirmada">Confirmadas</option>
-              <option value="completada">Completadas</option>
-              <option value="cancelada">Canceladas</option>
-            </select>
-          </label>
-          <label>Fecha <input type="date" data-res-fecha></label>
-          <label class="res-search">Buscar
-            <input type="search" data-res-q placeholder="Nombre o teléfono" autocomplete="off">
-          </label>
-          <button class="dash-btn" type="button" data-export>Exportar CSV</button>
+        <div class="new-note" data-nueva hidden>
+          <p data-nueva-text></p>
+          <button type="button" data-nueva-close>Listo</button>
         </div>
-        <p class="res-count" data-res-count></p>
-        <div class="table-scroll" data-res-table></div>
-      </section>
-
-      <section class="dash-panel" data-panel="servicios" hidden aria-label="Servicios">
-        <article class="dash-card">
-          <h2>Servicios</h2>
-          <div data-servicios></div>
-        </article>
-        <div class="dash-grid-2">
-          <article class="dash-card">
-            <h2>Horas más pedidas</h2>
-            <div class="dash-chart is-loading" data-chart="horas"></div>
-          </article>
-          <article class="dash-card">
-            <h2>Días de la semana</h2>
-            <div class="dash-chart is-loading" data-chart="dias"></div>
-          </article>
+        <div data-reservas>
+          <p class="empty-note">Cargando citas…</p>
         </div>
-      </section>
-
-      <section class="dash-panel" data-panel="audiencia" hidden aria-label="Audiencia">
-        <div class="dash-grid-2">
-          <article class="dash-card">
-            <h2>Dispositivos</h2>
-            <div class="dash-chart dash-chart-sm is-loading" data-chart="dispositivos"></div>
-          </article>
-          <article class="dash-card">
-            <h2>Orígenes</h2>
-            <div data-origenes></div>
-          </article>
-        </div>
-        <h2 class="dash-subtitle">Contacto</h2>
-        <div class="contact-grid" data-contacto></div>
-      </section>
-
-      <section class="dash-panel" data-panel="fidelidad" hidden aria-label="Fidelidad">
-        <div class="res-tools">
-          <label class="res-search">Buscar
-            <input type="search" data-fid-q placeholder="Nombre o celular" autocomplete="off">
-          </label>
-        </div>
-        <div class="table-scroll" data-fid-table></div>
       </section>
 
       <section class="dash-panel" data-panel="horarios" hidden aria-label="Horarios">
@@ -205,25 +129,83 @@
         <div data-bloqueo-avisos hidden></div>
         <div class="block-list" data-bloqueos></div>
       </section>
+
+      <section class="dash-panel" data-panel="fidelidad" hidden aria-label="Fidelidad">
+        <h2>Fidelidad</h2>
+        <label class="fid-search">Buscar
+          <input type="search" data-fid-q placeholder="Nombre o celular" autocomplete="off">
+        </label>
+        <div class="table-scroll" data-fid-table></div>
+      </section>
+
+      <section class="dash-panel" data-panel="servicios" hidden aria-label="Servicios">
+        <h2>Servicios</h2>
+        <div class="choice" role="group" aria-label="Periodo">
+          <button type="button" data-period="hoy" aria-pressed="true">Hoy</button>
+          <button type="button" data-period="7" aria-pressed="false">7 días</button>
+          <button type="button" data-period="30" aria-pressed="false">30 días</button>
+          <button type="button" data-period="rango" aria-pressed="false">Rango</button>
+        </div>
+        <div class="dash-range" data-range hidden>
+          <label>Desde <input type="date" data-desde></label>
+          <label>Hasta <input type="date" data-hasta></label>
+        </div>
+        <p class="dash-range-error" data-range-error role="alert" hidden>Elige un rango válido.</p>
+        <div class="table-scroll" data-servicios></div>
+        <div class="dash-grid-2">
+          <article class="dash-card">
+            <h2>Horas más pedidas</h2>
+            <div class="dash-chart" data-chart="horas"></div>
+          </article>
+          <article class="dash-card">
+            <h2>Días de la semana</h2>
+            <div class="dash-chart" data-chart="dias"></div>
+          </article>
+        </div>
+      </section>
     </div>
   </div>
 
-  <p class="dash-note">Las visitas y eventos se cuentan desde que se activó el registro, y no incluyen las tuyas cuando tienes la sesión iniciada.</p>
-
   <nav class="dash-tabs" aria-label="Secciones del panel">
-    <button type="button" data-view="resumen" aria-current="page">Resumen</button>
-    <button type="button" data-view="reservas">Reservas</button>
-    <button type="button" data-view="servicios">Servicios</button>
-    <button type="button" data-view="audiencia">Audiencia</button>
-    <button type="button" data-view="fidelidad">Fidelidad</button>
-    <button type="button" data-view="horarios">Horarios</button>
+    <button type="button" data-view="reservas" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 9.5h16M8 3.5v3.2M16 3.5v3.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="nav-label">Reservas</span>
+      <span class="nav-count" data-pendientes hidden>0</span>
+    </button>
+    <button type="button" data-view="horarios">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3.2 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="nav-label">Horarios</span>
+    </button>
+    <button type="button" data-view="fidelidad">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 12h4.2M7 15h2.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="16.2" cy="12.5" r="1.35" fill="currentColor"/></svg>
+      <span class="nav-label">Fidelidad</span>
+    </button>
+    <button type="button" data-view="servicios">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.2" cy="7" r="2.15" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="6.2" cy="17" r="2.15" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.1 8.4 20 18.2M8.1 15.6 20 5.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="nav-label">Servicios</span>
+    </button>
   </nav>
 
-  <div class="milestone" data-milestone hidden>
-    <div class="milestone-card" role="status">
-      <p data-milestone-text></p>
-      <a class="btn btn-dark btn-block" data-milestone-wa target="_blank" rel="noopener">Avisar por WhatsApp</a>
-      <button class="btn btn-block" type="button" data-milestone-close>Cerrar</button>
+  <div class="ask" data-ask hidden>
+    <div class="ask-card" role="dialog" aria-modal="true" aria-labelledby="ask-text">
+      <p id="ask-text" data-ask-text></p>
+      <div class="ask-actions">
+        <button class="act act-ok" type="button" data-ask-yes>Sí</button>
+        <button class="act act-quiet" type="button" data-ask-no>No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet hidden>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <h2 id="sheet-title" data-sheet-title></h2>
+      <p class="sheet-extra" data-sheet-extra hidden></p>
+      <div class="sheet-actions">
+        <a class="act act-wa" data-sheet-wa target="_blank" rel="noopener"></a>
+        <a class="act act-wa act-meta" data-sheet-meta target="_blank" rel="noopener" hidden></a>
+        <p class="aviso-ok" data-sheet-status hidden></p>
+        <button class="act act-quiet" type="button" data-sheet-close>Cerrar</button>
+      </div>
     </div>
   </div>
 
