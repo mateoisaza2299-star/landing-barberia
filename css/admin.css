@@ -389,9 +389,9 @@
 }
 
 .booking-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
 }
 
@@ -399,6 +399,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  width: 100%;
+  max-width: 440px;
   min-width: 0;
 }
 
@@ -424,12 +426,12 @@
 
 .when-value {
   font-family: var(--serif);
-  font-size: clamp(1.35rem, 3.2vw, 1.7rem);
+  font-size: clamp(1.28rem, 4.4vw, 1.7rem);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--ink);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .booking h3 {
@@ -488,8 +490,9 @@
 
 .badges {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  order: -1;
   gap: 6px;
 }
 
@@ -1014,19 +1017,8 @@
   .dash-nav svg { width: 24px; height: 24px; }
 }
 
-@media (max-width: 380px) {
-  .booking-head { grid-template-columns: 1fr; }
-
-  .badges {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-}
-
 @media (prefers-color-scheme: dark) {
-  .when-block,
-  .booking .note {
+  .when-block {
     background: #1F1F1F;
     border-color: rgba(245, 243, 239, 0.08);
   }
@@ -1034,8 +1026,6 @@
   .when-label { color: rgba(245, 243, 239, 0.62); }
 
   .when-value { color: #F7F3EB; }
-
-  .booking .note { color: rgba(245, 243, 239, 0.78); }
 }
 
 @media (prefers-reduced-motion: reduce) {
