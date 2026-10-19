@@ -97,6 +97,19 @@ const shortDay = (iso) => new Intl.DateTimeFormat("es-CO", {
   month: "short"
 }).format(new Date(iso + "T00:00:00Z"));
 
+const fechaCorta = (iso) => {
+  const clean = String(iso || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
+  const text = new Intl.DateTimeFormat("es-CO", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "short"
+  }).format(new Date(clean + "T00:00:00Z"));
+  const tidy = text.replace(/\./g, "").replace(/,/g, "").replace(/\bde\b/gi, "").replace(/\s+/g, " ").trim();
+  return tidy ? tidy.charAt(0).toUpperCase() + tidy.slice(1) : clean;
+};
+
 const diaTexto = (iso) => {
   const clean = String(iso || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
@@ -325,16 +338,31 @@ const abrirAviso = (row, hechos) => {
   });
 };
 
+const whenBlock = (label, value, dateTime) => {
+  const block = el("div", "when-block");
+  block.appendChild(el("span", "when-label", label));
+  const time = document.createElement("time");
+  time.className = "when-value";
+  time.textContent = value;
+  if (dateTime) time.dateTime = dateTime;
+  block.appendChild(time);
+  return block;
+};
+
 const bookingCard = (row) => {
   const article = el("article", "booking");
-  const header = el("header");
-  const time = document.createElement("time");
-  time.textContent = hourLabel(row.hora);
-  time.dateTime = fechaDe(row) + "T" + String(row.hora || "").slice(0, 5);
+  const header = el("header", "booking-head");
+  const when = el("div", "booking-when");
+  const fecha = fechaDe(row);
+  const hora = String(row.hora || "").slice(0, 5);
+  when.append(
+    whenBlock("Fecha", fechaCorta(fecha), fecha || ""),
+    whenBlock("Hora", hourLabel(row.hora), fecha && hora ? fecha + "T" + hora : "")
+  );
   const badges = el("div", "badges");
   badges.appendChild(el("span", "badge badge-" + (row.estado || ""), STATUS[row.estado] || row.estado || ""));
   if (row.gratis === true) badges.appendChild(el("span", "badge badge-gratis", "Gratis"));
-  header.append(time, badges);
+  header.append(when, badges);
   article.append(header, el("h3", null, row.nombre || "Sin nombre"), el("p", "booking-service", row.servicio || ""));
   const phone = el("p", "booking-phone");
   const link = document.createElement("a");
@@ -346,27 +374,30 @@ const bookingCard = (row) => {
   phone.appendChild(link);
   article.appendChild(phone);
   if (String(row.nota || "").trim()) article.appendChild(el("p", "note", String(row.nota).trim()));
-  if (row.estado === "pendiente" || row.estado === "confirmada") {
-    const actions = el("div", "booking-actions" + (row.estado === "pendiente" ? "" : " is-one"));
-    if (row.estado === "pendiente") {
-      const ok = el("button", "act act-ok", "Confirmar");
-      ok.type = "button";
-      ok.addEventListener("click", () => confirmar(row, ok));
-      actions.appendChild(ok);
-    }
+  const cancelBtn = () => {
     const cancel = el("button", "act act-no", "Cancelar");
     cancel.type = "button";
     cancel.addEventListener("click", () => cancelarCita(row, cancel));
-    actions.appendChild(cancel);
+    return cancel;
+  };
+  if (row.estado === "pendiente") {
+    const actions = el("div", "booking-actions is-split");
+    const ok = el("button", "act act-ok", "Confirmar");
+    ok.type = "button";
+    ok.addEventListener("click", () => confirmar(row, ok));
+    actions.append(ok, cancelBtn());
     article.appendChild(actions);
   }
   if (row.estado === "confirmada" || row.estado === "cancelada") {
     const avisado = row.avisado === true;
     article.appendChild(el("p", avisado ? "aviso-ok" : "aviso-falta", avisado ? "Cliente avisado ✓" : "Falta avisar al cliente"));
+    const actions = el("div", "booking-actions");
     const send = el("button", "act act-send", "Enviar WhatsApp");
     send.type = "button";
     send.addEventListener("click", () => abrirAviso(row));
-    article.appendChild(send);
+    actions.appendChild(send);
+    if (row.estado === "confirmada") actions.appendChild(cancelBtn());
+    article.appendChild(actions);
   }
   return article;
 };
