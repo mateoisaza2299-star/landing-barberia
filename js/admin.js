@@ -1,5 +1,6 @@
 import { supabase } from "./supabase.js";
-import { negocio, horasDelDia } from "./config.js";
+import { negocio, horasDelDia, direccionLinea } from "./config.js";
+import { servicios } from "./servicios.js";
 
 const EMPTY = "Aún no hay datos en este periodo";
 const COLS = "id, nombre, telefono, servicio, barbero, fecha, hora, nota, estado, gratis, avisado, token";
@@ -41,6 +42,8 @@ let lastFetch = 0;
 let saving = false;
 let askResolve = null;
 let sheetId = null;
+let sheetPhone = "";
+const hitos = new Map();
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -141,15 +144,36 @@ const fail = (message) => {
 
 const digitos = (telefono) => String(telefono || "").replace(/\D/g, "").slice(-10);
 
-const paginaPublica = () => {
-  const sitio = String(negocio.sitio || "").trim();
-  if (sitio) return sitio;
-  return new URL("index.html", window.location.href).href;
-};
-
 const waNumero = (telefono) => "https://wa.me/57" + digitos(telefono);
 
 const waMensaje = (telefono, texto) => waNumero(telefono) + "?text=" + encodeURIComponent(texto);
+
+const numeroCliente = (telefono) => {
+  const limpio = String(telefono || "").replace(/[\s()+-]/g, "");
+  if (!/^\d+$/.test(limpio)) return "";
+  if (limpio.length === 10) return "57" + limpio;
+  if (limpio.length === 12 && limpio.startsWith("57")) return limpio;
+  return "";
+};
+
+const enlaceWhatsappCliente = (telefono, texto) => {
+  const numero = numeroCliente(telefono);
+  if (!numero) return "";
+  return "https://wa.me/" + numero + "?text=" + encodeURIComponent(texto);
+};
+
+const precioTexto = (row) => {
+  if (row.gratis === true) return "Gratis 🎁";
+  const nombre = String(row.servicio || "").trim().toLowerCase();
+  const item = servicios.find((entry) => String(entry.nombre || "").trim().toLowerCase() === nombre);
+  return item && item.precio ? item.precio : "";
+};
+
+const lineaServicio = (row) => {
+  const servicio = String(row.servicio || "").trim() || "servicio";
+  const precio = precioTexto(row);
+  return precio ? servicio + " (" + precio + ")" : servicio;
+};
 
 const fichaFidelidad = (telefono) => state.fidelidad.find((item) => digitos(item.telefono) === digitos(telefono)) || null;
 
@@ -161,25 +185,36 @@ const cuentaServicio = (nombre) => {
   return lista.some((item) => String(item || "").trim().toLowerCase() === key);
 };
 
-const mensajeConfirmacion = (row) => {
+const mensajeConfirmacion = (row, hechos) => {
   const nombre = nombreDe(row);
-  let texto = "Hola " + nombre + ", tu cita en " + negocio.nombre + " quedó confirmada para el " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " (" + (row.servicio || "servicio") + "). ¡Te esperamos!";
-  const token = String(row.token || "").trim();
-  if (token) texto += " Puedes ver o cancelar tu cita aquí: " + paginaPublica() + "?cita=" + token;
-  return texto;
+  const lineas = [
+    "Hola " + nombre + " 👋, tu cita en " + negocio.nombre + " quedó *confirmada*.",
+    "",
+    "📅 " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora),
+    "✂️ " + lineaServicio(row)
+  ];
+  const direccion = direccionLinea();
+  if (direccion) lineas.push("📍 " + direccion);
+  lineas.push("", "Si necesitas cancelarla o cambiarla, avísanos por aquí. ¡Te esperamos!");
+  if (hechos) lineas.push("🎉 Con esta cita completas " + hechos + " cortes: ¡tu próximo corte es gratis!");
+  return lineas.join("\n");
 };
 
 const mensajeCancelacion = (row) => {
   const nombre = nombreDe(row);
-  return "Hola " + nombre + ", lamentamos avisarte que tu cita del " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + " fue cancelada. ¿Quieres que la reagendemos? Reserva de nuevo aquí: " + paginaPublica();
+  const servicio = String(row.servicio || "").trim() || "servicio";
+  return "Hola " + nombre + ", lamentamos avisarte que tu cita del " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " (" + servicio + ") en " + negocio.nombre + " fue *cancelada*. ¿Quieres que la reagendemos? Respóndenos por aquí.";
 };
 
 const mensajeGratis = (row, hechos) => {
   const nombre = nombreDe(row);
-  return "¡Hola " + nombre + "! Completaste " + hechos + " cortes en " + negocio.nombre + " y tu próximo corte es gratis. Reserva cuando quieras: " + paginaPublica();
+  return "¡Hola " + nombre + "! 🎉 Completaste " + hechos + " cortes en " + negocio.nombre + " y tu próximo corte es gratis. Cuando quieras reservarlo, escríbenos por aquí.";
 };
 
-const mensajeEstado = (row) => row.estado === "cancelada" ? mensajeCancelacion(row) : mensajeConfirmacion(row);
+const mensajeBloqueo = (row) => {
+  const nombre = String((row && row.nombre) || "").trim() || "cliente";
+  return "Hola " + nombre + ", por un imprevisto no podremos atenderte el " + diaTexto(fechaDe(row)) + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + ". Disculpa las molestias, ¿te reagendamos? Respóndenos por aquí.";
+};
 
 const diaSeleccionado = () => {
   const today = bogotaToday();
@@ -278,15 +313,15 @@ const ordenar = (rows) => rows.slice().sort((a, b) => {
   return String(a.hora || "").localeCompare(String(b.hora || ""));
 });
 
-const enlaceAviso = (row) => {
-  const link = document.createElement("a");
-  link.className = "act act-wa";
-  link.href = waMensaje(row.telefono, mensajeEstado(row));
-  link.target = "_blank";
-  link.rel = "noopener";
-  link.textContent = "Avisar a " + nombreDe(row) + " por WhatsApp";
-  link.addEventListener("click", () => marcarAvisado(row.id));
-  return link;
+const abrirAviso = (row, hechos) => {
+  const cancelada = row.estado === "cancelada";
+  const cortes = hechos || hitos.get(row.id) || 0;
+  abrirHoja({
+    id: row.id,
+    titulo: cancelada ? "Cita cancelada" : "Cita confirmada",
+    texto: cancelada ? mensajeCancelacion(row) : mensajeConfirmacion(row, cortes),
+    telefono: row.telefono
+  });
 };
 
 const bookingCard = (row) => {
@@ -325,11 +360,12 @@ const bookingCard = (row) => {
     article.appendChild(actions);
   }
   if (row.estado === "confirmada" || row.estado === "cancelada") {
-    if (row.avisado === false) {
-      article.append(el("p", "aviso-falta", "Falta avisar al cliente"), enlaceAviso(row));
-    } else if (row.avisado === true) {
-      article.appendChild(el("p", "aviso-ok", "Cliente avisado ✓"));
-    }
+    if (row.avisado === false) article.appendChild(el("p", "aviso-falta", "Falta avisar al cliente"));
+    else if (row.avisado === true) article.appendChild(el("p", "aviso-ok", "Cliente avisado ✓"));
+    const send = el("button", "act act-send", "Enviar WhatsApp");
+    send.type = "button";
+    send.addEventListener("click", () => abrirAviso(row));
+    article.appendChild(send);
   }
   return article;
 };
@@ -731,35 +767,34 @@ const preguntar = (texto, si, no, tono) => {
   });
 };
 
-const abrirHoja = ({ id, titulo, extra, principal, metaLink }) => {
+const refrescarEnlaceHoja = () => {
+  const area = document.querySelector("[data-sheet-text]");
+  const link = document.querySelector("[data-sheet-wa]");
+  if (!area || !link || link.hidden) return;
+  const href = enlaceWhatsappCliente(sheetPhone, area.value);
+  if (href) link.href = href;
+};
+
+const abrirHoja = ({ id, titulo, texto, telefono }) => {
   const sheet = document.querySelector("[data-sheet]");
   const title = document.querySelector("[data-sheet-title]");
-  const extraNode = document.querySelector("[data-sheet-extra]");
+  const area = document.querySelector("[data-sheet-text]");
   const link = document.querySelector("[data-sheet-wa]");
-  const meta = document.querySelector("[data-sheet-meta]");
-  const status = document.querySelector("[data-sheet-status]");
-  if (!sheet || !title || !link) return;
+  const error = document.querySelector("[data-sheet-error]");
+  const copy = document.querySelector("[data-sheet-copy]");
+  if (!sheet || !title || !area || !link) return;
   sheetId = id;
+  sheetPhone = telefono || "";
   title.textContent = titulo;
-  if (extraNode) {
-    extraNode.hidden = !extra;
-    extraNode.textContent = extra || "";
-  }
-  link.href = principal.href;
-  link.textContent = principal.label;
-  link.onclick = () => marcarAvisado(id);
-  if (meta) {
-    meta.hidden = !metaLink;
-    if (metaLink) {
-      meta.href = metaLink.href;
-      meta.textContent = metaLink.label;
-    }
-  }
-  if (status) {
-    status.hidden = true;
-    status.textContent = "";
-  }
+  area.value = texto;
+  const valido = Boolean(numeroCliente(sheetPhone));
+  if (error) error.hidden = valido;
+  link.hidden = !valido;
+  if (valido) link.href = enlaceWhatsappCliente(sheetPhone, area.value);
+  if (copy) copy.textContent = "Copiar mensaje";
   sheet.hidden = false;
+  const foco = valido ? link : copy;
+  if (foco) foco.focus();
 };
 
 const marcarAvisado = async (id) => {
@@ -772,13 +807,6 @@ const marcarAvisado = async (id) => {
   const row = state.reservas.find((item) => item.id === id);
   if (row) row.avisado = true;
   paintReservas();
-  if (sheetId === id) {
-    const status = document.querySelector("[data-sheet-status]");
-    if (status) {
-      status.hidden = false;
-      status.textContent = "Cliente avisado ✓";
-    }
-  }
 };
 
 const guardarEstado = async (row, payload) => {
@@ -818,31 +846,18 @@ const confirmar = async (row, control) => {
     const ok = await guardarEstado(row, payload);
     if (!ok) return;
     await Promise.all([loadReservas(), loadFidelidad()]);
-    let extra = "";
-    let metaLink = null;
+    let hechosHito = 0;
     if (listaAntes) {
       const despues = fichaFidelidad(row.telefono);
       const hechos = despues ? num(despues.hechos) : 0;
       const meta = state.meta || 10;
       if (hechos > hechosAntes && meta > 0 && hechos % meta === 0) {
-        extra = nombreDe(row) + " completó " + hechos + " cortes: su próximo corte es gratis";
-        metaLink = {
-          href: waMensaje(row.telefono, mensajeGratis(row, hechos)),
-          label: "Avisar por WhatsApp"
-        };
+        hechosHito = hechos;
+        hitos.set(row.id, hechos);
       }
     }
     const actual = state.reservas.find((item) => item.id === row.id) || { ...row, ...payload };
-    abrirHoja({
-      id: row.id,
-      titulo: "Cita confirmada",
-      extra,
-      principal: {
-        href: waMensaje(actual.telefono, mensajeConfirmacion(actual)),
-        label: "Avisar a " + nombreDe(actual) + " por WhatsApp"
-      },
-      metaLink
-    });
+    abrirAviso(actual, hechosHito);
   } finally {
     saving = false;
     if (control) control.disabled = false;
@@ -860,15 +875,7 @@ const cancelarCita = async (row, control) => {
     if (!ok) return;
     await Promise.all([loadReservas(), loadFidelidad()]);
     const actual = state.reservas.find((item) => item.id === row.id) || { ...row, estado: "cancelada", avisado: false };
-    abrirHoja({
-      id: row.id,
-      titulo: "Cita cancelada",
-      extra: "",
-      principal: {
-        href: waMensaje(actual.telefono, mensajeCancelacion(actual)),
-        label: "Avisar a " + nombreDe(actual) + " por WhatsApp"
-      }
-    });
+    abrirAviso(actual);
   } finally {
     saving = false;
     if (control) control.disabled = false;
@@ -1032,8 +1039,7 @@ const pintarAvisos = (rows) => {
   host.replaceChildren(el("p", "block-note", "Bloqueo guardado. Avisa a estos clientes:"));
   rows.forEach((row) => {
     const line = el("p", "block-aviso");
-    const dia = diaTexto(fechaDe(row));
-    const texto = "Hola " + (row.nombre || "") + ", por un imprevisto no podremos atenderte el " + dia + " a las " + hourLabel(row.hora) + " en " + negocio.nombre + ". Disculpa las molestias, ¿te reagendamos? " + paginaPublica();
+    const texto = mensajeBloqueo(row);
     const link = document.createElement("a");
     link.href = waMensaje(row.telefono, texto);
     link.target = "_blank";
@@ -1308,6 +1314,39 @@ if (sheetClose) sheetClose.addEventListener("click", () => {
   const sheet = document.querySelector("[data-sheet]");
   if (sheet) sheet.hidden = true;
   sheetId = null;
+  sheetPhone = "";
+});
+const sheetText = document.querySelector("[data-sheet-text]");
+if (sheetText) sheetText.addEventListener("input", refrescarEnlaceHoja);
+const sheetWa = document.querySelector("[data-sheet-wa]");
+if (sheetWa) sheetWa.addEventListener("click", (event) => {
+  refrescarEnlaceHoja();
+  if (!numeroCliente(sheetPhone)) {
+    event.preventDefault();
+    return;
+  }
+  if (sheetId) marcarAvisado(sheetId);
+});
+const sheetCopy = document.querySelector("[data-sheet-copy]");
+if (sheetCopy) sheetCopy.addEventListener("click", async () => {
+  const area = document.querySelector("[data-sheet-text]");
+  const texto = area ? area.value : "";
+  let copiado = false;
+  try {
+    await navigator.clipboard.writeText(texto);
+    copiado = true;
+  } catch (error) {
+    try {
+      if (area) {
+        area.focus();
+        area.select();
+      }
+      copiado = document.execCommand("copy");
+    } catch (err) {
+      copiado = false;
+    }
+  }
+  sheetCopy.textContent = copiado ? "Mensaje copiado" : "No se pudo copiar";
 });
 prepararBloqueos();
 const logout = document.querySelector("[data-logout]");

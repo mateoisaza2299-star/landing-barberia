@@ -199,11 +199,11 @@
   <div class="sheet" data-sheet hidden>
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
       <h2 id="sheet-title" data-sheet-title></h2>
-      <p class="sheet-extra" data-sheet-extra hidden></p>
+      <p class="sheet-error" data-sheet-error hidden>El celular de este cliente no es válido</p>
+      <textarea data-sheet-text aria-label="Mensaje"></textarea>
       <div class="sheet-actions">
-        <a class="act act-wa" data-sheet-wa target="_blank" rel="noopener"></a>
-        <a class="act act-wa act-meta" data-sheet-meta target="_blank" rel="noopener" hidden></a>
-        <p class="aviso-ok" data-sheet-status hidden></p>
+        <a class="act act-send" data-sheet-wa target="_blank" rel="noopener">Abrir WhatsApp y enviar</a>
+        <button class="act act-quiet" type="button" data-sheet-copy>Copiar mensaje</button>
         <button class="act act-quiet" type="button" data-sheet-close>Cerrar</button>
       </div>
     </div>

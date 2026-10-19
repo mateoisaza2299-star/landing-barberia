@@ -486,9 +486,15 @@
 
 .aviso-falta {
   margin: 12px 0 0;
-  color: #8c3b32;
+  color: #a56a00;
   font-size: 17px;
   font-weight: 600;
+}
+
+.booking > .act-send {
+  margin-top: 12px;
+  background: #2f7d4a;
+  color: #f7f3eb;
 }
 
 .aviso-ok {
@@ -684,16 +690,41 @@
   border-top: 3px solid var(--gold);
 }
 
+.sheet-card {
+  max-height: min(92svh, 100%);
+  overflow: auto;
+}
+
 .ask-card p,
-.sheet-card h2,
-.sheet-extra {
+.sheet-card h2 {
   margin: 0;
   font-family: var(--serif);
   font-size: clamp(1.9rem, 5.5vw, 2.5rem);
   line-height: 1.12;
 }
 
-.sheet-extra { margin-top: 12px; }
+.sheet-error {
+  margin: 12px 0 0;
+  color: #8c3b32;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sheet-card textarea {
+  width: 100%;
+  min-height: 11rem;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(26, 21, 18, 0.22);
+  background: #fffdf8;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+  resize: vertical;
+}
 
 .ask-actions,
 .sheet-actions {
@@ -702,10 +733,15 @@
   margin-top: 18px;
 }
 
-.sheet-actions .act-wa,
+.sheet-actions .act,
 .ask-actions .act { margin-top: 0; }
 
-.sheet-actions .aviso-ok { margin: 0; }
+.sheet-actions .act-send {
+  min-height: 64px;
+  background: #2f7d4a;
+  color: #f7f3eb;
+  font-size: 1.2rem;
+}
 
 .dash-tabs {
   position: fixed;
