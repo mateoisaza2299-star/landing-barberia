@@ -18,7 +18,8 @@ export const negocio = {
   horasAntesDeCerrar: 1,
   bloqueMinutos: 60,
   horario: [
-    { etiqueta: "Lunes a domingo", dias: [0, 1, 2, 3, 4, 5, 6], abre: "09:00", cierra: "17:00" }
+    { etiqueta: "Lun – Vie", dias: [1, 2, 3, 4, 5], abre: "09:00", cierra: "17:00" },
+    { etiqueta: "Sáb y Dom", dias: [6, 0], abre: "09:00", cierra: "20:00" }
   ],
   redes: {
     instagram: "https://www.instagram.com/miami__cuts/",

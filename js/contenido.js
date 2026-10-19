@@ -143,12 +143,8 @@ const applyHorario = () => {
     node.replaceChildren();
     negocio.horario.forEach((regla, index) => {
       if (index) node.appendChild(document.createElement("br"));
-      const dias = regla.dias || [];
-      const corto = [0, 1, 2, 3, 4, 5, 6].every((dia) => dias.includes(dia))
-        ? "Lun – Dom"
-        : dias.includes(1) ? "Lun – Vie" : dias.includes(6) ? "Sáb" : "Dom";
       const cuando = textoHorario(regla);
-      node.appendChild(document.createTextNode(corto + " · " + cuando));
+      node.appendChild(document.createTextNode(regla.etiqueta + " · " + cuando));
     });
   });
   const pintarEstado = (estado) => {

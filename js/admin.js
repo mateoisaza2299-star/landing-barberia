@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { negocio, horasDelDia, direccionLinea } from "./config.js";
+import { negocio, horasDelDia, diaSemana, direccionLinea } from "./config.js";
 import { servicios } from "./servicios.js";
 
 const EMPTY = "Aún no hay datos en este periodo";
@@ -975,34 +975,66 @@ const setPeriod = (period) => {
   loadServicios();
 };
 
-const horasLocal = () => {
-  const slots = horasDelDia("2026-01-05").slice();
-  const cierra = String((negocio.horario[0] && negocio.horario[0].cierra) || "").slice(0, 5);
-  if (cierra && slots[slots.length - 1] !== cierra) slots.push(cierra);
-  return slots.length ? slots : ["09:00", "16:00"];
+const fechasBloqueo = () => {
+  const form = document.querySelector("[data-bloqueo-form]");
+  const desde = form ? String(new FormData(form).get("desde") || "") : "";
+  const hasta = form ? String(new FormData(form).get("hasta") || "") : "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(desde)) return [bogotaToday()];
+  const fin = /^\d{4}-\d{2}-\d{2}$/.test(hasta) && hasta >= desde ? hasta : desde;
+  const fechas = [];
+  let cursor = desde;
+  for (let i = 0; i < 366 && cursor <= fin; i += 1) {
+    fechas.push(cursor);
+    cursor = addDays(cursor, 1);
+  }
+  return fechas.length ? fechas : [bogotaToday()];
+};
+
+const horasLocal = (fechas) => {
+  const bookable = [];
+  const seen = new Set();
+  const cierre = new Set();
+  fechas.forEach((iso) => {
+    horasDelDia(iso).forEach((slot) => {
+      if (seen.has(slot)) return;
+      seen.add(slot);
+      bookable.push(slot);
+    });
+    const regla = negocio.horario.find((item) => (item.dias || []).includes(diaSemana(iso)));
+    const cierra = String((regla && regla.cierra) || "").slice(0, 5);
+    if (cierra) cierre.add(cierra);
+  });
+  bookable.sort();
+  const slots = bookable.slice();
+  cierre.forEach((slot) => {
+    if (!slots.includes(slot)) slots.push(slot);
+  });
+  slots.sort();
+  return {
+    inicio: bookable.length ? bookable : ["09:00"],
+    slots: slots.length ? slots : ["09:00"]
+  };
 };
 
 const llenarHorasBloqueo = () => {
   const desde = document.querySelector("[data-bloqueo-form] select[name='hora_desde']");
   const hasta = document.querySelector("[data-bloqueo-form] select[name='hora_hasta']");
   if (!desde || !hasta) return;
-  const slots = horasLocal();
-  const bookable = horasDelDia("2026-01-05");
-  const inicio = bookable.length ? bookable : slots;
-  desde.replaceChildren();
-  hasta.replaceChildren();
-  inicio.forEach((slot) => {
-    const option = el("option", null, hourLabel(slot));
-    option.value = slot;
-    desde.appendChild(option);
-  });
-  slots.forEach((slot) => {
-    const option = el("option", null, hourLabel(slot));
-    option.value = slot;
-    hasta.appendChild(option);
-  });
-  desde.value = inicio[0];
-  hasta.value = inicio[inicio.length - 1] || slots[slots.length - 1];
+  const prevDesde = desde.value;
+  const prevHasta = hasta.value;
+  const { inicio, slots } = horasLocal(fechasBloqueo());
+  const fill = (select, values) => {
+    select.replaceChildren();
+    values.forEach((slot) => {
+      const option = el("option", null, hourLabel(slot));
+      option.value = slot;
+      select.appendChild(option);
+    });
+  };
+  fill(desde, inicio);
+  fill(hasta, slots);
+  desde.value = inicio.includes(prevDesde) ? prevDesde : inicio[0];
+  hasta.value = slots.includes(prevHasta) ? prevHasta : (inicio[inicio.length - 1] || slots[slots.length - 1]);
 };
 
 const bloqueoError = (message) => {
@@ -1225,6 +1257,7 @@ const prepararBloqueos = () => {
       const hasta = form.querySelector("[name='hasta']");
       if (desde && !desde.value) desde.value = today;
       if (hasta && !hasta.value) hasta.value = today;
+      llenarHorasBloqueo();
       ocultarChoques();
       const avisos = document.querySelector("[data-bloqueo-avisos]");
       if (avisos) avisos.hidden = true;
@@ -1236,6 +1269,7 @@ const prepararBloqueos = () => {
     const hasta = form.querySelector("[name='hasta']");
     if (desde) desde.value = iso;
     if (hasta) hasta.value = iso;
+    llenarHorasBloqueo();
     ocultarChoques();
   };
   const hoy = document.querySelector("[data-bloqueo-hoy]");
@@ -1251,7 +1285,13 @@ const prepararBloqueos = () => {
         ocultarChoques();
       });
     });
-    form.querySelectorAll("[name='desde'], [name='hasta'], [name='hora_desde'], [name='hora_hasta']").forEach((input) => {
+    form.querySelectorAll("[name='desde'], [name='hasta']").forEach((input) => {
+      input.addEventListener("change", () => {
+        llenarHorasBloqueo();
+        ocultarChoques();
+      });
+    });
+    form.querySelectorAll("[name='hora_desde'], [name='hora_hasta']").forEach((input) => {
       input.addEventListener("change", ocultarChoques);
     });
     form.addEventListener("submit", async (event) => {
