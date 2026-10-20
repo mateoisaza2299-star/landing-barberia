@@ -26,7 +26,7 @@ export const negocio = {
     resenas: ""
   },
   precios: {
-    "Corte + bebida": 24000,
+    "Corte básico": 22000,
     "Corte especial": 30000,
     "Corte Miami Cuts": 35000,
     "Diseño": 5000,

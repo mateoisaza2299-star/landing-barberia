@@ -2,15 +2,15 @@ import { negocio, formatoPrecio, enlaceWhatsapp } from "./config.js";
 
 const base = [
   {
-    id: "corte-bebida",
-    nombre: "Corte + bebida",
-    precio: 24000,
-    descripcion: "Asesoría, corte y cejas, con una bebida para acompañar.",
-    experiencia: "Llegas, te sientas y te tomas algo mientras Brayan te asesora el corte que va con tu cara y tu estilo. Rápido, cómodo y con las cejas listas para salir impecable.",
-    incluye: ["Asesoría", "Corte", "Cejas", "Bebida"],
+    id: "corte-basico",
+    nombre: "Corte básico",
+    precio: 22000,
+    descripcion: "Asesoría, corte y cejas.",
+    experiencia: "Llegas, te sientas y Brayan te asesora el corte que va con tu cara y tu estilo. Rápido, cómodo y con las cejas listas para salir impecable.",
+    incluye: ["Asesoría", "Corte", "Cejas"],
     fotos: [
-      { src: "assets/servicios/corte-bebida/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." },
-      { src: "assets/servicios/corte-bebida/2.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
+      { src: "assets/servicios/corte-basico/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." },
+      { src: "assets/servicios/corte-basico/2.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
     ]
   },
   {
