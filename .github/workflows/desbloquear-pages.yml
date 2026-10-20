@@ -1,0 +1,31 @@
+name: Desbloquear Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+  contents: read
+
+jobs:
+  cancelar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancelar el despliegue atascado
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          for sha in \
+            d21ce95e81332f1be4623afcd4e5507694805842 \
+            6f7c4ce5af9fb1c3441f5da3f759d6ef01cef3ae \
+            da9456ce614789f585a7182f5907d5c1a391f096
+          do
+            echo "Cancelando ${sha}"
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/deployments/${sha}/cancel"
+            echo
+          done
+          exit 0
