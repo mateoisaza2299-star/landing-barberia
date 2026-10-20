@@ -9,8 +9,19 @@ const base = [
     experiencia: "Llegas, te sientas y Brayan te asesora el corte que va con tu cara y tu estilo. Rápido, cómodo y con las cejas listas para salir impecable.",
     incluye: ["Asesoría", "Corte", "Cejas"],
     fotos: [
-      { src: "assets/servicios/corte-basico/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." },
-      { src: "assets/servicios/corte-basico/2.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
+      { src: "assets/servicios/corte-basico/1.jpg", width: 1050, height: 1600, alt: "Araña rapada en el lateral de un corte corto." }
+    ]
+  },
+  {
+    id: "corte-bebida",
+    nombre: "Corte + bebida",
+    precio: 24000,
+    descripcion: "Asesoría, corte y cejas, con una bebida para acompañar.",
+    experiencia: "Llegas, te sientas y te tomas algo mientras Brayan te asesora el corte que va con tu cara y tu estilo. Rápido, cómodo y con las cejas listas para salir impecable.",
+    incluye: ["Asesoría", "Corte", "Cejas", "Bebida"],
+    fotos: [
+      { src: "assets/servicios/corte-bebida/1.jpg", width: 1080, height: 1049, alt: "Degradado medio con el cabello peinado hacia atrás, visto de perfil." },
+      { src: "assets/servicios/corte-bebida/2.jpg", width: 1080, height: 1465, alt: "Línea curva rapada sobre un degradado." }
     ]
   },
   {
@@ -36,17 +47,6 @@ const base = [
       { src: "assets/servicios/corte-miami-cuts/1.jpg", width: 902, height: 1599, alt: "Degradado bajo con el cabello corto y texturizado, visto de perfil." },
       { src: "assets/servicios/corte-miami-cuts/2.jpg", width: 1200, height: 1600, alt: "Perfil con la ceja y la mejilla visibles, y una flor rapada en el lateral." },
       { src: "assets/servicios/corte-miami-cuts/3.jpg", width: 1170, height: 1194, alt: "Corazón rapado en la nuca, sobre un degradado." }
-    ]
-  },
-  {
-    id: "diseno",
-    nombre: "Diseño",
-    precio: 5000,
-    descripcion: "Diseño en tu corte, con asesoramiento.",
-    experiencia: "Líneas y detalles pensados para ti. Brayan te asesora el diseño que mejor se ve con tu corte, para que tengas un acabado que se nota y es solo tuyo.",
-    incluye: ["Diseño", "Asesoramiento"],
-    fotos: [
-      { src: "assets/servicios/diseno/1.jpg", width: 1050, height: 1600, alt: "Araña rapada en el lateral de un corte corto." }
     ]
   },
   {

@@ -27,9 +27,9 @@ export const negocio = {
   },
   precios: {
     "Corte básico": 22000,
+    "Corte + bebida": 24000,
     "Corte especial": 30000,
     "Corte Miami Cuts": 35000,
-    "Diseño": 5000,
     "Barba y cejas": 10000,
     "Limpieza facial": 12000
   },

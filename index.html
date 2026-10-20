@@ -51,9 +51,9 @@
     },
     "makesOffer": [
       { "@type": "Offer", "price": "22000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Corte básico", "description": "Asesoría, corte y cejas." } },
+      { "@type": "Offer", "price": "24000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Corte + bebida", "description": "Asesoría, corte y cejas, con una bebida para acompañar." } },
       { "@type": "Offer", "price": "30000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Corte especial", "description": "Corte con exfoliación, limpieza facial, cejas, mascarilla y barba." } },
       { "@type": "Offer", "price": "35000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Corte Miami Cuts", "description": "Todo el corte especial, más lavado capilar, tratamiento capilar y bebida." } },
-      { "@type": "Offer", "price": "5000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Diseño", "description": "Diseño en tu corte, con asesoramiento." } },
       { "@type": "Offer", "price": "10000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Barba y cejas", "description": "Asesoramiento, perfilado de barba y cejas." } },
       { "@type": "Offer", "price": "12000", "priceCurrency": "COP", "itemOffered": { "@type": "Service", "name": "Limpieza facial", "description": "Exfoliación, mascarilla y tratamiento facial." } }
     ],
@@ -174,12 +174,12 @@
             <button class="service-open" type="button" data-service="Corte básico" aria-haspopup="dialog" aria-controls="servicio-ficha">
               <span class="service-cover">
                 <picture>
-                  <source type="image/webp" srcset="assets/servicios/corte-basico/1-640.webp 640w, assets/servicios/corte-basico/1.webp 1080w" sizes="(min-width: 900px) 30vw, 100vw">
-                  <img src="assets/servicios/corte-basico/1.jpg" srcset="assets/servicios/corte-basico/1-640.jpg 640w, assets/servicios/corte-basico/1.jpg 1080w" sizes="(min-width: 900px) 30vw, 100vw" width="1080" height="1049" alt="Degradado medio con el cabello peinado hacia atrás, visto de perfil." decoding="async" loading="eager">
+                  <source type="image/webp" srcset="assets/servicios/corte-basico/1-640.webp 640w, assets/servicios/corte-basico/1.webp 1050w" sizes="(min-width: 900px) 30vw, 100vw">
+                  <img src="assets/servicios/corte-basico/1.jpg" srcset="assets/servicios/corte-basico/1-640.jpg 640w, assets/servicios/corte-basico/1.jpg 1050w" sizes="(min-width: 900px) 30vw, 100vw" width="1050" height="1600" alt="Araña rapada en el lateral de un corte corto." decoding="async" loading="eager">
                 </picture>
               </span>
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><circle cx="9" cy="8" r="3.2"/><circle cx="9" cy="24" r="3.2"/><path d="M11.4 10.2 26 23.5M11.4 21.8 26 8.5"/></svg>
+                <svg viewBox="0 0 32 32"><path d="M8 24 24 8"/><path d="M8 16h6M18 16h6M16 8v6M16 18v6"/></svg>
               </span>
               <h3>Corte básico</h3>
               <p>Asesoría, corte y cejas.</p>
@@ -188,6 +188,23 @@
             </button>
           </li>
           <li class="service-card reveal" data-delay="1">
+            <button class="service-open" type="button" data-service="Corte + bebida" aria-haspopup="dialog" aria-controls="servicio-ficha">
+              <span class="service-cover">
+                <picture>
+                  <source type="image/webp" srcset="assets/servicios/corte-bebida/1-640.webp 640w, assets/servicios/corte-bebida/1.webp 1080w" sizes="(min-width: 900px) 30vw, 100vw">
+                  <img src="assets/servicios/corte-bebida/1.jpg" srcset="assets/servicios/corte-bebida/1-640.jpg 640w, assets/servicios/corte-bebida/1.jpg 1080w" sizes="(min-width: 900px) 30vw, 100vw" width="1080" height="1049" alt="Degradado medio con el cabello peinado hacia atrás, visto de perfil." decoding="async" loading="eager">
+                </picture>
+              </span>
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32"><circle cx="9" cy="8" r="3.2"/><circle cx="9" cy="24" r="3.2"/><path d="M11.4 10.2 26 23.5M11.4 21.8 26 8.5"/></svg>
+              </span>
+              <h3>Corte + bebida</h3>
+              <p>Asesoría, corte y cejas, con una bebida para acompañar.</p>
+              <p class="price">$24.000</p>
+              <span class="service-more">Ver detalle</span>
+            </button>
+          </li>
+          <li class="service-card reveal" data-delay="2">
             <button class="service-open" type="button" data-service="Corte especial" aria-haspopup="dialog" aria-controls="servicio-ficha">
               <span class="service-cover">
                 <picture>
@@ -204,7 +221,7 @@
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
-          <li class="service-card reveal" data-delay="2">
+          <li class="service-card reveal">
             <button class="service-open" type="button" data-service="Corte Miami Cuts" aria-haspopup="dialog" aria-controls="servicio-ficha">
               <span class="service-cover">
                 <picture>
@@ -218,23 +235,6 @@
               <h3>Corte Miami Cuts</h3>
               <p>Todo el corte especial, más lavado capilar, tratamiento capilar y bebida.</p>
               <p class="price">$35.000</p>
-              <span class="service-more">Ver detalle</span>
-            </button>
-          </li>
-          <li class="service-card reveal">
-            <button class="service-open" type="button" data-service="Diseño" aria-haspopup="dialog" aria-controls="servicio-ficha">
-              <span class="service-cover">
-                <picture>
-                  <source type="image/webp" srcset="assets/servicios/diseno/1-640.webp 640w, assets/servicios/diseno/1.webp 1050w" sizes="(min-width: 900px) 30vw, 100vw">
-                  <img src="assets/servicios/diseno/1.jpg" srcset="assets/servicios/diseno/1-640.jpg 640w, assets/servicios/diseno/1.jpg 1050w" sizes="(min-width: 900px) 30vw, 100vw" width="1050" height="1600" alt="Araña rapada en el lateral de un corte corto." decoding="async" loading="eager">
-                </picture>
-              </span>
-              <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><path d="M8 24 24 8"/><path d="M8 16h6M18 16h6M16 8v6M16 18v6"/></svg>
-              </span>
-              <h3>Diseño</h3>
-              <p>Diseño en tu corte, con asesoramiento.</p>
-              <p class="price">$5.000</p>
               <span class="service-more">Ver detalle</span>
             </button>
           </li>
@@ -483,9 +483,9 @@
             <select name="servicio" required>
               <option value="">Elige uno</option>
               <option>Corte básico</option>
+              <option>Corte + bebida</option>
               <option>Corte especial</option>
               <option>Corte Miami Cuts</option>
-              <option>Diseño</option>
               <option>Barba y cejas</option>
               <option>Limpieza facial</option>
             </select>
